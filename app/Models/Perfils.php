@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Usuaris;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\hasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Perfils extends Model
 {
@@ -13,7 +14,7 @@ class Perfils extends Model
     public $timestamps = false;
 
     /**
-     * Get the user Usuari that owns the Perfils
+     * Get the Usuari that owns the Perfils
      *
      * @return \Illuminate\Database\Eloquent\Relations\hasMany
      */
