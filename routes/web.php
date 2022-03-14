@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Usuaris;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/', function () {
+    return redirect('/expedients');
+});
+
 Route::get('/login', function () {
-    return view('login/index');
+    if (!Auth::check()) {
+        $response = view('login/index');
+    } else {
+        $response = redirect(RouteServiceProvider::HOME);
+    }
+
+    return $response;
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/expedients', function () {
+        return view('menu/expedients');
+    });
 });
