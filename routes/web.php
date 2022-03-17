@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return redirect('/expedients');
+    return redirect(RouteServiceProvider::HOME);
 });
 
 Route::get('/login', function () {
@@ -31,7 +31,7 @@ Route::get('/login', function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/expedients', function () {
+    Route::get(RouteServiceProvider::HOME, function () {
         return view('menu/expedients');
     });
 });

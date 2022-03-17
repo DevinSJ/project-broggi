@@ -12,6 +12,7 @@
                             id="input-user"
                             type="text"
                             placeholder="Usuari"
+                            v-model="user.username"
                             required
                         />
                         <label class="user-select-none" for="input-user">
@@ -41,6 +42,7 @@
                             :type="!showPassword ? 'password' : 'text'"
                             placeholder="Contrasenya"
                             class="input-password"
+                            v-model="user.password"
                             required
                         />
                         <label class="user-select-none" for="input-password">
@@ -70,10 +72,34 @@ export default {
         return {
             showPassword: false,
             errorMessage: "",
+            user: {
+                username: "",
+                password: ""
+            }
         };
     },
     methods: {
-        login() {},
+        login() {
+            if (this.user.username && this.user.password) {
+                let me = this;
+
+                axios.post('/users/login', this.user)
+                    .then(function (data) {
+                        if (data.status === 200) {
+                            window.location.href = data.home;
+                        } else {
+                            me.errorMessage = "Usuari o contrasenya incorrecte."
+                            console.error(error);
+                        }
+                    })
+                    .catch(function (error) {
+                        me.errorMessage = "Usuari o contrasenya incorrecte."
+                        console.error(error);
+                    });
+            } else {
+                this.errorMessage = "Has d'omplir tots els camps.";
+            }
+        },
     },
 };
 </script>
