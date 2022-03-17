@@ -1,9 +1,7 @@
 <?php
 
-use App\Models\Usuaris;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Providers\RouteServiceProvider;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,15 +18,9 @@ Route::get('/', function () {
     return redirect(RouteServiceProvider::HOME);
 });
 
-Route::get('/login', function () {
-    if (!Auth::check()) {
-        $response = view('login/index');
-    } else {
-        $response = redirect(RouteServiceProvider::HOME);
-    }
-
-    return $response;
-});
+Route::get('/login',[App\Http\Controllers\LoginController::class, 'show']);
+Route::post('/login',[App\Http\Controllers\LoginController::class,'login'])->name('login');
+Route::get('/logout',[App\Http\Controllers\LoginController::class,'logout']);
 
 Route::middleware(['auth'])->group(function () {
     Route::get(RouteServiceProvider::HOME, function () {

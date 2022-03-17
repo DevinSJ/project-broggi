@@ -8,9 +8,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Providers\RouteServiceProvider;
-
 class UsuarisController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *

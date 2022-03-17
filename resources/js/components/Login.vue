@@ -4,12 +4,16 @@
             class="col-lg-4 col-md-8 col-sm-8 p-4 shadow-lg user-select-none"
             no-body
         >
-            <b-card-img src="/assets/img/logo.png" alt="Logo" class="card-img p-4"/>
+            <b-card-img
+                src="/assets/img/logo.png"
+                alt="Logo"
+                class="card-img p-4"
+            />
             <b-card-body class="p-0">
-                <b-form @submit.prevent="login()">
+                <b-form action="login" method="POST">
                     <div class="form-floating user-select-none">
                         <b-form-input
-                            id="input-user"
+                            id="usuari"
                             type="text"
                             placeholder="Usuari"
                             v-model="user.username"
@@ -38,7 +42,7 @@
                             ></i>
                         </span>
                         <b-form-input
-                            id="input-password"
+                            id="contrassenya"
                             :type="!showPassword ? 'password' : 'text'"
                             placeholder="Contrasenya"
                             class="input-password"
@@ -59,6 +63,7 @@
                     <b-button type="submit" variant="primary" class="w-100">
                         Accedir
                     </b-button>
+                    <input type="hidden" name="_token" :value="csrf" />
                 </b-form>
             </b-card-body>
         </b-card>
@@ -70,12 +75,15 @@ export default {
     mounted() {},
     data() {
         return {
+            csrf: document
+                .querySelector('meta[name="csrf-token"]')
+                .getAttribute("content"),
             showPassword: false,
             errorMessage: "",
             user: {
                 username: "",
-                password: ""
-            }
+                password: "",
+            },
         };
     },
     methods: {
@@ -83,17 +91,19 @@ export default {
             if (this.user.username && this.user.password) {
                 let me = this;
 
-                axios.post('/users/login', this.user)
+                axios
+                    .post("/users/login", this.user)
                     .then(function (data) {
                         if (data.status === 200) {
                             window.location.href = data.home;
                         } else {
-                            me.errorMessage = "Usuari o contrasenya incorrecte."
+                            me.errorMessage =
+                                "Usuari o contrasenya incorrecte.";
                             console.error(error);
                         }
                     })
                     .catch(function (error) {
-                        me.errorMessage = "Usuari o contrasenya incorrecte."
+                        me.errorMessage = "Usuari o contrasenya incorrecte.";
                         console.error(error);
                     });
             } else {
