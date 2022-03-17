@@ -6,10 +6,13 @@
         >
             <b-card-img src="/assets/img/logo.png" alt="Logo" class="card-img p-4"/>
             <b-card-body class="p-0">
-                <b-form @submit.prevent="login()">
+                <b-form
+                        action="login"
+                        method="POST"
+                        >
                     <div class="form-floating user-select-none">
                         <b-form-input
-                            id="input-user"
+                            id="usuari"
                             type="text"
                             placeholder="Usuari"
                             required
@@ -37,7 +40,7 @@
                             ></i>
                         </span>
                         <b-form-input
-                            id="input-password"
+                            id="contrassenya"
                             :type="!showPassword ? 'password' : 'text'"
                             placeholder="Contrasenya"
                             class="input-password"
@@ -57,6 +60,7 @@
                     <b-button type="submit" variant="primary" class="w-100">
                         Accedir
                     </b-button>
+                    <input type="hidden" name="_token" :value="csrf"/>
                 </b-form>
             </b-card-body>
         </b-card>
@@ -68,12 +72,19 @@ export default {
     mounted() {},
     data() {
         return {
+            csrf:document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             showPassword: false,
             errorMessage: "",
+            user:{
+                id:"",
+                username:"",
+                password:""
+            }
         };
     },
     methods: {
-        login() {},
+        
+
     },
 };
 </script>

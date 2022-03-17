@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Usuaris;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UsuarisController extends Controller
 {
+   
     /**
      * Display a listing of the resource.
      *

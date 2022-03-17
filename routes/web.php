@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\UsuarisController;
+use App\Http\Controllers\LoginController;
 use App\Models\Usuaris;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Auth;
@@ -17,10 +19,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return redirect('/expedients');
+    return view('login.index');
 });
 
-Route::get('/login', function () {
+Route::get('/login',[App\Http\Controllers\LoginController::class,'show']);
+Route::post('/login',[App\Http\Controllers\LoginController::class,'login'])->name('login');
+Route::get('/login',[App\Http\Controllers\LoginController::class,'logout']);
+
+
+/* Route::get('/login', function () {
     if (!Auth::check()) {
         $response = view('login/index');
     } else {
@@ -28,10 +35,16 @@ Route::get('/login', function () {
     }
 
     return $response;
-});
+}); */
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/expedients', function () {
-        return view('menu/expedients');
+        $user=Auth::user();
+
+        return view('menu/expedients',compact('user'));
     });
 });
+
+//Route::resource('usuaris',UsuarisController::class);
+
+//Route::get('/login',[App\Http\Controllers\UsuarisController::class,'login'])->name('login');
