@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\Usuaris;
-
 return [
 
     /*
@@ -42,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'api' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ]
     ],
 
     /*

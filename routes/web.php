@@ -1,9 +1,8 @@
 <?php
 
-use App\Models\Usuaris;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Providers\RouteServiceProvider;
+use App\Http\Controllers\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,22 +15,42 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+
 Route::get('/', function () {
-    return redirect('/expedients');
+    return redirect(RouteServiceProvider::HOME);
 });
 
-Route::get('/login', function () {
-    if (!Auth::check()) {
-        $response = view('login/index');
-    } else {
-        $response = redirect(RouteServiceProvider::HOME);
-    }
-
-    return $response;
-});
+Route::get('/login',[LoginController::class, 'show']);
+Route::get('/logout',[LoginController::class,'logout']);
+Route::post('/login', [LoginController::class, 'login']);
 
 Route::middleware(['auth'])->group(function () {
+    /*
+    Route::get('/{route?}', function ($route) {
+        if ($route !== "login") {
+            return view('templates.index');
+        } else {
+            return redirect("/login");
+        }
+    });*/
     Route::get('/expedients', function () {
-        return view('menu/expedients');
-    });
+        return view('templates.index');
+    })->middleware(['role:1|2|3']);
+
+    Route::get('/trucades', function () {
+        return view('templates.index');
+    })->middleware(['role:1|2|3']);
+
+    Route::get('/grafics', function () {
+        return view('templates.index');
+    })->middleware(['role:1|2|3']);
+
+    Route::get('/usuaris', function () {
+        return view('templates.index');
+    })->middleware(['role:3']);
+
+    Route::any('{catchall}', function () {
+        return view('errors.404');
+    })->where('catchall', '.*');
 });
