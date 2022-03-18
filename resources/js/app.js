@@ -7,9 +7,11 @@
 require('./bootstrap');
 
 import { BootstrapVue } from 'bootstrap-vue';
+import VueRouter from 'vue-router';
 
 window.Vue = require('vue').default;
 window.Vue.use(BootstrapVue);
+window.Vue.use(VueRouter);
 
 /**
  * The following block of code may be used to automatically register your
@@ -30,6 +32,24 @@ files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+const Expedients = Vue.component('expedients', require('./pages/Expedients.vue').default);
+const Calls = Vue.component('calls', require('./pages/Calls.vue').default);
+const Graphs = Vue.component('graphs', require('./pages/Graphs.vue').default);
+const Users = Vue.component('users', require('./pages/Users.vue').default);
+const NotFound = Vue.component('notfound', require('./pages/NotFound.vue').default);
+
+const router = new VueRouter({
+    mode: 'history',
+    routes: [
+        { path: '/expedients', component: Expedients },
+        { path: '/trucades', component: Calls },
+        { path: '/grafics', component: Graphs },
+        { path: '/usuaris', component: Users },
+        { path: '*', component: NotFound }
+    ]
+});
+
 const app = new Vue({
     el: '#app',
+    router
 });
