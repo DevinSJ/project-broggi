@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UsuarisController extends Controller
 {
-   
+
     /**
      * Display a listing of the resource.
      *
@@ -27,7 +27,7 @@ class UsuarisController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
     /**
