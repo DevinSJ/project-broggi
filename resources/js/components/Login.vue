@@ -4,17 +4,19 @@
             class="col-lg-4 col-md-8 col-sm-8 p-4 shadow-lg user-select-none"
             no-body
         >
-            <b-card-img src="/assets/img/logo.png" alt="Logo" class="card-img p-4"/>
+            <b-card-img
+                src="/assets/img/logo.png"
+                alt="Logo"
+                class="card-img p-4"
+            />
             <b-card-body class="p-0">
-                <b-form
-                        action="login"
-                        method="POST"
-                        >
+                <b-form @submit.prevent="login">
                     <div class="form-floating user-select-none">
                         <b-form-input
                             id="usuari"
                             type="text"
                             placeholder="Usuari"
+                            v-model="user.username"
                             required
                         />
                         <label class="user-select-none" for="input-user">
@@ -44,6 +46,7 @@
                             :type="!showPassword ? 'password' : 'text'"
                             placeholder="Contrasenya"
                             class="input-password"
+                            v-model="user.password"
                             required
                         />
                         <label class="user-select-none" for="input-password">
@@ -60,7 +63,6 @@
                     <b-button type="submit" variant="primary" class="w-100">
                         Accedir
                     </b-button>
-                    <input type="hidden" name="_token" :value="csrf"/>
                 </b-form>
             </b-card-body>
         </b-card>
@@ -69,22 +71,56 @@
 
 <script>
 export default {
-    mounted() {},
+    mounted() {
+        document.title = "Login - ibroggi";
+    },
     data() {
         return {
-            csrf:document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             showPassword: false,
             errorMessage: "",
-            user:{
-                id:"",
-                username:"",
-                password:""
-            }
+            user: {
+                username: "",
+                password: "",
+                _token: document
+                    .querySelector('meta[name="csrf-token"]')
+                    .getAttribute("content"),
+            },
         };
     },
     methods: {
-        
+        login(event) {
+            if (this.user.username && this.user.password) {
+                event.target.querySelector('button[type="submit"]').innerHTML ='<i class="fas fa-circle-notch fa-spin"></i>';
+                event.target.querySelector('button[type="submit"]').disabled = true;
 
+                let me = this;
+
+                axios
+                    .post("/login", this.user)
+                    .then(function (data) {
+                        if (data.status === 200) {
+                            window.location.href = data.data.home;
+                        } else {
+                            me.errorMessage = "Usuari o contrasenya incorrecte.";
+
+                            console.error(error);
+
+                            event.target.querySelector('button[type="submit"]').innerHTML = "Accedir";
+                            event.target.querySelector('button[type="submit"]').disabled = false;
+                        }
+                    })
+                    .catch(function (error) {
+                        me.errorMessage = "Usuari o contrasenya incorrecte.";
+
+                        console.error(error);
+
+                        event.target.querySelector('button[type="submit"]').innerHTML = "Accedir";
+                        event.target.querySelector('button[type="submit"]').disabled = false;
+                    });
+            } else {
+                this.errorMessage = "Has d'omplir tots els camps.";
+            }
+        },
     },
 };
 </script>

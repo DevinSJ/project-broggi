@@ -1,11 +1,8 @@
 <?php
 
-use App\Http\Controllers\UsuarisController;
-use App\Http\Controllers\LoginController;
-use App\Models\Usuaris;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Providers\RouteServiceProvider;
+use App\Http\Controllers\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,33 +15,42 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+
 Route::get('/', function () {
-    return view('login.index');
+    return redirect(RouteServiceProvider::HOME);
 });
 
-Route::get('/login',[App\Http\Controllers\LoginController::class,'show']);
-Route::post('/login',[App\Http\Controllers\LoginController::class,'login'])->name('login');
-Route::get('/login',[App\Http\Controllers\LoginController::class,'logout']);
-
-
-/* Route::get('/login', function () {
-    if (!Auth::check()) {
-        $response = view('login/index');
-    } else {
-        $response = redirect(RouteServiceProvider::HOME);
-    }
-
-    return $response;
-}); */
+Route::get('/login',[LoginController::class, 'show']);
+Route::get('/logout',[LoginController::class,'logout']);
+Route::post('/login', [LoginController::class, 'login']);
 
 Route::middleware(['auth'])->group(function () {
+    /*
+    Route::get('/{route?}', function ($route) {
+        if ($route !== "login") {
+            return view('templates.index');
+        } else {
+            return redirect("/login");
+        }
+    });*/
     Route::get('/expedients', function () {
-        $user=Auth::user();
+        return view('templates.index');
+    })->middleware(['role:1|2|3']);
 
-        return view('menu/expedients',compact('user'));
-    });
+    Route::get('/trucades', function () {
+        return view('templates.index');
+    })->middleware(['role:1|2|3']);
+
+    Route::get('/grafics', function () {
+        return view('templates.index');
+    })->middleware(['role:1|2|3']);
+
+    Route::get('/usuaris', function () {
+        return view('templates.index');
+    })->middleware(['role:3']);
+
+    Route::any('{catchall}', function () {
+        return view('errors.404');
+    })->where('catchall', '.*');
 });
-
-//Route::resource('usuaris',UsuarisController::class);
-
-//Route::get('/login',[App\Http\Controllers\UsuarisController::class,'login'])->name('login');
