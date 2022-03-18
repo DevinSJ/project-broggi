@@ -10,7 +10,7 @@
                 class="card-img p-4"
             />
             <b-card-body class="p-0">
-                <b-form action="login" method="POST">
+                <b-form @submit.prevent="login">
                     <div class="form-floating user-select-none">
                         <b-form-input
                             id="usuari"
@@ -63,7 +63,6 @@
                     <b-button type="submit" variant="primary" class="w-100">
                         Accedir
                     </b-button>
-                    <input type="hidden" name="_token" :value="csrf" />
                 </b-form>
             </b-card-body>
         </b-card>
@@ -72,39 +71,51 @@
 
 <script>
 export default {
-    mounted() {},
+    mounted() {
+        document.title = "Login - ibroggi";
+    },
     data() {
         return {
-            csrf: document
-                .querySelector('meta[name="csrf-token"]')
-                .getAttribute("content"),
             showPassword: false,
             errorMessage: "",
             user: {
                 username: "",
                 password: "",
+                _token: document
+                    .querySelector('meta[name="csrf-token"]')
+                    .getAttribute("content"),
             },
         };
     },
     methods: {
-        login() {
+        login(event) {
             if (this.user.username && this.user.password) {
+                event.target.querySelector('button[type="submit"]').innerHTML ='<i class="fas fa-circle-notch fa-spin"></i>';
+                event.target.querySelector('button[type="submit"]').disabled = true;
+
                 let me = this;
 
                 axios
-                    .post("/users/login", this.user)
+                    .post("/login", this.user)
                     .then(function (data) {
                         if (data.status === 200) {
-                            window.location.href = data.home;
+                            window.location.href = data.data.home;
                         } else {
-                            me.errorMessage =
-                                "Usuari o contrasenya incorrecte.";
+                            me.errorMessage = "Usuari o contrasenya incorrecte.";
+
                             console.error(error);
+
+                            event.target.querySelector('button[type="submit"]').innerHTML = "Accedir";
+                            event.target.querySelector('button[type="submit"]').disabled = false;
                         }
                     })
                     .catch(function (error) {
                         me.errorMessage = "Usuari o contrasenya incorrecte.";
+
                         console.error(error);
+
+                        event.target.querySelector('button[type="submit"]').innerHTML = "Accedir";
+                        event.target.querySelector('button[type="submit"]').disabled = false;
                     });
             } else {
                 this.errorMessage = "Has d'omplir tots els camps.";

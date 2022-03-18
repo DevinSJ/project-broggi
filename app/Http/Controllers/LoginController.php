@@ -22,17 +22,17 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $usuari = $request->input('usuari');
-        $contrassenya = $request->input('contrassenya');
+        $username = $request->input('username');
+        $password = $request->input('password');
 
-        $user = Usuaris::where('usuari', $usuari)->first();
+        $user = Usuaris::where('usuari', $username)->first();
 
-        if ($user != null && Hash::check($contrassenya, $user->contrassenya)) {
+        if ($user && Hash::check($password, $user->contrassenya)) {
             Auth::login($user);
-            $response = redirect('/home');
+
+            $response = response()->json(['message' => 'Login correcte.', 'home' => RouteServiceProvider::HOME], 200);
         } else {
-            $request->flash('error', 'Usuari o contrasenya incorrecte');
-            $response = redirect('/login')->withInput();
+            $response = response()->json(['message' => 'Usuari o contrasenya incorrecte.'], 401);
         }
 
         return $response;
@@ -41,6 +41,7 @@ class LoginController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect('/');
+        
+        return redirect('/login');
     }
 }

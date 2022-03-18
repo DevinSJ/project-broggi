@@ -16,4 +16,3 @@ use App\Http\Controllers\Api\UsuarisController;
 */
 
 Route::apiResource('users', UsuarisController::class);
-Route::post('users/login', [UsuarisController::class, 'login']);
