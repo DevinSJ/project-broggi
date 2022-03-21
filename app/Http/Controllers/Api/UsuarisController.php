@@ -8,10 +8,6 @@ use App\Http\Controllers\Controller;
 
 class UsuarisController extends Controller
 {
-<<<<<<< HEAD:app/Http/Controllers/UsuarisController.php
-
-=======
->>>>>>> 6471063c116843b2783bc054b9bd212bf0f3c694:app/Http/Controllers/Api/UsuarisController.php
     /**
      * Display a listing of the resource.
      *
@@ -23,19 +19,6 @@ class UsuarisController extends Controller
     }
 
     /**
-<<<<<<< HEAD:app/Http/Controllers/UsuarisController.php
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-
-    }
-
-    /**
-=======
->>>>>>> 6471063c116843b2783bc054b9bd212bf0f3c694:app/Http/Controllers/Api/UsuarisController.php
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
