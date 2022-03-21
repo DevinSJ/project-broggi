@@ -1,8 +1,14 @@
 <template>
     <div>
+<<<<<<< HEAD
         <b-navbar toggleable="lg" type="dark" variant="primary">
             <b-navbar-brand href="/">
                 <img src="/assets/img/logo.svg" width="50" class="ml-2"/>
+=======
+        <b-navbar toggleable="lg" type="light" variant="light">
+            <b-navbar-brand href="/">
+                <img src="/assets/img/logo.svg" width="120" class="ml-2"/>
+>>>>>>> main
             </b-navbar-brand>
 
             <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
@@ -22,7 +28,11 @@
                 </b-navbar-nav>
 
                 <b-navbar-nav class="ml-auto">
+<<<<<<< HEAD
                     <b-nav-item-dropdown right>
+=======
+                    <b-nav-item-dropdown class="ml-2" right>
+>>>>>>> main
                         <template #button-content>
                             <em class="mr-2">{{ user.cognoms }}, {{ user.nom }}</em>
                         </template>
