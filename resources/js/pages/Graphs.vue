@@ -1,5 +1,8 @@
 <template>
-  <h1>Gráfics</h1>
+<div class="view-container">
+    <h1>Gráfics</h1>
+</div>
+
 </template>
 
 <script>

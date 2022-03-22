@@ -1,5 +1,8 @@
 <template>
-  <h1>Usuaris</h1>
+<div class="view-container">
+    <h1>Usuaris</h1>
+</div>
+
 </template>
 
 <script>

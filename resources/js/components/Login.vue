@@ -5,15 +5,9 @@
             no-body
         >
             <b-card-img
-<<<<<<< HEAD
-                src="/assets/img/logo.png"
-                alt="Logo"
-                class="card-img p-4"
-=======
                 src="/assets/img/logo.svg"
                 alt="Logo"
                 class="card-img mb-4"
->>>>>>> main
             />
             <b-card-body class="p-0">
                 <b-form @submit.prevent="login">
@@ -101,15 +95,6 @@ export default {
                     .querySelector('meta[name="csrf-token"]')
                     .getAttribute("content"),
             },
-<<<<<<< HEAD
-        };
-    },
-    methods: {
-        login(event) {
-            if (this.user.username && this.user.password) {
-                event.target.querySelector('button[type="submit"]').innerHTML ='<i class="fas fa-circle-notch fa-spin"></i>';
-                event.target.querySelector('button[type="submit"]').disabled = true;
-=======
             isLoading: false,
         };
     },
@@ -117,7 +102,6 @@ export default {
         login() {
             if (this.user.username && this.user.password) {
                 this.isLoading = true;
->>>>>>> main
 
                 let me = this;
 
@@ -127,34 +111,19 @@ export default {
                         if (data.status === 200) {
                             window.location.href = data.data.home;
                         } else {
-<<<<<<< HEAD
-                            me.errorMessage = "Usuari o contrasenya incorrecte.";
-
-                            console.error(error);
-
-                            event.target.querySelector('button[type="submit"]').innerHTML = "Accedir";
-                            event.target.querySelector('button[type="submit"]').disabled = false;
-=======
                             me.errorMessage =
                                 "Usuari o contrasenya incorrecte.";
 
                             console.error(error);
 
                             me.isLoading = false;
->>>>>>> main
                         }
                     })
                     .catch(function (error) {
                         me.errorMessage = "Usuari o contrasenya incorrecte.";
 
                         console.error(error);
-<<<<<<< HEAD
-
-                        event.target.querySelector('button[type="submit"]').innerHTML = "Accedir";
-                        event.target.querySelector('button[type="submit"]').disabled = false;
-=======
                         me.isLoading = false;
->>>>>>> main
                     });
             } else {
                 this.errorMessage = "Has d'omplir tots els camps.";

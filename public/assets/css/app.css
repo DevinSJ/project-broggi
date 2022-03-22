@@ -10020,6 +10020,9 @@ h3 {
     border-color: #dee2e6;
   }
 }
+.view-container {
+  padding: 20px;
+}
 /* General */
 html,
 body,
