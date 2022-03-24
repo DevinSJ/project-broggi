@@ -218,7 +218,7 @@ export default {
 
 <style>
 .float-btn-help-lang {
-    position: absolute;
+    position: fixed;
     right: 0;
     bottom: 0;
     margin: 10px;
