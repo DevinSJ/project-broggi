@@ -6,6 +6,7 @@
             type="light"
             variant="light"
             class="fondoBackground"
+            sticky
         >
             <!--LOGO-->
             <b-navbar-brand href="/">
