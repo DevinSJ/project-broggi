@@ -8,6 +8,7 @@ require('./bootstrap');
 
 import { BootstrapVue } from 'bootstrap-vue';
 import VueRouter from 'vue-router';
+// import "bootstrap-vue/dist/bootstrap-vue.css";
 
 window.Vue = require('vue').default;
 window.Vue.use(BootstrapVue);
