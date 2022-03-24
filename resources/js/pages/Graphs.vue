@@ -1,5 +1,7 @@
 <template>
-  <h1>Grafics</h1>
+    <main>
+        <h1>Gràfics</h1>
+    </main>
 </template>
 
 <script>

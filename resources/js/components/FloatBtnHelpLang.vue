@@ -14,28 +14,28 @@
                         id="en-lang"
                         variant="secondary"
                         class="btn-lang mb-1 d-none"
-                        @click="togglePopoverLang"
+                        @click="changeLang"
                     >
                     </b-button>
                     <b-button
                         id="de-lang"
                         variant="secondary"
                         class="btn-lang mb-1 d-none"
-                        @click="togglePopoverLang"
+                        @click="changeLang"
                     >
                     </b-button>
                     <b-button
                         id="es-lang"
                         variant="secondary"
                         class="btn-lang mb-1 d-none"
-                        @click="togglePopoverLang"
+                        @click="changeLang"
                     >
                     </b-button>
                     <b-button
                         id="fr-lang"
                         variant="secondary"
                         class="btn-lang mb-1 d-none"
-                        @click="togglePopoverLang"
+                        @click="changeLang"
                     >
                     </b-button>
                 </div>
@@ -52,8 +52,7 @@
         <b-popover
             id="popoverLang"
             :show.sync="showPopoverLang"
-            :target="targetPopoverLang"
-            @show="onShowPopover">
+            target="fr-lang">
             <template #title>
                 <div class="d-flex">
                     <svg-vue v-if="isLoadingPopoverLang" icon="spinner" class="mx-auto my-auto" width="20"/>
@@ -71,7 +70,7 @@
                 <div v-show="!isLoadingPopoverLang">
                     <div v-if="langsData.length > 0">
                         <div v-for="lang in langsData" :key="lang.id" class="border-bottom mb-2">
-                            <label class="d-block font-weight-bold">{{lang[targetPopoverLang.replace('-', '_')]}}</label>
+                            <label class="d-block font-weight-bold">{{lang[langSelected.replace('-', '_')]}}</label>
                             <label class="text-secondary">{{lang.ca_lang}}</label>
                         </div>
                     </div>
@@ -108,7 +107,7 @@ export default {
             request: null,
             showItemsLang: false,
             buttonsLangsElements: [],
-            targetPopoverLang: '',
+            langSelected: '',
             showPopoverLang: false,
             isLoadingPopoverLang: false,
             errorMessagePopoverLang: '',
@@ -146,25 +145,6 @@ export default {
 
             this.buttonsLangsElements = this.buttonsLangsElements.reverse();
         },
-        togglePopoverLang(e) {
-            if (this.targetPopoverLang !== e.currentTarget.id) {
-                this.showPopoverLang = false;
-                this.targetPopoverLang = e.currentTarget.id;
-            }
-
-            this.isLoadingPopoverLang = true;
-
-            let me = this;
-
-            setTimeout(() => me.showPopoverLang = !me.showPopoverLang, 200);
-        },
-        onShowPopover() {
-            this.errorMessagePopoverLang = '';
-            this.imageSrcLang = `/assets/img/ca-${this.targetPopoverLang.split('-')[0]}.png`;
-            this.langsData = [];
-
-            this.fetchLang();
-        },
         hideItemsLang(e) {
             let popoverLangElement = document.querySelector('#popoverLang');
 
@@ -172,23 +152,35 @@ export default {
                 return;
 
             if (this.showItemsLang) {
-                this.targetPopoverLang = '';
+                this.toggleItemsLang();
+            }
+        },
+        changeLang(e) {
+            if (this.langSelected === e.currentTarget.id) {
+                this.langSelected = '';
+                this.langsData = [];
                 this.showPopoverLang = false;
+            } else {
+                this.langSelected = e.currentTarget.id;
+                this.imageSrcLang = `/assets/img/ca-${this.langSelected.split('-')[0]}.png`;
+                this.showPopoverLang = true;
 
-                let me = this;
-
-                setTimeout(() => me.toggleItemsLang(), 100);
+                this.fetchLang();
             }
         },
         fetchLang(search = "") {
-            let me = this;
+            this.errorMessagePopoverLang = '';
+            this.langsData = [];
+            this.isLoadingPopoverLang = true;
 
             if (this.request) this.request.cancel();
 
             let axiosSource = axios.CancelToken.source();
             this.request = { cancel: axiosSource.cancel };
 
-            axios.get(`/api/help-phrases?search=${search}&type=${this.targetPopoverLang.replace('-', '_')}`, {
+            let me = this;
+
+            axios.get(`/api/help-phrases?search=${search}&type=${this.langSelected.replace('-', '_')}`, {
                 cancelToken: axiosSource.token,
             })
             .then(function (data) {
@@ -205,6 +197,10 @@ export default {
                     me.errorMessagePopoverLang = 'No s\'ha pogut cargar les dades...';
 
                     console.error(error);
+                } else {
+                    me.langSelected = '';
+                    me.errorMessagePopoverLang = '';
+                    me.langsData = [];
                 }
             })
             .finally(() => {
@@ -273,15 +269,19 @@ button[id$=lang] {
     background-image: url('/assets/img/fr.png');
 }
 
-.popover {
+#popoverLang {
     max-width: 400px;
     width: 100%;
 }
 
-.popover-body {
+#popoverLang .popover-body {
     max-height: 250px;
     height: 250px;
     overflow-y: scroll;
+}
+
+#popoverLang .arrow {
+    display: none;
 }
 
 @keyframes bounceOut {
