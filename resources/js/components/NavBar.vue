@@ -1,5 +1,4 @@
 <template>
-
     <div id="miNavBar">
         <b-navbar
             toggleable="lg"
@@ -42,16 +41,16 @@
                             <i
                                 class="fa-solid fa-users mr-2 desactivar-click"
                             ></i>
-                            <span class="desactivar-click">Usuaris</span></router-link
+                            <span class="desactivar-click"
+                                >Usuaris</span
+                            ></router-link
                         >
                         <router-link to="parametres">
                             <i
                                 class="fa-solid fa-gear mr-2 desactivar-click"
-                            ></i><span class="desactivar-click">Paràmetres</span>
-                            </router-link
-                        >
-
-
+                            ></i
+                            ><span class="desactivar-click">Paràmetres</span>
+                        </router-link>
                     </div>
                     <!--CERRAR SESION-->
                 </b-navbar-nav>
@@ -160,21 +159,20 @@ export default {
     left: 0px;
     width: 180px;
     height: 4px;
-    background: #E55490;
+    background: #e55490;
     border-top-right-radius: 5px;
     border-top-left-radius: 5px;
 }
-
 
 .router-link-exact-active {
     font-weight: bold;
     font-size: 15px;
 }
-.router-link-exact-active i{
-    color:#E55490;
+.router-link-exact-active i {
+    color: #e55490;
 }
 
-.router-link-exact-active span{
-    color:#E55490;}
-
+.router-link-exact-active span {
+    color: #e55490;
+}
 </style>
