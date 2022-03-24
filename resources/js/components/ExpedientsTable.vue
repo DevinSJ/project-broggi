@@ -151,7 +151,6 @@ export default {
 
 <style scoped>
 .expedients-table-container{
-    margin-top: 100px;
     padding-inline: 10px;
 }
 
