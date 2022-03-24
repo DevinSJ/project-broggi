@@ -13008,9 +13008,12 @@ input[type=color].form-control:disabled {
   font-size: 125%;
   vertical-align: text-bottom;
 }
+<<<<<<< HEAD
 .view-container {
   padding: 20px;
 }
+=======
+>>>>>>> 4d6a6ebbbe2af9f52c2ed54fb9dba58f11df1e41
 /* General */
 html,
 body,
