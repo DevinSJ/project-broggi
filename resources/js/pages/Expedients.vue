@@ -1,8 +1,8 @@
 <template>
-  <div class="view-container">
+  <main>
     <button-call />
     <expedients-table />
-  </div>
+  </main>
 </template>
 
 <script>
