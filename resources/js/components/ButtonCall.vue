@@ -142,14 +142,14 @@ h1 {
   transition: transform ease-out 200ms;
 }
 .menu-open-button {
-  background: #12e266;
+  background: green;
   border-radius: 5%;
   font-weight: bold;
   padding: 5px;
   padding-inline: 30px;
   position: absolute;
   top: 20px;
-  color: black;
+  color: white;
   text-align: center;
   transform: translate3d(0, 0, 0);
   transition: transform ease-out 200ms;
@@ -218,5 +218,6 @@ h1 {
 }
 .m-top {
     margin-top: 3px;
+    margin-left: 5px;
 }
 </style>
