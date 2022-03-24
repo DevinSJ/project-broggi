@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UsuarisController;
+use App\Http\Controllers\Api\AjudesFrasesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,4 @@ use App\Http\Controllers\Api\UsuarisController;
 */
 
 Route::apiResource('users', UsuarisController::class);
+Route::apiResource('help-phrases', AjudesFrasesController::class);

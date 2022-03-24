@@ -4,9 +4,8 @@
             class="col-lg-4 col-md-8 col-sm-8 p-4 shadow-lg user-select-none"
             no-body
         >
-            <b-card-img
+            <img
                 src="/assets/img/logo.svg"
-                alt="Logo"
                 class="card-img mb-4"
             />
             <b-card-body class="p-0">
@@ -66,11 +65,7 @@
                         class="w-100"
                         :disabled="isLoading"
                     >
-                        <img
-                            v-show="isLoading"
-                            src="/assets/img/spinner.svg"
-                            width="20"
-                        />
+                        <svg-vue v-show="isLoading" icon="spinner" width="20"/>
                         <span v-show="!isLoading">Accedir</span>
                     </b-button>
                 </b-form>
@@ -111,20 +106,17 @@ export default {
                         if (data.status === 200) {
                             window.location.href = data.data.home;
                         } else {
-                            me.errorMessage =
-                                "Usuari o contrasenya incorrecte.";
+                            me.errorMessage = "Usuari o contrasenya incorrecte.";
 
-                            console.error(error);
-
-                            me.isLoading = false;
+                            console.error(data);
                         }
                     })
                     .catch(function (error) {
                         me.errorMessage = "Usuari o contrasenya incorrecte.";
 
                         console.error(error);
-                        me.isLoading = false;
-                    });
+                    })
+                    .finally(() => me.isLoading = false);
             } else {
                 this.errorMessage = "Has d'omplir tots els camps.";
             }

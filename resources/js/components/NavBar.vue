@@ -1,8 +1,12 @@
 <template>
     <div>
-        <b-navbar toggleable="lg" type="light" variant="light">
+        <b-navbar toggleable="lg" type="light" variant="light" sticky>
             <b-navbar-brand href="/">
-                <img src="/assets/img/logo.svg" width="120" class="ml-2"/>
+                <img
+                    src="/assets/img/logo.svg"
+                    width="120"
+                    class="ml-2"
+                />
             </b-navbar-brand>
 
             <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>

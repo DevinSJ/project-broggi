@@ -16,6 +16,8 @@
 
             <router-view>
             </router-view>
+
+            <float-btn-help-lang />
         @else
             @yield('content')
         @endif
