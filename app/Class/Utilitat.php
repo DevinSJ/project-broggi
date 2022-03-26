@@ -29,7 +29,6 @@ class Utilitat
             case 1044:
                 $mensaje = "Usuario y/o password incorrecto";
                 break;
-
             case 1049:
                 $mensaje = "Base de datos desconocida";
                 break;

@@ -18,9 +18,9 @@ class UsuarisController extends Controller
      */
     public function index()
     {
-        $_usuaris= Usuaris::all();
+        $_usuaris= Usuaris::with('perfil')->get();
 
-      return UsuarisResource::collection($_usuaris);
+        return UsuarisResource::collection($_usuaris);
     }
 
     /**
@@ -36,10 +36,11 @@ class UsuarisController extends Controller
         $usuari->usuari=$request->input('usuari');
         $usuari->nom=$request->input('nom');
         $usuari->cognoms=$request->input('cognoms');
-        $usuari->contrassenya=$request->input('contrassenya');
+        $usuari->contrassenya=bcrypt($request->input('contrassenya'));
+
         $usuari->perfils_id=$request->input('perfils_id');
 
-        $usuari->actiu= ($request->input('actiu')=='actiu');
+        $usuari->actiu= $request->input('actiu');
 
         try{
             $usuari->save();
@@ -82,7 +83,7 @@ class UsuarisController extends Controller
         $usuari->usuari=$request->input('usuari');
         $usuari->nom=$request->input('nom');
         $usuari->cognoms=$request->input('cognoms');
-        $usuari->contrassenya=$request->input('contrassenya');
+        $usuari->contrassenya=bcrypt($request->input('contrassenya'));
         $usuari->perfils_id=$request->input('perfils_id');
 
         $usuari->actiu= ($request->input('actiu')=='actiu');

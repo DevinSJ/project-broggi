@@ -2,13 +2,18 @@
     <main>
         <div class="principal">
             <div class="botones">
+                <!--PAnel filtrado-->
                 <b-row class="text-center">
                     <b-col cols="3">
                         <button
-                            class="btn btn-success"
+                            class="btn-sm btn-success"
                             area-hidden="true"
                             v-b-modal.modal-usuari
-                            @click="setTitleModalUsuari('Nou usuari')"
+                            @click="
+                                nouUsuari();
+                                setTitleModalUsuari('Nou usuari'),
+                                    colorCabezalCrearUsuari();
+                            "
                         >
                             <i class="fas fa-user-circle"></i>
                             Afegir usuari
@@ -19,7 +24,7 @@
                         <b-form inline>
                             <b-form-input
                                 id="inline-form-input-name"
-                                class="mb-2 mr-sm-2 mb-sm-0"
+                                class="mb-2 mr-sm-2 mb-sm-0 form-control-sm"
                                 placeholder="Exemple: Francisco ..."
                             ></b-form-input>
 
@@ -29,6 +34,7 @@
                                 >Perfil</label
                             >
                             <b-form-select
+                                size="sm"
                                 id="inline-form-custom-select-pref"
                                 class="mb-2 mr-sm-2 mb-sm-0"
                                 :options="[
@@ -46,6 +52,7 @@
                                 >Actiu</label
                             >
                             <b-form-select
+                                size="sm"
                                 id="inline-form-custom-select-pref"
                                 class="mb-2 mr-sm-2 mb-sm-0"
                                 :options="[
@@ -56,11 +63,12 @@
                                 :value="null"
                             ></b-form-select>
 
-                            <b-button variant="info"
+                            <b-button variant="info" class="btn-sm"
                                 ><i class="fa-solid fa-filter"></i>
                                 Filtrar</b-button
                             >
                             <b-button
+                                class="btn-sm"
                                 variant="secondary ml-2"
                                 @click="selectUsuaris"
                             >
@@ -71,23 +79,13 @@
                     </b-col>
                 </b-row>
             </div>
+            <hr />
 
-            <!--MSG INFO
-
-            <div
-                v-if="msgInfo"
-                class="alert alert-success alert-dismissible fade show"
-                role="alert"
-            >
-                <i class="fas fa-check"></i>
-                {{ msgInfo }}
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert"
-                    aria-label="Close"
-                ></button>
-            </div>-->
+            <!-- ALERTS-->
+            <!-- MSG info-->
+            <b-alert v-if="msgInfo" show dismissible variant="success"
+                ><i class="fas fa-check"></i> {{ msgInfo }}
+            </b-alert>
 
             <!--TABLA-->
             <div class="contenedor-tabla">
@@ -95,6 +93,7 @@
                     v-show="!isLoading"
                     striped
                     hover
+                    class="table-sm"
                     thead-class="thead-dark"
                     sort-icon-left
                     :fields="fields"
@@ -104,13 +103,28 @@
                     <template #cell(edit)="data">
                         <div>
                             <b-button
+                                title="Editar usuari"
                                 variant="warning"
                                 v-b-modal.modal-usuari
+                                class="btn-sm"
                                 @click="
                                     setUsuari(data.item);
                                     setTitleModalUsuari('Editar usuari');
+                                    colorCabezalEditarUsuari();
                                 "
-                                ><i class="fas fa-edit"></i> Editar
+                                ><i class="fas fa-edit"></i>
+                            </b-button>
+                            <b-button
+                                title="Editar contrasenya"
+                                variant="dark"
+                                class="btn-sm"
+                                v-b-modal.modal-usuari
+                                @click="
+                                    setUsuari(data.item);
+                                    setTitleModalUsuari('Editar contrasenya');
+                                    colorCabezalEditarContrasenya();
+                                "
+                                ><i class="fa-solid fa-key"></i>
                             </b-button>
                         </div>
                     </template>
@@ -118,16 +132,20 @@
                         <div class="centrar-icono">
                             <i
                                 v-if="data.item.actiu"
-                                class="fa-solid fa-2x fa-circle-check color-actiu"
+                                class="fa-solid fa-circle-check color-actiu"
                             ></i>
                             <i
                                 v-else
-                                class="fa-solid fa-2x fa-circle-xmark color-inactiu"
+                                class="fa-solid fa-circle-xmark color-inactiu"
                             ></i>
                         </div>
                     </template>
-                </b-table>
 
+                    <template #cell(perfils_id)="data">
+                        <div>{{ data.item.perfil.nom }}</div>
+                    </template>
+                </b-table>
+                <!--CARGA-->
                 <div class="centrar-carga">
                     <img
                         v-show="isLoading"
@@ -138,25 +156,26 @@
             </div>
         </div>
 
-        <!-- MODAL CREAR USUARIO-->
+        <!-- MODAL USUARIO-->
 
         <b-modal
             id="modal-usuari"
             size="lg"
-            :title="titleModalUsuari"
-            @ok="createUpdateUsuari"
+            @ok="handleOk"
             @hidden="resetModal"
+            :header-class="colorCabezal"
         >
+            <template #modal-header>
+                <h3><i :class="iconoModal"></i> {{ titleModalUsuari }}</h3>
+            </template>
+
             <template #modal-footer="{ ok, cancel }">
                 <div class="w-100">
-                    <span class="text-danger" v-if="showErrorModal"
-                        ><i class="fas fa-exclamation-circle mr-2"></i
-                        >{{ errorMessageModal }}</span
-                    >
                     <b-button
                         @click="ok()"
-                        variant="primary"
+                        :variant="btnClassForm"
                         class="float-right"
+                        type="submit"
                         :disabled="disabled_ok_button_modal"
                     >
                         {{ save_button_title }}
@@ -172,82 +191,192 @@
             </template>
 
             <template #default>
-                <b-form @submit="createUpdateUsuari">
-                    <div class="form-floating user-select-none mb-2">
+
+                <b-form
+                    @submit="createUpdateUsuari"
+                    id="form-user"
+                    invalid-feedback="This field is required"
+                    aria-autocomplete="false"
+                >
+                    <!-- MSG ERROR-->
+                    <b-alert v-if="msgError" show dismissible variant="danger"
+                        ><i class="fas fa-exclamation"></i> {{ msgError }}
+                    </b-alert>
+
+                    <p>Els camps amb ! son obligatoris</p>
+
+                    <div
+                        v-if="opcionModal === 1 || opcionModal === 2"
+                        class="form-floating user-select-none mb-2"
+                    >
                         <b-form-input
-                            id="usuari"
+                            id="input-usuari"
                             type="text"
                             placeholder="Usuari"
                             v-model="usuari.usuari"
                             required
+                            :state="validationUsuari"
                         />
                         <label class="user-select-none" for="input-usuari">
                             Usuari
                         </label>
                     </div>
 
-                    <div class="form-floating user-select-none mb-2">
-                        <b-form-input
-                            id="nom"
-                            type="text"
-                            placeholder="Nom"
-                            v-model="usuari.nom"
-                            required
-                        />
-                        <label class="user-select-none" for="input-nom">
-                            Nom
-                        </label>
-                    </div>
+                    <b-row>
+                        <b-col
+                            ><div
+                                v-if="opcionModal === 1 || opcionModal === 2"
+                                class="form-floating user-select-none mb-2"
+                            >
+                                <b-form-input
+                                    id="nom"
+                                    type="text"
+                                    placeholder="Nom"
+                                    v-model="usuari.nom"
+                                    required
+                                    :state="validationNom"
+                                />
+                                <label class="user-select-none" for="input-nom">
+                                    Nom
+                                </label>
+                            </div></b-col
+                        >
+                        <b-col>
+                            <div
+                                v-if="opcionModal === 1 || opcionModal === 2"
+                                class="form-floating user-select-none mb-2"
+                            >
+                                <b-form-input
+                                    id="cognoms"
+                                    type="text"
+                                    placeholder="Cognoms"
+                                    v-model="usuari.cognoms"
+                                    required
+                                    :state="validationCognoms"
+                                />
+                                <label
+                                    class="user-select-none"
+                                    for="input-cognoms"
+                                >
+                                    Cognoms
+                                </label>
+                            </div></b-col
+                        >
+                    </b-row>
 
-                    <div class="form-floating user-select-none mb-2">
-                        <b-form-input
-                            id="cognoms"
-                            type="text"
-                            placeholder="Cognoms"
-                            v-model="usuari.cognoms"
-                            required
-                        />
-                        <label class="user-select-none" for="input-cognoms">
-                            Cognoms
-                        </label>
-                    </div>
+                    <b-row>
+                        <b-col
+                            ><div
+                                v-if="opcionModal === 1 || opcionModal === 3"
+                                class="form-floating user-select-none mb-2"
+                            >
+                                <span
+                                    @click="showPassword = !showPassword"
+                                    role="button"
+                                    class="position-absolute"
+                                    style="
+                                        top: 50%;
+                                        right: 10px;
+                                        transform: translateY(-50%);
+                                    "
+                                >
+                                    <i
+                                        :class="
+                                            'fa-solid ' +
+                                            (!showPassword
+                                                ? 'fa-eye mr-4 '
+                                                : 'fa-eye-slash mr-4 ')
+                                        "
+                                    ></i>
+                                </span>
+                                <b-form-input
+                                    id="contrassenya"
+                                    :type="!showPassword ? 'password' : 'text'"
+                                    placeholder="Contrasenya"
+                                    v-model="usuari.contrassenya"
+                                    required
+                                    :state="validationContrassenya"
+                                />
+                                <label class="user-select-none" for="input-nom">
+                                    Contrasenya
+                                </label>
+                            </div></b-col
+                        >
+                        <b-col
+                            ><div
+                                v-if="opcionModal === 1 || opcionModal === 3"
+                                class="form-floating user-select-none mb-2"
+                            >
+                                <span
+                                    @click="showPassword = !showPassword"
+                                    role="button"
+                                    class="position-absolute"
+                                    style="
+                                        top: 50%;
+                                        right: 10px;
+                                        transform: translateY(-50%);
+                                    "
+                                >
+                                    <i
+                                        :class="
+                                            'fa-solid ' +
+                                            (!showPassword
+                                                ? 'fa-eye mr-4'
+                                                : 'fa-eye-slash mr-4')
+                                        "
+                                    ></i>
+                                </span>
+                                <b-form-input
+                                    id="repetirContrassenya"
+                                    :type="!showPassword ? 'password' : 'text'"
+                                    placeholder="Repetir contrasenya"
+                                    v-model="repetirContrassenya"
+                                    required
+                                    :state="validationRepetirContrassenya"
+                                />
+                                <label
+                                    class="user-select-none"
+                                    for="input-perfils_id"
+                                >
+                                    Repetir contrasenya
+                                </label>
+                            </div></b-col
+                        >
+                    </b-row>
+                    <hr />
+                    <b-row>
+                        <b-col
+                            ><b-form-group
+                                v-if="opcionModal === 1 || opcionModal === 2"
+                                label="Perfil"
+                            >
+                                <b-form-radio-group
+                                    id="radio-group-1"
+                                    v-model="usuari.perfils_id"
+                                    :options="optionsPerfil"
+                                    name="radio-options-perfil"
+                                ></b-form-radio-group> </b-form-group
+                        ></b-col>
+                        <b-col
+                            ><b-form-group
+                                v-if="opcionModal === 1 || opcionModal === 2"
+                                label="Estat"
+                            >
+                                <b-form-radio-group
+                                    id="radio-group-2"
+                                    v-model="usuari.actiu"
+                                    :options="optionsEstat"
+                                    name="radio-options-estat"
+                                ></b-form-radio-group> </b-form-group
+                        ></b-col>
+                    </b-row>
 
-                    <div class="form-floating user-select-none mb-2">
-                        <b-form-input
-                            id="contrassenya"
-                            type="text"
-                            placeholder="Contrasenya"
-                            v-model="usuari.contrassenya"
-                            required
-                        />
-                        <label class="user-select-none" for="input-nom">
-                            Contrasenya
-                        </label>
-                    </div>
-
-                    <div class="form-floating user-select-none mb-2">
-                        <b-form-input
-                            id="perfils_id"
-                            type="text"
-                            placeholder="Perfil"
-                            v-model="usuari.perfils_id"
-                            required
-                        />
-                        <label class="user-select-none" for="input-perfils_id">
-                            Perfil
-                        </label>
-                    </div>
-
-                    <b-form-group
-                        label="Perfil"
-                    >
-                        <b-form-radio-group
-                            id="radio-group-1"
-                            v-model="usuari.perfils_id"
-                            :options="options"
-                            name="radio-options"
-                        ></b-form-radio-group>
-                    </b-form-group>
+                    <b-button
+                        id="btn-submit-form-user"
+                        type="submit"
+                        variant="primary"
+                        class="d-none"
+                    ></b-button>
                 </b-form>
             </template>
         </b-modal>
@@ -260,60 +389,62 @@ export default {
         return {
             usuaris: [],
             usuari: {
-                id: 1,
+                id: "",
                 usuari: "",
                 nom: "",
                 cognoms: "",
                 contrassenya: "",
-                perfils_id: "",
-                actiu: true,
+                perfils_id: "1",
+                actiu: "1",
             },
+            showPassword: false,
+            repetirContrassenya: "",
             fields: [
                 {
                     key: "id",
                     label: "ID",
                     sortable: true,
-                    tdClass: "column-id",
+                    tdClass: "column-id align-middle",
                     thClass: "column-id",
                 },
                 {
                     key: "usuari",
                     label: "Usuari",
                     sortable: true,
-                    tdClass: "column-usuari",
+                    tdClass: "column-usuari align-middle",
                     thClass: "column-usuari",
                 },
                 {
                     key: "nom",
                     label: "Nom",
                     sortable: true,
-                    tdClass: "column-nom",
+                    tdClass: "column-nom align-middle",
                     thClass: "column-nom",
                 },
                 {
                     key: "cognoms",
                     label: "Cognoms",
                     sortable: true,
-                    tdClass: "column-cognoms",
+                    tdClass: "column-cognoms align-middle",
                     thClass: "column-cognoms",
                 },
                 {
                     key: "perfils_id",
                     label: "Perfil",
-                    sortable: false,
-                    tdClass: "column-perfils_id",
+                    sortable: true,
+                    tdClass: "column-perfils_id align-middle",
                     thClass: "column-perfils_id",
                 },
                 {
                     key: "actiu",
                     label: "Actiu",
-                    tdClass: "column-actiu",
-                    thClass: "column-actiu",
+                    tdClass: "column-actiu align-middle",
+                    thClass: "column-actiu text-center",
                 },
                 {
                     key: "edit",
-                    label: "Edit",
-                    tdClass: "column-edit",
+                    label: "Accions",
+                    tdClass: "column-edit align-middle",
                     thClass: "column-edit",
                 },
             ],
@@ -323,11 +454,34 @@ export default {
             errorMessageModal: "",
             showErrorModal: false,
             save_button_title: "Guardar",
-            options:[{text:"Operador",value:"1"},{text:"Supervisor",value:"2"},{text:"Administrador",value:"3"}
-                        ]
+            optionsPerfil: [
+                { text: "Operador", value: 1 },
+                { text: "Supervisor", value: 2 },
+                { text: "Administrador", value: 3 },
+            ],
+            optionsEstat: [
+                { text: "Actiu", value: "1" },
+                { text: "Inactiu", value: "0" },
+            ],
+            colorCabezal: "",
+            iconoModal: "",
+            opcionModal: "",
+            msgError: "",
+            msgInfo: "",
+            btnClassForm: "",
         };
     },
     methods: {
+        nouUsuari() {
+            (this.usuari.id = ""),
+                (this.usuari.usuari = ""),
+                (this.usuari.nom = ""),
+                (this.usuari.cognoms = ""),
+                (this.usuari.contrassenya = ""),
+                (this.usuari.perfils_id = "1"),
+                (this.usuari.actiu = "1");
+            this.repetirContrassenya = "";
+        },
         selectUsuaris() {
             this.isLoading = true;
             let me = this;
@@ -337,70 +491,10 @@ export default {
                     me.usuaris = response.data;
                 })
                 .catch((error) => {
-                    console.log("error");
+                    console.log(error);
                 })
                 .finally(() => (me.isLoading = false));
         },
-        editUsuari(usuari) {
-            console.log(usuari.id);
-            console.log(usuari.nom);
-            console.log(usuari.cognoms);
-        },
-        /*createUsuari() {
-            this.msgError = "";
-            this.msgInfo = "";
-            this.usuari.usuari = "";
-            this.usuari.nom = "";
-            this.usuari.cognoms = "";
-            this.usuari.contrassenya = "";
-            this.usuari.perfils_id = "";
-            this.usuari.actiu = true;
-            this.usuariModal.show();
-        },
-        insertUsuari() {
-            let me = this;
-            me.esborrar = false;
-            axios
-                .post("/api/users/", me.usuari)
-                .then(function (response) {
-                    console.log(response);
-                    me.selectUsuaris();
-                    me.msgError = "";
-                    me.msgInfo = "Usuari afegit correctament";
-                    me.usuariModal.hide();
-                })
-                .catch(function (error) {
-                    console.log(error.response.status);
-                    console.log(error.response.data);
-                    me.msgError = error.response.data.error;
-                    me.msgInfo = "";
-                });
-        },
-        editUsuari(usuari) {
-            this.insert = false;
-            this.usuari = usuari;
-            this.usuariModal.show();
-        },
-        updateUsuari() {
-            let me = this;
-            me.esborrar = false;
-            axios
-                .put("/api/users/" + me.usuari.id, me.usuari)
-                .then(function (response) {
-                    console.log(response);
-                    me.selectUsuaris();
-                    me.msgInfo = "Usuari editat correctament";
-                    me.msgError = "";
-                    me.usuariModal.hide();
-                })
-                .catch(function (error) {
-                    console.log(error.response.status);
-                    console.log(error.response.data);
-                    me.msgError = error.response.data.error;
-                    me.msgInfo = "";
-                });
-        },*/
-
         refresh() {
             this.selectUsuaris();
         },
@@ -408,9 +502,55 @@ export default {
             this.titleModalUsuari = title;
         },
         setUsuari(usuari) {
-            this.usuari = usuari;
+            this.usuari = { ...usuari };
         },
-        createUpdateUsuari() {},
+        createUpdateUsuari(event) {
+            event.preventDefault();
+
+            let me = this;
+
+            switch (this.opcionModal) {
+                case 1:
+                    if (me.repetirContrassenya !== me.usuari.contrassenya) {
+                        me.msgError = "Les contrasenyes no coincideixen";
+                        me.repetirContrassenya = "";
+                    } else {
+                        console.log(me.usuari.actiu);
+                        axios
+                            .post("/api/users/", me.usuari)
+                            .then(function (response) {
+                                console.log(response);
+                                me.selectUsuaris();
+                                me.msgError = "";
+                                me.msgInfo =
+                                    "Usuari " +
+                                    me.usuari.usuari +
+                                    " afegit correctament";
+                                console.log(me.msgInfo);
+
+                                me.$bvModal.hide("modal-usuari");
+                            })
+                            .catch(function (error) {
+                                console.log(error.status);
+                                console.log(error.response.data);
+                                me.msgError = error.response.data.error;
+                                me.msgInfo = "";
+                                console.log = msgError;
+                            });
+                    }
+
+                    break;
+                case 2:
+                    console.table(this.usuari);
+                    console.log("modificando usuario");
+                    me.$bvModal.hide("modal-usuari");
+                    break;
+                case 3:
+                    console.log("cambiando contrasenya");
+                    me.$bvModal.hide("modal-usuari");
+                    break;
+            }
+        },
         resetModal() {
             this.setUsuari({
                 id: -1,
@@ -419,11 +559,49 @@ export default {
                 cognoms: "",
                 contrassenya: "",
                 perfils_id: "",
-                actiu: false,
+                actiu: true,
             });
             this.disabled_ok_button_modal = false;
             this.errorMessageModal = "";
             this.showErrorModal = false;
+        },
+        colorCabezalCrearUsuari() {
+            this.colorCabezal = "header-class-nou-usuari";
+            this.iconoModal = "fas fa-user-circle";
+            this.save_button_title = "Crear usuari";
+            this.opcionModal = 1;
+            this.msgError = "";
+            this.msgInfo = "";
+            this.btnClassForm = "success";
+
+            console.log(this.usuari);
+        },
+        colorCabezalEditarUsuari() {
+            this.colorCabezal = "header-class-editar-usuari";
+            this.iconoModal = "fas fa-edit";
+            this.save_button_title = "Modificar usuari";
+            this.opcionModal = 2;
+            this.msgError = "";
+            this.msgInfo = "";
+            this.btnClassForm = "warning";
+
+            console.log(this.usuari);
+        },
+        colorCabezalEditarContrasenya() {
+            this.colorCabezal = "header-class-editar-contrasenya";
+            this.iconoModal = "fa-solid fa-key";
+            this.save_button_title = "Cambiar contrasenya usuari";
+            this.opcionModal = 3;
+            this.usuari.contrassenya = "";
+            this.msgError = "";
+            this.msgInfo = "";
+            this.btnClassForm = "dark";
+
+            console.log(this.usuari);
+        },
+        handleOk(event) {
+            event.preventDefault();
+            document.querySelector("#btn-submit-form-user").click();
         },
     },
     created() {
@@ -435,6 +613,23 @@ export default {
     mounted() {
         document.title = "Usuaris - ibroggi";
     },
+    computed: {
+        validationUsuari() {
+            return this.usuari.usuari !== "";
+        },
+        validationNom() {
+            return this.usuari.nom !== "";
+        },
+        validationCognoms() {
+            return this.usuari.cognoms !== "";
+        },
+        validationContrassenya() {
+            return this.usuari.contrassenya !== "";
+        },
+        validationRepetirContrassenya() {
+            return this.repetirContrassenya !== "";
+        },
+    },
 };
 </script>
 
@@ -442,9 +637,6 @@ export default {
 .botones {
     margin-bottom: 20px;
 }
-.tabla {
-}
-
 .centrar-carga {
     width: 100%;
     text-align: center;
@@ -454,30 +646,11 @@ export default {
 .principal {
     padding: 15px;
 }
-
-::v-deep .column-id {
-    text-align: center;
-    width: 5%;
-    vertical-align: middle;
-}
-::v-deep .column-usuari {
+::v-deep .column-usuari .column-nom .column-cognoms {
     width: 25%;
     vertical-align: middle;
 }
-::v-deep .column-nom {
-    width: 25%;
-    vertical-align: middle;
-}
-::v-deep .column-cognoms {
-    width: 25%;
-    vertical-align: middle;
-}
-::v-deep .column-perfils_id {
-    text-align: center;
-    width: 5%;
-    vertical-align: middle;
-}
-::v-deep .column-actiu {
+::v-deep .column-perfils_id .column-actiu .column-id {
     text-align: center;
     width: 5%;
     vertical-align: middle;
@@ -487,19 +660,24 @@ export default {
     width: 10%;
     vertical-align: middle;
 }
-
 .centrar-icono {
     text-align: center;
     vertical-align: middle;
 }
-
 .color-actiu {
     color: rgb(20, 128, 33);
 }
 .color-inactiu {
     color: rgb(208, 52, 52);
 }
-.color {
-    background-color: aqua;
+
+::v-deep .header-class-nou-usuari {
+    background: rgb(205, 247, 225);
+}
+::v-deep .header-class-editar-usuari {
+    background: rgb(255, 250, 180);
+}
+::v-deep .header-class-editar-contrasenya {
+    background: rgb(218, 218, 218);
 }
 </style>
