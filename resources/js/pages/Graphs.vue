@@ -1,8 +1,7 @@
 <template>
-<div class="view-container">
-    <h1>Gráfics</h1>
-</div>
-
+    <main>
+        <h1>Gràfics</h1>
+    </main>
 </template>
 
 <script>
