@@ -1,7 +1,7 @@
 <template>
     <div>
         <b-card v-show="!isLoading" class="p-5 card-container">
-                <b-table striped hover bordered thead-class="thead-dark" :items="expedients" :fields="fields" >
+                <b-table striped hover small thead-class="thead-dark" :items="expedients" :fields="fields" >
                     <template #cell(estats_expedients_id)="data">
                         <div>
                             <i :class="getState(data.item.estats_expedients_id)"></i>
@@ -26,7 +26,7 @@
         <!-- Modal -->
         <b-modal id="modal-expedients" class="modal-calls" title="Trucades de l'expedient" size="huge">
 
-            <b-table v-if="trucades.length > 0" striped hover bordered thead-class="thead-dark" :items="trucades" :fields="callFields" v-show="!isLoading2">
+            <b-table v-if="trucades.length > 0" striped hover small thead-class="thead-dark" :items="trucades" :fields="callFields" v-show="!isLoading2">
                 <template #cell(cartes_trucades_has_agencies)="data">
                     <p style="display:none">{{data.item.id}}</p>
                     <button class="button-edit" v-b-modal.modal-info-calls @click="loadAgencies(data.item.cartes_trucades_has_agencies)"> <i class="fa-solid fa-eye m-1"></i></button>
