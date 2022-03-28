@@ -13,7 +13,7 @@ import SvgVue from 'svg-vue';
 window.Vue = require("vue").default;
 window.Vue.use(BootstrapVue);
 window.Vue.use(VueRouter);
-window.Vue.use(SvgVue);
+
 
 /**
  * The following block of code may be used to automatically register your
@@ -29,6 +29,8 @@ files
     .map((key) =>
         Vue.component(key.split("/").pop().split(".")[0], files(key).default)
     );
+
+    Vue.component('pagination', require('laravel-vue-pagination'));
 
 // Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 

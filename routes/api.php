@@ -4,9 +4,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UsuarisController;
 use App\Http\Controllers\Api\AjudesFrasesController;
+use App\Http\Controllers\Api\ComarquesController;
+use App\Http\Controllers\Api\ExpedientsController;
+use App\Http\Controllers\Api\MunicipisController;
+use App\Http\Controllers\Api\ProvinciesController;
+use App\Http\Controllers\Api\TipusLocalitzacions;
+use App\Http\Controllers\Api\TrucadesController;
+use App\Http\Controllers\TipusLocalitzacionsController;
 use App\Http\Controllers\Api\CartesTrucadesController;
 use App\Http\Controllers\Api\Estats_expedientsController;
-use App\Http\Controllers\Api\ExpedientsController;
 use App\Models\Estats_expedients;
 
 /*
@@ -23,6 +29,11 @@ use App\Models\Estats_expedients;
 Route::apiResource('users', UsuarisController::class);
 Route::apiResource('help-phrases', AjudesFrasesController::class);
 Route::apiResource('expedients', ExpedientsController::class);
+Route::apiResource('call', TrucadesController::class);
+Route::apiResource('provinces', ProvinciesController::class);
+Route::apiResource('regions', ComarquesController::class);
+Route::apiResource('towns', MunicipisController::class);
+Route::apiResource('LocationsTypes', TipusLocalitzacionsController::class);
 Route::apiResource('cartestrucades', CartesTrucadesController::class);
 Route::apiResource('estats_expedients', Estats_expedientsController::class);
 
