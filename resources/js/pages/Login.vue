@@ -109,14 +109,17 @@ export default {
                             me.errorMessage = "Usuari o contrasenya incorrecte.";
 
                             console.error(data);
+
+                            me.isLoading = false;
                         }
                     })
                     .catch(function (error) {
                         me.errorMessage = "Usuari o contrasenya incorrecte.";
 
                         console.error(error);
-                    })
-                    .finally(() => me.isLoading = false);
+
+                        me.isLoading = false;
+                    });
             } else {
                 this.errorMessage = "Has d'omplir tots els camps.";
             }
