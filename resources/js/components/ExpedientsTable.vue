@@ -1,33 +1,80 @@
 <template>
     <div>
-        <div class="expedients-table-container">
-            <b-table striped hover bordered thead-class="thead-dark" :items="expedients" :fields="fields" v-show="!isLoading">
-                <template #cell(estats_expedients_id)="data">
-                    <div>
-                        <i :class="getState(data.item.estats_expedients_id)"></i>
-                    </div>
-                </template>
+        <b-card v-show="!isLoading" class="p-5 card-container">
+                <b-table striped hover bordered thead-class="thead-dark" :items="expedients" :fields="fields" >
+                    <template #cell(estats_expedients_id)="data">
+                        <div>
+                            <i :class="getState(data.item.estats_expedients_id)"></i>
+                        </div>
+                    </template>
 
-                <template #cell(see_expedient)="data">
-                    <div>
-                        <button class="button-edit" v-b-modal.modal-expedients> <i class="fa-solid fa-eye mr-2"></i> Veure dades {{data.item.id }}</button>
-                    </div>
-                </template>
-            </b-table>
+                    <template #cell(see_expedient)="data">
+                        <div>
+                            <button class="button-edit" v-b-modal.modal-expedients @click="getCalls(data.item.id, data.item.estats_expedients_id)"> <i class="fa-solid fa-eye mr-2"></i> Veure dades {{data.item.id }}</button>
+                        </div>
+                    </template>
+                </b-table>
+        </b-card>
 
-            <div class="loading-spinner">
-                <img
-                    v-show="isLoading"
-                    src="/assets/img/spinner.svg"
-                    width="100"/>
-            </div>
+        <div class="loading-spinner">
+            <img
+                v-show="isLoading"
+                src="/assets/img/spinner.svg"
+                width="100"/>
         </div>
 
         <!-- Modal -->
-        <b-modal id="modal-expedients" class="modal-lg" :title="modalTitle" size="xl">
-            <b-table striped hover thead-class="thead-dark" :items="trucades" :fields="callFields" v-show="!isLoading">
+        <b-modal id="modal-expedients" class="modal-calls" title="Trucades de l'expedient" size="huge">
 
+            <b-table v-if="trucades.length > 0" striped hover bordered thead-class="thead-dark" :items="trucades" :fields="callFields" v-show="!isLoading2">
+                <template #cell(cartes_trucades_has_agencies)="data">
+                    <p style="display:none">{{data.item.id}}</p>
+                    <button class="button-edit" v-b-modal.modal-info-calls @click="loadAgencies(data.item.cartes_trucades_has_agencies)"> <i class="fa-solid fa-eye m-1"></i></button>
+                </template>
+                <template #cell(show-nota-comuna)="data">
+                    <div>
+                        <p style="display: none">{{data.item.id}}</p>
+                        <button class="button-edit" v-b-modal.modal-info-calls @click="loadInfo(data.item.nom_trucada, data.item.nota_comuna_descripcio)"> <i class="fa-solid fa-eye m-1"></i></button>
+                    </div>
+                </template>
             </b-table>
+
+            <div v-else v-show="!showTrucades">No hi ha trucades enllaçades a aquest expedient realitzades per aquest usuari.</div>
+
+            <div v-show="!isLoading2" v-if="this.user.perfils_id != 1" class="div-expedient-estate">
+                <p>Estat de l'expedient: </p>
+                <b-form-select
+                v-model="expedientState"
+                :options="renderConditions">
+                </b-form-select>
+            </div>
+
+            <div class="loading-spinner2">
+                <img
+                    v-show="isLoading2"
+                    src="/assets/img/spinner.svg"
+                    width="100"/>
+            </div>
+        </b-modal>
+
+        <!-- Modal with call information -->
+        <b-modal id="modal-info-calls" class="modal-info-calls" :title="modalTitle2" size="lg">
+
+            <div v-if="!this.modal_agencia">
+                <p>Nom: {{this.name_call}}</p>
+                <label for="txtNotaComuna">Descripció:</label>
+                <textarea name="txtNotaComuna" id="txtNotaComuna" class="w-100" cols="30" rows="10" v-model="this.description_call"></textarea>
+            </div>
+            <div v-else>
+                <p v-for="relacioAgencia in this.agencies_contactades" :key="relacioAgencia.agencia.id"> {{ relacioAgencia.agencia.nom }} </p>
+            </div>
+
+            <div class="loading-spinner2">
+                <img
+                    v-show="isLoading3"
+                    src="/assets/img/spinner.svg"
+                    width="100"/>
+            </div>
         </b-modal>
     </div>
 </template>
@@ -37,11 +84,16 @@ export default {
     mounted() {
       document.title = "Expedients - Broggi";
       this.getExpedients();
+      this.getEstatsExpedients();
+      this.user = window.Vue.prototype.$user;
     },
     data(){
         return{
             isLoading: true,
-            modalTitle: '',
+            isLoading2: true,
+            isLoading3: true,
+            modalTitle2: "",
+            user: {},
             fields: [
                 {
                     key: 'estats_expedients_id',
@@ -79,34 +131,55 @@ export default {
                 }
 
             ],
-            expedients: [],
             callFields:[
                 {
                     key: 'codi_trucada',
                     label: 'Codi',
                     sortable: true,
+                    tdClass: 'centered-text-class',
                     thClass: 'codi-th-column'
-                },{
-                    key: 'fora_catalunya',
-                    label: 'Fora Catalunya',
-                    thClass: 'fora-cat-th-column'
                 },{
                     key: 'tipus_localitzacions_id',
                     label: 'Localització',
+                    tdClass: 'centered-text-class',
                     thClass: 'localitzacio-th-column'
-                },
-                {
-                    key: 'incidents_id',
+                },{
+                    key: 'incident.descripcio',
                     label: 'Incident',
+                    tdClass: 'centered-text-class',
                     thClass: 'incident-th-column'
-                },
-                {
-                    key: 'show-call',
-                    label: 'Show call',
-                    thClass: 'show-call-th-column'
+                },{
+                    key: 'cartes_trucades_has_agencies',
+                    label: 'Agències',
+                    tdClass: 'centered-text-class',
+                    thClass: 'agencies-th-column'
+                },{
+                    key: 'show-nota-comuna',
+                    label: 'Nota comuna',
+                    tdClass: 'centered-text-class',
+                    thClass: 'nota-comuna-th-column'
                 }
             ],
-            trucades: []
+            expedients: [],
+            trucades: [],
+            expedient_conditions: [],
+            options: [],
+            expedientState: '',
+            name_call: '',
+            description_call: '',
+            agencies_contactades: [],
+            modal_agencia: true,
+            showTrucades: true
+        }
+    },
+    computed: {
+        renderConditions() {
+            return this.expedient_conditions.map((condition) => {
+                return {
+                    value: condition.id,
+                    text: condition.estat
+                }
+            })
         }
     },
     methods:{
@@ -129,6 +202,7 @@ export default {
                     classname = 'fa-solid fa-circle immobilized';
                     break;
             }
+
             return classname;
         },
 
@@ -144,51 +218,93 @@ export default {
                     console.log(error)
                 })
                 .finally(() => this.isLoading = false)
+        },
+        getCalls(idExpedient, idEstatExpedient){
+            this.expedientState = idEstatExpedient;
+            this.showTrucades = true;
+            this.isLoading2 = true;
+            let me = this;
+
+            axios
+                .get('/api/cartestrucades/list/' + idExpedient + '?id_rol=' + this.user.perfils_id + '&id_user=' + this.user.id)
+                .then(response =>{
+                    me.trucades = response.data;
+                    if(me.trucades.length == 0){
+                        me.showTrucades = false;
+                    }
+                })
+                .catch(error => {
+                    console.log(error)
+                })
+                .finally(() => this.isLoading2 = false)
+        },
+        getEstatsExpedients(){
+            let me = this;
+            this.isLoading2 = true;
+            axios
+                .get('/api/estats_expedients/')
+                .then(response =>{
+                    me.expedient_conditions = response.data;
+                })
+                .catch(error =>{
+                    console.log(error)
+                })
+                .finally(() => this.isLoading2 = false)
+        },
+        loadInfo(name, nota_comuna_descripcio){
+            this.name_call = name;
+            this.description_call = nota_comuna_descripcio;
+            this.isLoading3 = false;
+            this.modal_agencia = false;
+            this.modalTitle2 = "Nota comuna";
+        },
+        loadAgencies(agencies){
+            this.agencies_contactades = agencies;
+            this.isLoading3 = false;
+            this.modal_agencia = true;
+            this.modalTitle2 = "Agències contactades";
         }
     }
 }
 </script>
 
 <style scoped>
-.expedients-table-container{
-    padding-inline: 10px;
+.card-container{
+    background-color: white;
+    border: 1px;
+    box-shadow: 0px 5px 25px 0px rgb(0 0 0 / 20%);
 }
 
 .in-progress{
     color: rgb(0, 255, 21);
-    box-shadow: 0 0 1px 2px rgb(125, 190, 125);
     border-radius: 50%;
-    height: 13px;
+    height: 15px;
 }
 .requested{
     color: yellow;
-    box-shadow: 0 0 1px 2px rgb(186, 190, 125);
     border-radius: 50%;
-    height: 13px;
+    height: 15px;
 }
 .accepted{
     color: rgb(3, 250, 3);
-    box-shadow: 0 0 1px 2px rgb(125, 190, 125);
     border-radius: 50%;
-    height: 13px;
+    height: 15px;
 }
 .closed{
     color: blue;
-    box-shadow: 0 0 1px 2px rgb(129, 125, 190);
     border-radius: 50%;
-    height: 13px;
+    height: 15px;
 }
 .immobilized{
     color: rgb(150, 22, 150);
-    box-shadow: 0 0 1px 2px rgb(167, 110, 179);
     border-radius: 50%;
-    height: 13px;
+    height: 15px;
 }
 
 .button-edit{
     border-radius: 5px;
     border: 0px;
-    background-color: deepskyblue;
+    background-color: #06adc4;
     padding: 10px;
     color: white;
 }
@@ -205,6 +321,11 @@ export default {
     margin-top: 150px;
 }
 
+.loading-spinner2{
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+}
 ::v-deep .centered-text-class{
     text-align: center;
     vertical-align: middle;
@@ -244,32 +365,47 @@ export default {
 ::v-deep .codi-th-column{
     text-align: center;
     vertical-align: middle;
-    width: 20%;
+    width: 5%;
 }
 
-::v-deep .fora-cat-th-column{
+::v-deep .agencies-th-column{
     text-align: center;
     vertical-align: middle;
-    width: 10%;
+    width: 5%;
 }
 
 ::v-deep .incident-th-column{
     text-align: center;
     vertical-align: middle;
-    width: 25%;
+    width: 20%;
 }
 
 ::v-deep .localitzacio-th-column{
     text-align: center;
     vertical-align: middle;
-    width: 25%;
-}
-
-::v-deep .show-call-th-column{
-    text-align: center;
-    vertical-align: middle;
     width: 15%;
 }
 
-</style>
+::v-deep .nota-comuna-th-column{
+    text-align: center;
+    vertical-align: middle;
+    width: 5%;
+}
 
+@media (min-width: 992px) {
+   ::v-deep .modal .modal-huge {
+      max-width: 90% !important;
+      width: 90% !important;;
+    }
+ }
+
+.div-expedient-estate{
+    width: 150px;
+    padding-top: 30px;
+}
+
+::v-deep .modal-body{
+    padding: 30px !important;
+}
+
+</style>

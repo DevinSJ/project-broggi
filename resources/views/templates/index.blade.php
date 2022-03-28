@@ -14,7 +14,7 @@
         @if (Auth::check())
             <nav-bar :user="{{ Auth::user() }}"></nav-bar>
 
-            <router-view class="p-4">
+            <router-view class="container-fluid p-4">
             </router-view>
 
             <float-btn-help-lang />

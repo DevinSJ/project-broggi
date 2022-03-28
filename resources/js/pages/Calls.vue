@@ -1,5 +1,7 @@
 <template>
-  <h1>Trucades</h1>
+    <main>
+        <h1>Trucades</h1>
+    </main>
 </template>
 
 <script>
