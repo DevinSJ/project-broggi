@@ -81,6 +81,8 @@
 export default {
     props: ["user"],
     mounted() {
+        window.Vue.prototype.$user = this.user;
+
         var topNavigation = document.querySelector(".top-navigation");
         var navigationLinks = document.querySelectorAll(".top-navigation a");
         var activeLink = document.querySelector("a.router-link-active");
@@ -159,7 +161,7 @@ export default {
     left: 0px;
     width: 180px;
     height: 4px;
-    background: #e55490;
+    background: #06adc4;
     border-top-right-radius: 5px;
     border-top-left-radius: 5px;
 }
@@ -169,10 +171,10 @@ export default {
     font-size: 15px;
 }
 .router-link-exact-active i {
-    color: #e55490;
+    color: #06adc4;
 }
 
 .router-link-exact-active span {
-    color: #e55490;
+    color: #06adc4;
 }
 </style>
