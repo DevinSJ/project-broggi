@@ -10,15 +10,15 @@ class Utilitat
     if (!empty($e->errorInfo[1])) {
         switch ($e->errorInfo[1]) {
             case 1062:
-                $mensaje = "Registro duplicado";
+                $mensaje = "Registre duplicat";
                 break;
 
             case 1452:
-                $mensaje = "Registro con elementos relacionados";
+                $mensaje = "Registre amb elements relacionats";
                 break;
 
                 case 1451:
-                    $mensaje = "Registro con elementos relacionados";
+                    $mensaje = "Registre amb elements relacionats";
                     break;
             default:
                 $mensaje = $e->errorInfo[1] . ' - ' . $e->errorInfo[2];
@@ -27,14 +27,14 @@ class Utilitat
     } else {
         switch ($e->getCode()) {
             case 1044:
-                $mensaje = "Usuario y/o password incorrecto";
+                $mensaje = "Usuari o contrasenya incorrecte";
                 break;
             case 1049:
-                $mensaje = "Base de datos desconocida";
+                $mensaje = "Base de dades desconeguda";
                 break;
 
             case 2002:
-                $mensaje = "No se encuentra el servidor";
+                $mensaje = "No es troba el servidor";
                 break;
             default:
                 $mensaje = $e->getCode() . ' - ' . $e->getMessage();

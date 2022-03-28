@@ -3,83 +3,84 @@
         <div class="principal">
             <div class="botones">
                 <!--PAnel filtrado-->
-                <b-row class="text-center">
-                    <b-col cols="3">
-                        <button
-                            class="btn-sm btn-success"
-                            area-hidden="true"
-                            v-b-modal.modal-usuari
-                            @click="
-                                nouUsuari();
-                                setTitleModalUsuari('Nou usuari'),
-                                    colorCabezalCrearUsuari();
-                            "
-                        >
-                            <i class="fas fa-user-circle"></i>
-                            Afegir usuari
-                        </button>
-                    </b-col>
-                    <b-col cols="3"> </b-col>
-                    <b-col cols="6">
-                        <b-form inline>
-                            <b-form-input
-                                id="inline-form-input-name"
-                                class="mb-2 mr-sm-2 mb-sm-0 form-control-sm"
-                                placeholder="Exemple: Francisco ..."
-                            ></b-form-input>
-
-                            <label
-                                class="mr-sm-2"
-                                for="inline-form-custom-select-pref"
-                                >Perfil</label
-                            >
-                            <b-form-select
-                                size="sm"
-                                id="inline-form-custom-select-pref"
-                                class="mb-2 mr-sm-2 mb-sm-0"
-                                :options="[
-                                    { text: 'Perfil', value: null },
-                                    'Operador',
-                                    'Supervisor',
-                                    'Administrador',
-                                ]"
-                                :value="null"
-                            ></b-form-select>
-
-                            <label
-                                class="mr-sm-2"
-                                for="inline-form-custom-select-pref"
-                                >Actiu</label
-                            >
-                            <b-form-select
-                                size="sm"
-                                id="inline-form-custom-select-pref"
-                                class="mb-2 mr-sm-2 mb-sm-0"
-                                :options="[
-                                    { text: 'Tots', value: null },
-                                    'Actius',
-                                    'Inactius',
-                                ]"
-                                :value="null"
-                            ></b-form-select>
-
-                            <b-button variant="info" class="btn-sm"
-                                ><i class="fa-solid fa-filter"></i>
-                                Filtrar</b-button
-                            >
+                <b-card class="show-card">
+                    <b-row class="text-center">
+                        <b-col cols="3">
                             <b-button
-                                class="btn-sm"
-                                variant="secondary ml-2"
-                                @click="selectUsuaris"
+                                class="btn-sm btn-success"
+                                area-hidden="true"
+                                v-b-modal.modal-usuari
+                                @click="
+                                    nouUsuari();
+                                    setTitleModalUsuari('Nou usuari'),
+                                        colorCabezalCrearUsuari();
+                                "
                             >
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                                Mostrar tots</b-button
-                            >
-                        </b-form>
-                    </b-col>
-                </b-row>
+                                <i class="fas fa-user-circle"></i>
+                                Afegir usuari
+                            </b-button></b-col
+                        >
+                        <b-col cols="3"> </b-col>
+                        <b-col cols="6">
+                            <b-form inline>
+                                <b-form-input
+                                    id="inline-form-input-name"
+                                    class="mb-2 mr-sm-2 mb-sm-0 form-control-sm"
+                                    placeholder="Exemple: Francisco ..."
+                                ></b-form-input>
+
+                                <label
+                                    class="mr-sm-2"
+                                    for="inline-form-custom-select-pref"
+                                    >Perfil</label
+                                >
+                                <b-form-select
+                                    size="sm"
+                                    id="inline-form-custom-select-pref"
+                                    class="mb-2 mr-sm-2 mb-sm-0"
+                                    :options="[
+                                        { text: 'Perfil', value: null },
+                                        'Operador',
+                                        'Supervisor',
+                                        'Administrador',
+                                    ]"
+                                    :value="null"
+                                ></b-form-select>
+
+                                <label
+                                    class="mr-sm-2"
+                                    for="inline-form-custom-select-pref"
+                                    >Actiu</label
+                                >
+                                <b-form-select
+                                    size="sm"
+                                    id="inline-form-custom-select-pref"
+                                    class="mb-2 mr-sm-2 mb-sm-0"
+                                    :options="[
+                                        { text: 'Tots', value: null },
+                                        'Actius',
+                                        'Inactius',
+                                    ]"
+                                    :value="null"
+                                ></b-form-select>
+
+                                <b-button variant="info" class="btn-sm"
+                                    ><i class="fa-solid fa-filter"></i>
+                                    Filtrar</b-button
+                                >
+                                <b-button
+                                    class="btn-sm"
+                                    variant="secondary ml-2"
+                                    @click="selectUsuaris"
+                                >
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    Mostrar tots</b-button
+                                >
+                            </b-form>
+                        </b-col>
+                    </b-row>
+                </b-card>
             </div>
-            <hr />
 
             <!-- ALERTS-->
             <!-- MSG info-->
@@ -88,72 +89,84 @@
             </b-alert>
 
             <!--TABLA-->
-            <div class="contenedor-tabla">
-                <b-table
-                    v-show="!isLoading"
-                    striped
-                    hover
-                    class="table-sm"
-                    thead-class="thead-dark"
-                    sort-icon-left
-                    :fields="fields"
-                    :items="usuaris"
-                    primary-key="id"
-                >
-                    <template #cell(edit)="data">
-                        <div>
-                            <b-button
-                                title="Editar usuari"
-                                variant="warning"
-                                v-b-modal.modal-usuari
-                                class="btn-sm"
-                                @click="
-                                    setUsuari(data.item);
-                                    setTitleModalUsuari('Editar usuari');
-                                    colorCabezalEditarUsuari();
-                                "
-                                ><i class="fas fa-edit"></i>
-                            </b-button>
-                            <b-button
-                                title="Editar contrasenya"
-                                variant="dark"
-                                class="btn-sm"
-                                v-b-modal.modal-usuari
-                                @click="
-                                    setUsuari(data.item);
-                                    setTitleModalUsuari('Editar contrasenya');
-                                    colorCabezalEditarContrasenya();
-                                "
-                                ><i class="fa-solid fa-key"></i>
-                            </b-button>
-                        </div>
-                    </template>
-                    <template #cell(actiu)="data">
-                        <div class="centrar-icono">
-                            <i
-                                v-if="data.item.actiu"
-                                class="fa-solid fa-circle-check color-actiu"
-                            ></i>
-                            <i
-                                v-else
-                                class="fa-solid fa-circle-xmark color-inactiu"
-                            ></i>
-                        </div>
-                    </template>
+            <b-card class="show-card">
+                <div class="contenedor-tabla">
+                    <b-table
+                        v-show="!isLoading"
+                        striped
+                        hover
+                        class="table-sm"
+                        thead-class="thead-dark"
+                        sort-icon-left
+                        :fields="fields"
+                        :items="usuaris.data"
+                        primary-key="id"
+                    >
+                        <template #cell(edit)="data">
+                            <div>
+                                <b-button
+                                    title="Editar usuari"
+                                    variant="warning"
+                                    v-b-modal.modal-usuari
+                                    class="btn-sm"
+                                    @click="
+                                        setUsuari(data.item);
+                                        setTitleModalUsuari('Editar usuari');
+                                        colorCabezalEditarUsuari();
+                                    "
+                                    ><i class="fas fa-edit"></i>
+                                </b-button>
+                                <b-button
+                                    title="Editar contrasenya"
+                                    variant="dark"
+                                    class="btn-sm"
+                                    v-b-modal.modal-usuari
+                                    @click="
+                                        setUsuari(data.item);
+                                        setTitleModalUsuari(
+                                            'Editar contrasenya'
+                                        );
+                                        colorCabezalEditarContrasenya();
+                                    "
+                                    ><i class="fa-solid fa-key"></i>
+                                </b-button>
+                            </div>
+                        </template>
+                        <template #cell(actiu)="data">
+                            <div class="centrar-icono">
+                                <i
+                                    v-if="data.item.actiu"
+                                    class="fa-solid fa-circle-check color-actiu"
+                                ></i>
+                                <i
+                                    v-else
+                                    class="fa-solid fa-circle-xmark color-inactiu"
+                                ></i>
+                            </div>
+                        </template>
 
-                    <template #cell(perfils_id)="data">
-                        <div>{{ data.item.perfil.nom }}</div>
-                    </template>
-                </b-table>
-                <!--CARGA-->
-                <div class="centrar-carga">
-                    <img
-                        v-show="isLoading"
-                        src="/assets/img/spinner.svg"
-                        width="100"
-                    />
+                        <template #cell(perfils_id)="data">
+                            <div>{{ data.item.perfil.nom }}</div>
+                        </template>
+                    </b-table>
                 </div>
+
+                <pagination
+                    class="justify-center-center pagination-sm"
+                    :data="usuaris"
+                    @pagination-change-page="fetchUsuaris"
+                >
+                </pagination>
+                 <!--CARGA-->
+            <div class="centrar-carga">
+                <img
+                    v-show="isLoading"
+                    src="/assets/img/spinner.svg"
+                    width="100"
+                />
             </div>
+            </b-card>
+
         </div>
 
         <!-- MODAL USUARIO-->
@@ -191,7 +204,6 @@
             </template>
 
             <template #default>
-
                 <b-form
                     @submit="createUpdateUsuari"
                     id="form-user"
@@ -199,7 +211,7 @@
                     aria-autocomplete="false"
                 >
                     <!-- MSG ERROR-->
-                    <b-alert v-if="msgError" show dismissible variant="danger"
+                    <b-alert v-if="msgError" show variant="danger"
                         ><i class="fas fa-exclamation"></i> {{ msgError }}
                     </b-alert>
 
@@ -387,7 +399,7 @@
 export default {
     data() {
         return {
-            usuaris: [],
+            usuaris: {},
             usuari: {
                 id: "",
                 usuari: "",
@@ -512,7 +524,8 @@ export default {
             switch (this.opcionModal) {
                 case 1:
                     if (me.repetirContrassenya !== me.usuari.contrassenya) {
-                        me.msgError = "Les contrasenyes no coincideixen";
+                        me.msgError =
+                            "Les contrasenyes no coincideixen i no poden estar buides";
                         me.repetirContrassenya = "";
                     } else {
                         console.log(me.usuari.actiu);
@@ -603,9 +616,25 @@ export default {
             event.preventDefault();
             document.querySelector("#btn-submit-form-user").click();
         },
+        fetchUsuaris(page = 1) {
+            let _this = this;
+
+            axios
+                .get(`api/users?page=${page}`)
+                .then((response) => {
+                    _this.usuaris = response.data;
+                })
+                .catch((error) => {
+                    console.error(error, error.response.data);
+                })
+                .finally(() => {
+                    _this.isLoading = false;
+                });
+        },
     },
     created() {
-        this.selectUsuaris();
+        //this.selectUsuaris();
+        this.fetchUsuaris();
     },
     refresh() {
         this.selectUsuaris();
@@ -634,6 +663,10 @@ export default {
 </script>
 
 <style scoped>
+.show-card{
+ background-color: white;
+  border: 1px;
+  box-shadow: 0px 5px 25px 0px rgb(0 0 0 / 20%);}
 .botones {
     margin-bottom: 20px;
 }
@@ -641,7 +674,7 @@ export default {
     width: 100%;
     text-align: center;
     justify-content: center;
-    margin-top: 50px;
+
 }
 .principal {
     padding: 15px;

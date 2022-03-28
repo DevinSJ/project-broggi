@@ -18,7 +18,7 @@ class UsuarisController extends Controller
      */
     public function index()
     {
-        $_usuaris= Usuaris::with('perfil')->get();
+        $_usuaris= Usuaris::with('perfil')->paginate(5);
 
         return UsuarisResource::collection($_usuaris);
     }

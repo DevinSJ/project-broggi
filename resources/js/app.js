@@ -30,6 +30,8 @@ files
         Vue.component(key.split("/").pop().split(".")[0], files(key).default)
     );
 
+    Vue.component('pagination', require('laravel-vue-pagination'));
+
 // Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 
 /**
