@@ -4,38 +4,39 @@
             <b-button
                 variant="secondary"
                 class="btn-circle order-1 mr-2 align-self-end"
-                title="Video interactiu"
+                title="2Video interactiu"
+                @click="openModalVideoInteractive"
             >
                 <i class="fa fa-play"></i>
             </b-button>
             <div class="d-flex flex-column order-2" v-click-outside="hideItemsLang">
-                <div class="d-flex flex-column-reverse align-items-center" id="buttons-langs">
+                <div class="d-flex flex-column-reverse align-items-center mb-2" id="buttons-langs">
                     <b-button
                         id="en-lang"
                         variant="secondary"
                         class="btn-lang mb-1 d-none"
-                        @click="togglePopoverLang"
+                        @click="changeLang"
                     >
                     </b-button>
                     <b-button
                         id="de-lang"
                         variant="secondary"
                         class="btn-lang mb-1 d-none"
-                        @click="togglePopoverLang"
+                        @click="changeLang"
                     >
                     </b-button>
                     <b-button
                         id="es-lang"
                         variant="secondary"
                         class="btn-lang mb-1 d-none"
-                        @click="togglePopoverLang"
+                        @click="changeLang"
                     >
                     </b-button>
                     <b-button
                         id="fr-lang"
                         variant="secondary"
                         class="btn-lang mb-1 d-none"
-                        @click="togglePopoverLang"
+                        @click="changeLang"
                     >
                     </b-button>
                 </div>
@@ -49,38 +50,34 @@
                 </b-button>
             </div>
         </div>
-        <b-popover
-            id="popoverLang"
-            :show.sync="showPopoverLang"
-            :target="targetPopoverLang"
-            @show="onShowPopover">
-            <template #title>
-                <div class="d-flex">
+        <div id="popoverLang"
+            :class="isShowPopover ? 'popover' : 'popover d-none'">
+            <div class="popover-header">
+                <div class="d-flex w-100">
                     <svg-vue v-if="isLoadingPopoverLang" icon="spinner" class="mx-auto my-auto" width="20"/>
-
-                    <b-input v-if="!isLoadingPopoverLang" type="text" class="form-control-sm mr-2" placeholder="Buscar traducció"/>
-                    <img v-if="!isLoadingPopoverLang" :src="imageSrcLang"/>
-                </div>
-            </template>
-            <div class="container-fluid h-100 p-2 d-flex flex-column">
-                <label v-show="errorMessagePopoverLang" class="text-danger">
-                    <i class="fa-solid fa-circle-exclamation mr-2"></i>
-                    {{ errorMessagePopoverLang }}
-                </label>
-                <svg-vue v-show="isLoadingPopoverLang" icon="spinner" class="mx-auto my-auto" width="50"/>
-                <div v-show="!isLoadingPopoverLang">
-                    <div v-if="langsData.length > 0">
-                        <div v-for="lang in langsData" :key="lang.id" class="border-bottom mb-2">
-                            <label class="d-block font-weight-bold">{{lang[targetPopoverLang.replace('-', '_')]}}</label>
-                            <label class="text-secondary">{{lang.ca_lang}}</label>
-                        </div>
-                    </div>
-                    <label v-else>
-                        No s'ha trobat registres.
-                    </label>
+                    <template v-else>
+                        <b-input type="text" v-model="search" v-on:input="inputSearchChange" class="form-control-sm mr-2" placeholder="Buscar traducció"/>
+                        <img :src="imageSrcLang"/>
+                    </template>
                 </div>
             </div>
-        </b-popover>
+            <div class="popover-body">
+                <div class="container-fluid h-100 w-100 p-2 d-flex flex-column">
+                    <label v-if="!isChrome" class="text-danger">
+                        Para escuchar las traducciones recomendamos usar el Chrome.
+                    </label>
+                    <label v-if="errorMessagePopoverLang && !isLoadingPopoverLang && !isSearching" class="text-danger">
+                        {{ errorMessagePopoverLang }}
+                    </label>
+                    <svg-vue v-if="isLoadingPopoverLang || isSearching" icon="spinner" class="mx-auto my-auto" width="50"/>
+                    <div v-for="lang in langsData" :key="lang.id" class="border-bottom mb-2">
+                        <label class="d-block font-weight-bold">{{lang[selectedLang.replace('-', '_')]}}<i class="ml-2 fa-solid fa-volume-high" role="button" @click="() => speechText(lang[selectedLang.replace('-', '_')])"></i></label>
+                        <label class="text-secondary">{{lang.ca_lang}}</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <VideoInteractive ref="modalVideoInteractive"/>
     </div>
 </template>
 
@@ -106,14 +103,19 @@ export default {
     data() {
         return {
             request: null,
+            isCancel: false,
             showItemsLang: false,
             buttonsLangsElements: [],
-            targetPopoverLang: '',
-            showPopoverLang: false,
+            isShowPopover: false,
             isLoadingPopoverLang: false,
+            isSearching: false,
             errorMessagePopoverLang: '',
+            selectedLang: '',
             imageSrcLang: '',
-            langsData: []
+            langsData: [],
+            search: '',
+            timeoutSearch: null,
+            isChrome: window.navigator.userAgent.toLowerCase().indexOf('chrome') > -1
         };
     },
     methods: {
@@ -144,26 +146,12 @@ export default {
                 });
             });
 
-            this.buttonsLangsElements = this.buttonsLangsElements.reverse();
-        },
-        togglePopoverLang(e) {
-            if (this.targetPopoverLang !== e.currentTarget.id) {
-                this.showPopoverLang = false;
-                this.targetPopoverLang = e.currentTarget.id;
-            }
-
             this.isLoadingPopoverLang = true;
+            this.isShowPopover = false;
+            this.selectedLang = '';
+            this.search = '';
 
-            let me = this;
-
-            setTimeout(() => me.showPopoverLang = !me.showPopoverLang, 200);
-        },
-        onShowPopover() {
-            this.errorMessagePopoverLang = '';
-            this.imageSrcLang = `/assets/img/ca-${this.targetPopoverLang.split('-')[0]}.png`;
-            this.langsData = [];
-
-            this.fetchLang();
+            this.buttonsLangsElements = this.buttonsLangsElements.reverse();
         },
         hideItemsLang(e) {
             let popoverLangElement = document.querySelector('#popoverLang');
@@ -172,23 +160,54 @@ export default {
                 return;
 
             if (this.showItemsLang) {
-                this.targetPopoverLang = '';
-                this.showPopoverLang = false;
-
-                let me = this;
-
-                setTimeout(() => me.toggleItemsLang(), 100);
+                this.toggleItemsLang();
             }
         },
-        fetchLang(search = "") {
+        changeLang(e) {
+            if (this.selectedLang != e.currentTarget.id) {
+                this.isShowPopover = true;
+                this.isLoadingPopoverLang = true;
+                this.selectedLang = e.currentTarget.id;
+                this.search = '';
+                this.imageSrcLang = '';
+                this.errorMessagePopoverLang = '';
+                this.langsData = [];
+
+                this.fetchLang();
+            } else {
+                this.isLoadingPopoverLang = true;
+                this.isShowPopover = false;
+                this.selectedLang = '';
+                this.search = '';
+                this.imageSrcLang = '';
+                this.errorMessagePopoverLang = '';
+                this.langsData = [];
+            }
+        },
+        inputSearchChange() {
+            this.isSearching = true;
+            this.errorMessagePopoverLang = '';
+            this.langsData = [];
+
+            clearTimeout(this.timeoutSearch);
+
             let me = this;
 
+            this.timeoutSearch = setTimeout(() => {
+                me.fetchLang();
+            }, 1000);
+        },
+        fetchLang() {
             if (this.request) this.request.cancel();
 
             let axiosSource = axios.CancelToken.source();
             this.request = { cancel: axiosSource.cancel };
 
-            axios.get(`/api/help-phrases?search=${search}&type=${this.targetPopoverLang.replace('-', '_')}`, {
+            let me = this;
+
+            this.imageSrcLang = `/assets/img/ca-${this.selectedLang.split('-')[0]}.png`;
+
+            axios.get(`/api/help-phrases?search=${this.search}&type=${this.selectedLang.replace('-', '_')}`, {
                 cancelToken: axiosSource.token,
             })
             .then(function (data) {
@@ -205,18 +224,44 @@ export default {
                     me.errorMessagePopoverLang = 'No s\'ha pogut cargar les dades...';
 
                     console.error(error);
+                } else {
+                    me.isCancel = true;
                 }
             })
             .finally(() => {
-                me.isLoadingPopoverLang = false;
                 me.request = null;
+
+                if (!me.isCancel) {
+                    me.isLoadingPopoverLang = false;
+                    me.isSearching = false;
+                }
+
+                me.isCancel = false;
             });
+        },
+        speechText(text) {
+            if ( 'speechSynthesis' in window ) {
+                window.speechSynthesis.cancel();
+                let lang = this.selectedLang.split('-')[0];
+                let msg = new SpeechSynthesisUtterance();
+                let voices = window.speechSynthesis.getVoices();
+                msg.voice = voices.filter(function (voice) { return voice.lang.split("-")[0] === lang; })[0];
+                msg.text = text;
+                msg.lang = lang;
+                window.speechSynthesis.speak(msg);
+            } else {
+                alert('El teu navegador no suporta aquesta funció.');
+            }
+
+        },
+        openModalVideoInteractive() {
+            this.$refs.modalVideoInteractive.openModal();
         }
     },
 };
 </script>
 
-<style>
+<style scope>
 .float-btn-help-lang {
     position: fixed;
     right: 0;
@@ -273,12 +318,17 @@ button[id$=lang] {
     background-image: url('/assets/img/fr.png');
 }
 
-.popover {
-    max-width: 400px;
+#popoverLang {
+    position: fixed;
+    top: auto;
+    left: auto;
+    right: 60px;
+    bottom: 70px;
     width: 100%;
+    max-width: 400px;
 }
 
-.popover-body {
+#popoverLang .popover-body {
     max-height: 250px;
     height: 250px;
     overflow-y: scroll;
