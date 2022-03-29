@@ -8,8 +8,6 @@ use App\Http\Controllers\Api\ComarquesController;
 use App\Http\Controllers\Api\ExpedientsController;
 use App\Http\Controllers\Api\MunicipisController;
 use App\Http\Controllers\Api\ProvinciesController;
-use App\Http\Controllers\Api\TipusLocalitzacions;
-use App\Http\Controllers\Api\TrucadesController;
 use App\Http\Controllers\TipusLocalitzacionsController;
 use App\Http\Controllers\Api\CartesTrucadesController;
 use App\Http\Controllers\Api\Estats_expedientsController;
@@ -29,7 +27,6 @@ use App\Models\Estats_expedients;
 Route::apiResource('users', UsuarisController::class);
 Route::apiResource('help-phrases', AjudesFrasesController::class);
 Route::apiResource('expedients', ExpedientsController::class);
-Route::apiResource('call', TrucadesController::class);
 Route::apiResource('provinces', ProvinciesController::class);
 Route::apiResource('regions', ComarquesController::class);
 Route::apiResource('towns', MunicipisController::class);
@@ -40,4 +37,5 @@ Route::apiResource('estats_expedients', Estats_expedientsController::class);
 
 // Customized routes
 Route::get('/cartestrucades/list/{id_expedient}', [CartesTrucadesController::class, 'calls_from_expedients']);
+Route::post('/expedients/put/{expedient}', [ExpedientsController::class, 'update']);
 
