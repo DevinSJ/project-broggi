@@ -18,7 +18,7 @@ class UsuarisController extends Controller
      */
     public function index()
     {
-        $_usuaris= Usuaris::with('perfil')->paginate(5);
+        $_usuaris= Usuaris::with('perfil')->paginate(10);
 
         return UsuarisResource::collection($_usuaris);
     }
@@ -77,21 +77,19 @@ class UsuarisController extends Controller
      * @param  \App\Models\Usuaris  $usuaris
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Usuaris $usuari)
+    public function update(Request $request, Usuaris $user)
     {
 
-        $usuari->usuari=$request->input('usuari');
-        $usuari->nom=$request->input('nom');
-        $usuari->cognoms=$request->input('cognoms');
-        $usuari->contrassenya=bcrypt($request->input('contrassenya'));
-        $usuari->perfils_id=$request->input('perfils_id');
-
-        $usuari->actiu= ($request->input('actiu')=='actiu');
+        $user->usuari=$request->input('usuari');
+        $user->nom=$request->input('nom');
+        $user->cognoms=$request->input('cognoms');
+        $user->perfils_id=$request->input('perfils_id');
+        $user->actiu= $request->input('actiu');
 
         try{
-            $usuari->save();
+            $user->save();
 
-            $response=(new UsuarisResource($usuari))
+            $response=(new UsuarisResource($user))
                         ->response()
                         ->setStatusCode(201);
 
@@ -105,6 +103,34 @@ class UsuarisController extends Controller
         return $response;
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Usuaris  $usuaris
+     * @return \Illuminate\Http\Response
+     */
+    public function updatePassword(Request $request, Usuaris $user)
+    {
+
+        $user->contrassenya=bcrypt($request->input('contrassenya'));
+
+        try{
+            $user->save();
+
+            $response=(new UsuarisResource($user))
+                        ->response()
+                        ->setStatusCode(201);
+
+        }catch(QueryException $ex){
+            $mensaje=Utilitat::errorMessage($ex);
+            $response=\response()
+                        ->json(["error"=>$mensaje], 400);
+        }
+
+
+        return $response;
+    }
     /**
      * Remove the specified resource from storage.
      *

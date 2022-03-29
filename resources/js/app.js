@@ -13,6 +13,7 @@ import SvgVue from 'svg-vue';
 window.Vue = require("vue").default;
 window.Vue.use(BootstrapVue);
 window.Vue.use(VueRouter);
+window.Vue.use(SvgVue);
 
 
 /**

@@ -5,7 +5,7 @@
                 <!--PAnel filtrado-->
                 <b-card class="show-card">
                     <b-row class="text-center">
-                        <b-col cols="3">
+                        <b-col cols="1">
                             <b-button
                                 class="btn-sm btn-success"
                                 area-hidden="true"
@@ -20,8 +20,8 @@
                                 Afegir usuari
                             </b-button></b-col
                         >
-                        <b-col cols="3"> </b-col>
-                        <b-col cols="6">
+                        <b-col cols="6"> </b-col>
+                        <b-col cols="5">
                             <b-form inline>
                                 <b-form-input
                                     id="inline-form-input-name"
@@ -152,21 +152,21 @@
                 </div>
 
                 <pagination
+                    v-show="!isLoading"
                     class="justify-center-center pagination-sm"
                     :data="usuaris"
                     @pagination-change-page="fetchUsuaris"
                 >
                 </pagination>
-                 <!--CARGA-->
-            <div class="centrar-carga">
-                <img
-                    v-show="isLoading"
-                    src="/assets/img/spinner.svg"
-                    width="100"
-                />
-            </div>
+                <!--CARGA-->
+                <div class="centrar-carga">
+                    <img
+                        v-show="isLoading"
+                        src="/assets/img/spinner.svg"
+                        width="100"
+                    />
+                </div>
             </b-card>
-
         </div>
 
         <!-- MODAL USUARIO-->
@@ -556,11 +556,50 @@ export default {
                 case 2:
                     console.table(this.usuari);
                     console.log("modificando usuario");
-                    me.$bvModal.hide("modal-usuari");
+
+                    axios
+                        .post(`/api/users/put/update/${this.usuari.id}`, this.usuari)
+                        .then((response) => {
+                            if (response.status === 201) {
+                                me.save_button_title = "Editar";
+
+                                me.fetchUsuaris();
+
+                                me.$bvModal.hide("modal-usuari");
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error.status);
+                            console.log(error.response.data);
+                            me.msgError = error.response.data.error;
+                            me.msgInfo = "";
+                            console.log = msgError;
+                        });
+
                     break;
                 case 3:
-                    console.log("cambiando contrasenya");
-                    me.$bvModal.hide("modal-usuari");
+                   console.table(this.usuari);
+                    console.log("modificando password usuario");
+
+                    axios
+                        .post(`/api/users/put/updatePassword/${this.usuari.id}`, this.usuari)
+                        .then((response) => {
+                            if (response.status === 201) {
+                                me.save_button_title = "Editar";
+
+                                me.fetchUsuaris();
+
+                                me.$bvModal.hide("modal-usuari");
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(error.status);
+                            console.log(error.response.data);
+                            me.msgError = error.response.data.error;
+                            me.msgInfo = "";
+                            console.log = msgError;
+                        });
+
                     break;
             }
         },
@@ -663,10 +702,11 @@ export default {
 </script>
 
 <style scoped>
-.show-card{
- background-color: white;
-  border: 1px;
-  box-shadow: 0px 5px 25px 0px rgb(0 0 0 / 20%);}
+.show-card {
+    background-color: white;
+    border: 1px;
+    box-shadow: 0px 5px 25px 0px rgb(0 0 0 / 20%);
+}
 .botones {
     margin-bottom: 20px;
 }
@@ -674,7 +714,6 @@ export default {
     width: 100%;
     text-align: center;
     justify-content: center;
-
 }
 .principal {
     padding: 15px;
