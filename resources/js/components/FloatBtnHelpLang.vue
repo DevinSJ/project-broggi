@@ -4,7 +4,7 @@
             <b-button
                 variant="secondary"
                 class="btn-circle order-1 mr-2 align-self-end"
-                title="2Video interactiu"
+                title="Video interactiu"
                 @click="openModalVideoInteractive"
             >
                 <i class="fa fa-play"></i>

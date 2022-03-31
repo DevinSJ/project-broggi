@@ -1,80 +1,78 @@
 <template>
-    <div id="miNavBar">
-        <b-navbar
-            toggleable="lg"
-            type="light"
-            variant="light"
-            class="fondoBackground"
-            sticky
-        >
-            <!--LOGO-->
-            <b-navbar-brand href="/">
-                <img src="/assets/img/logo.svg" width="120" class="ml-2" />
-            </b-navbar-brand>
+    <b-navbar
+        toggleable="lg"
+        type="light"
+        variant="light"
+        class="fondoBackground"
+        sticky
+    >
+        <!--LOGO-->
+        <b-navbar-brand href="/">
+            <img src="/assets/img/logo.svg" width="120" class="ml-2" />
+        </b-navbar-brand>
 
-            <!--COLAPSE-->
-            <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-            <b-collapse id="nav-collapse" is-nav>
-                <b-navbar-nav class="w-100 justify-content-center">
-                    <!--LINKS-->
-                    <div class="top-navigation">
-                        <div class="active-link item-transition"></div>
-                        <router-link to="expedients">
-                            <i
-                                class="fa-solid fa-folder-open mr-2 desactivar-click"
-                            ></i
-                            ><span class="desactivar-click">Expedients</span>
-                        </router-link>
-                        <router-link to="trucades">
-                            <i
-                                class="fa-solid fa-phone mr-2 desactivar-click"
-                            ></i
-                            ><span class="desactivar-click">Trucades</span>
-                        </router-link>
-                        <router-link to="grafics">
-                            <i
-                                class="fa-solid fa-chart-pie mr-2 desactivar-click"
-                            ></i
-                            ><span class="desactivar-click">Grafics</span>
-                        </router-link>
-                        <router-link to="usuaris">
-                            <i
-                                class="fa-solid fa-users mr-2 desactivar-click"
-                            ></i>
-                            <span class="desactivar-click"
-                                >Usuaris</span
-                            ></router-link
-                        >
-                        <router-link to="parametres">
-                            <i
-                                class="fa-solid fa-gear mr-2 desactivar-click"
-                            ></i
-                            ><span class="desactivar-click">Paràmetres</span>
-                        </router-link>
-                    </div>
-                    <!--CERRAR SESION-->
-                </b-navbar-nav>
+        <!--COLAPSE-->
+        <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+        <b-collapse id="nav-collapse" is-nav>
+            <b-navbar-nav class="w-100 justify-content-center">
+                <!--LINKS-->
+                <div class="top-navigation">
+                    <div class="active-link item-transition"></div>
+                    <router-link to="expedients">
+                        <i
+                            class="fa-solid fa-folder-open mr-2 desactivar-click"
+                        ></i
+                        ><span class="desactivar-click">Expedients</span>
+                    </router-link>
+                    <router-link to="trucades">
+                        <i
+                            class="fa-solid fa-phone mr-2 desactivar-click"
+                        ></i
+                        ><span class="desactivar-click">Trucades</span>
+                    </router-link>
+                    <router-link to="grafics">
+                        <i
+                            class="fa-solid fa-chart-pie mr-2 desactivar-click"
+                        ></i
+                        ><span class="desactivar-click">Grafics</span>
+                    </router-link>
+                    <router-link to="usuaris">
+                        <i
+                            class="fa-solid fa-users mr-2 desactivar-click"
+                        ></i>
+                        <span class="desactivar-click"
+                            >Usuaris</span
+                        ></router-link
+                    >
+                    <router-link to="parametres">
+                        <i
+                            class="fa-solid fa-gear mr-2 desactivar-click"
+                        ></i
+                        ><span class="desactivar-click">Paràmetres</span>
+                    </router-link>
+                </div>
+                <!--CERRAR SESION-->
+            </b-navbar-nav>
 
-                <b-navbar-nav class="ml-auto">
-                    <b-nav-item-dropdown class="ml-2" right>
-                        <template #button-content>
-                            <em class="mr-2"
-                                >{{ user.cognoms }}, {{ user.nom }}</em
-                            >
-                        </template>
-                        <b-dropdown-item href="#"
-                            ><i class="fa-solid fa-address-card mr-2"></i
-                            >Perfil</b-dropdown-item
+            <b-navbar-nav class="ml-auto">
+                <b-nav-item-dropdown class="ml-2" right>
+                    <template #button-content>
+                        <em class="mr-2"
+                            >{{ user.cognoms }}, {{ user.nom }}</em
                         >
-                        <b-dropdown-item href="/logout"
-                            ><i class="fa-solid fa-right-from-bracket mr-2"></i
-                            >Tancar sessió</b-dropdown-item
-                        >
-                    </b-nav-item-dropdown>
-                </b-navbar-nav>
-            </b-collapse>
-        </b-navbar>
-    </div>
+                    </template>
+                    <b-dropdown-item href="#"
+                        ><i class="fa-solid fa-address-card mr-2"></i
+                        >Perfil</b-dropdown-item
+                    >
+                    <b-dropdown-item href="/logout"
+                        ><i class="fa-solid fa-right-from-bracket mr-2"></i
+                        >Tancar sessió</b-dropdown-item
+                    >
+                </b-nav-item-dropdown>
+            </b-navbar-nav>
+        </b-collapse>
+    </b-navbar>
 </template>
 
 <script>

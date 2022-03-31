@@ -14,6 +14,8 @@ use App\Http\Controllers\TipusLocalitzacionsController;
 use App\Http\Controllers\Api\CartesTrucadesController;
 use App\Http\Controllers\Api\Estats_expedientsController;
 use App\Models\Estats_expedients;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +40,21 @@ Route::apiResource('cartestrucades', CartesTrucadesController::class);
 Route::apiResource('estats_expedients', Estats_expedientsController::class);
 
 
+Route::get('/video-interactive', function () {
+    $path = public_path() . '\\assets\\video\\video-interactive.mp4';
+
+    $size = filesize($path);
+    $fileContents = file_get_contents($path);
+
+    $response = Response::make($fileContents, 200);
+
+    $response->header('Content-Type', 'video/mp4');
+    $response->header('Accept-Ranges', 'bytes');
+    $response->header('Content-Length', $size);
+    $response->header('Content-Range', 'bytes 1-' . $size - 1 . '/' . $size);
+
+    return $response;
+});
+
 // Customized routes
 Route::get('/cartestrucades/list/{id_expedient}', [CartesTrucadesController::class, 'calls_from_expedients']);
-
