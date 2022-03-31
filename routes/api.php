@@ -27,8 +27,7 @@ use App\Models\Estats_expedients;
 */
 
 Route::apiResource('users', UsuarisController::class);
-Route::post('users/put/update/{user}',[UsuarisController::class,"update"]);
-Route::post('users/put/updatePassword/{user}',[UsuarisController::class,"updatePassword"]);
+
 
 
 Route::apiResource('help-phrases', AjudesFrasesController::class);
@@ -44,4 +43,7 @@ Route::apiResource('estats_expedients', Estats_expedientsController::class);
 
 // Customized routes
 Route::get('/cartestrucades/list/{id_expedient}', [CartesTrucadesController::class, 'calls_from_expedients']);
+Route::post('users/put/update/{user}',[UsuarisController::class,"update"]);
+Route::post('users/put/updatePassword/{user}',[UsuarisController::class,"updatePassword"]);
+
 

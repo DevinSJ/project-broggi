@@ -16,9 +16,26 @@ class UsuarisController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $_usuaris= Usuaris::with('perfil')->paginate(10);
+
+        $filtroUsuario = $request->input('filtroUsuario');
+        $filtroPerfil = $request->input('filtroPerfil');
+        $filtroActivo = $request->input('filtroActivo');
+
+        if ($filtroPerfil == 4) {
+            $filtroPerfil = "";
+        }
+
+        if ($filtroActivo == 2) {
+            $filtroActivo = "";
+        }
+
+        $_usuaris = Usuaris::with('perfil')->where('usuari', "like", "%" . $filtroUsuario . "%")
+            ->where('perfils_id', "like", "%" . $filtroPerfil . "%")
+            ->where('actiu',  "like", "%" . $filtroActivo . "%")
+            ->paginate(10);
+
 
         return UsuarisResource::collection($_usuaris);
     }
@@ -31,28 +48,27 @@ class UsuarisController extends Controller
      */
     public function store(Request $request)
     {
-        $usuari=new Usuaris();
+        $usuari = new Usuaris();
 
-        $usuari->usuari=$request->input('usuari');
-        $usuari->nom=$request->input('nom');
-        $usuari->cognoms=$request->input('cognoms');
-        $usuari->contrassenya=bcrypt($request->input('contrassenya'));
+        $usuari->usuari = $request->input('usuari');
+        $usuari->nom = $request->input('nom');
+        $usuari->cognoms = $request->input('cognoms');
+        $usuari->contrassenya = bcrypt($request->input('contrassenya'));
 
-        $usuari->perfils_id=$request->input('perfils_id');
+        $usuari->perfils_id = $request->input('perfils_id');
 
-        $usuari->actiu= $request->input('actiu');
+        $usuari->actiu = $request->input('actiu');
 
-        try{
+        try {
             $usuari->save();
 
-            $response=(new UsuarisResource($usuari))
-                        ->response()
-                        ->setStatusCode(201);
-
-        }catch(QueryException $ex){
-            $mensaje=Utilitat::errorMessage($ex);
-            $response=\response()
-                        ->json(["error"=>$mensaje], 400);
+            $response = (new UsuarisResource($usuari))
+                ->response()
+                ->setStatusCode(201);
+        } catch (QueryException $ex) {
+            $mensaje = Utilitat::errorMessage($ex);
+            $response = \response()
+                ->json(["error" => $mensaje], 400);
         }
 
 
@@ -80,23 +96,22 @@ class UsuarisController extends Controller
     public function update(Request $request, Usuaris $user)
     {
 
-        $user->usuari=$request->input('usuari');
-        $user->nom=$request->input('nom');
-        $user->cognoms=$request->input('cognoms');
-        $user->perfils_id=$request->input('perfils_id');
-        $user->actiu= $request->input('actiu');
+        $user->usuari = $request->input('usuari');
+        $user->nom = $request->input('nom');
+        $user->cognoms = $request->input('cognoms');
+        $user->perfils_id = $request->input('perfils_id');
+        $user->actiu = $request->input('actiu');
 
-        try{
+        try {
             $user->save();
 
-            $response=(new UsuarisResource($user))
-                        ->response()
-                        ->setStatusCode(201);
-
-        }catch(QueryException $ex){
-            $mensaje=Utilitat::errorMessage($ex);
-            $response=\response()
-                        ->json(["error"=>$mensaje], 400);
+            $response = (new UsuarisResource($user))
+                ->response()
+                ->setStatusCode(201);
+        } catch (QueryException $ex) {
+            $mensaje = Utilitat::errorMessage($ex);
+            $response = \response()
+                ->json(["error" => $mensaje], 400);
         }
 
 
@@ -113,19 +128,18 @@ class UsuarisController extends Controller
     public function updatePassword(Request $request, Usuaris $user)
     {
 
-        $user->contrassenya=bcrypt($request->input('contrassenya'));
+        $user->contrassenya = bcrypt($request->input('contrassenya'));
 
-        try{
+        try {
             $user->save();
 
-            $response=(new UsuarisResource($user))
-                        ->response()
-                        ->setStatusCode(201);
-
-        }catch(QueryException $ex){
-            $mensaje=Utilitat::errorMessage($ex);
-            $response=\response()
-                        ->json(["error"=>$mensaje], 400);
+            $response = (new UsuarisResource($user))
+                ->response()
+                ->setStatusCode(201);
+        } catch (QueryException $ex) {
+            $mensaje = Utilitat::errorMessage($ex);
+            $response = \response()
+                ->json(["error" => $mensaje], 400);
         }
 
 
