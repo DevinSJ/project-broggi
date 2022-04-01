@@ -11,6 +11,7 @@
             ref="video"
             class="w-100"
             src="/assets/video/video-interactive.mp4"
+         
             @loadeddata="onVideoLoaded"
             loop
         >
