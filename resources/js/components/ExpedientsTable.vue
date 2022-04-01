@@ -20,12 +20,23 @@
                 </div>
         </b-card>
 
+        <b-card v-show="!isLoading" class="card-leyenda">
+            <div class="leyenda" >
+                    <label class="mr-5 mt-2">Llegenda d'estats dels expedients: </label>
+                    <i class="fa-solid fa-circle in-progress mr-2"></i><p class="mr-3 mt-3">En progrés</p>
+                    <i class="fa-solid fa-circle requested mr-2"></i><p class="mr-3 mt-3">Sol·licitat</p>
+                    <i class="fa-solid fa-circle accepted mr-2"></i><p class="mr-3 mt-3">Acceptat</p>
+                    <i class="fa-solid fa-circle closed mr-2"></i><p class="mr-3 mt-3">Tancat</p>
+                    <i class="fa-solid fa-circle immobilized mr-2"></i><p class="mt-3">Immobilitzat</p>
+                </div>
+        </b-card>
+
         <!-- Modal -->
             <b-modal v-show="!isLoading2" id="modal-expedients"  class="modal-calls" title="Trucades de l'expedient" size="huge" @ok="updateExpedient" :hide-footer="isLoading2">
                 <b-table v-if="trucades.length > 0" striped hover small thead-class="thead-dark" :items="trucades" :fields="callFields" v-show="!isLoading2">
                     <template #cell(cartes_trucades_has_agencies)="data">
                         <p style="display:none">{{data.item.id}}</p>
-                        <button class="button-edit" v-b-modal.modal-info-calls @click="loadAgencies(data.item.cartes_trucades_has_agencies)"> <i class="fa-solid fa-eye m-1"></i></button>
+                        <button class="button-edit" v-b-modal.modal-info-calls @click="loadAgencies(data.item.cartes_trucades_has_agencies, data.item)"> <i class="fa-solid fa-eye m-1"></i></button>
                     </template>
                     <template #cell(show-nota-comuna)="data">
                         <div>
@@ -56,7 +67,7 @@
 
 
         <!-- Modal with call information -->
-        <b-modal id="modal-info-calls" class="modal-info-calls" :title="modalTitle2" size="lg" ok-only>
+        <b-modal id="modal-info-calls" class="modal-info-calls" :title="modalTitle2" size="lg" ok-only @ok="updateExpedient">
 
             <div v-if="!this.modal_agencia">
                 <p>Nom: {{this.name_call}}</p>
@@ -64,7 +75,19 @@
                 <textarea name="txtNotaComuna" id="txtNotaComuna" class="w-100 p-2" cols="30" rows="10" v-model="this.description_call" readonly></textarea>
             </div>
             <div v-else>
-                <p v-for="relacioAgencia in this.agencies_contactades" :key="relacioAgencia.agencia.id"> {{ relacioAgencia.agencia.nom }} </p>
+                <b-table striped hover small bordered thead-class="thead-dark" :items="agencies_contactades" :fields="agenciesFields" v-show="!isLoading3">
+                    <template #cell(estats_agencies_id)="data">
+                        <p style="display:none">{{data.item.id}}</p>
+
+                        <b-form-select class="select-agency"
+                        v-model="data.item.estats_agencies_id"
+                        id="estats_agencies_id"
+                        name="estats_agencies_id"
+                        @change="updateEstatAgencies(data.item.agencia.id, data.item.estats_agencies_id)"
+                        :options="renderEstatsAgencies">
+                        </b-form-select>
+                    </template>
+                </b-table>
             </div>
 
             <div v-if="this.isLoading3" class="loading-spinner">
@@ -80,6 +103,7 @@ export default {
       document.title = "Expedients - Broggi";
       this.getExpedients();
       this.getEstatsExpedients();
+      this.getEstatsAgencies();
       this.user = window.Vue.prototype.$user;
     },
     data(){
@@ -103,6 +127,13 @@ export default {
                     sortable: true,
                     tdClass: 'centered-text-class',
                     thClass: 'id-th-column'
+                },
+                {
+                    key: 'codi',
+                    label: 'Codi Expedient',
+                    sortable: true,
+                    tdClass: 'centered-text-class',
+                    thClass: 'codi-exp-th-column'
                 },
                 {
                     key: 'data_creacio',
@@ -133,8 +164,15 @@ export default {
                     sortable: true,
                     tdClass: 'centered-text-class',
                     thClass: 'codi-th-column'
-                },{
-                    key: 'tipus_localitzacions_id',
+                },
+                {
+                    key:'telefon',
+                    label: 'Número de telèfon',
+                    tdClass: 'centered-text-class',
+                    thClass: 'num-telf-th-column'
+                },
+                {
+                    key: 'descripcio_localitzacio',
                     label: 'Localització',
                     tdClass: 'centered-text-class',
                     thClass: 'localitzacio-th-column'
@@ -155,9 +193,32 @@ export default {
                     thClass: 'nota-comuna-th-column'
                 }
             ],
+            agenciesFields: [
+                {
+                    key:'agencia.id',
+                    label: 'Id',
+                    sortable: true,
+                    tdClass: 'centered-text-class',
+                    thClass: 'id-th-column'
+                },
+                {
+                    key: 'agencia.nom',
+                    label: 'Nom',
+                    tdClass: 'centered-text-class',
+                    thClass: 'localitzacio-th-column'
+                },
+                {
+                    key: 'estats_agencies_id',
+                    label: 'Estat',
+                    tdClass: 'centered-text-class',
+                    thClass: 'estats-agencies-th-column'
+                }
+
+            ],
             expedients: [],
             trucades: [],
             expedient_conditions: [],
+            estats_agencies: [],
             options: [],
             name_call: '',
             description_call: '',
@@ -170,6 +231,11 @@ export default {
                 data_ultima_modificacio: '',
                 estats_expedients_id: ''
             },
+            call:{
+                id: '',
+                expedients_id:'',
+                cartes_trucades_has_agencies:{}
+            },
             newState:''
         }
     },
@@ -177,6 +243,14 @@ export default {
         renderConditions() {
             return this.expedient_conditions.map((condition) => {
                 return {
+                    value: condition.id,
+                    text: condition.estat
+                }
+            })
+        },
+        renderEstatsAgencies(){
+            return this.estats_agencies.map((condition) =>{
+                return{
                     value: condition.id,
                     text: condition.estat
                 }
@@ -252,6 +326,19 @@ export default {
                 })
                 .finally(() => this.isLoading2 = false)
         },
+        getEstatsAgencies(){
+            let me = this;
+            this.isLoading3 = true;
+            axios
+                .get('/api/estats_agencies/')
+                .then(response =>{
+                    me.estats_agencies = response.data;
+                })
+                .catch(error =>{
+                    console.log(error)
+                })
+                .finally(() => this.isLoading3 = false)
+        },
         loadInfo(name, nota_comuna_descripcio){
             this.name_call = name;
             this.description_call = nota_comuna_descripcio;
@@ -259,7 +346,8 @@ export default {
             this.modal_agencia = false;
             this.modalTitle2 = "Nota comuna";
         },
-        loadAgencies(agencies){
+        loadAgencies(agencies, call){
+            this.call = call;
             this.agencies_contactades = agencies;
             this.isLoading3 = false;
             this.modal_agencia = true;
@@ -270,6 +358,8 @@ export default {
                 .post('/api/expedients/put/' + this.expedient.id + '?estat_exp=' + this.expedient.estats_expedients_id)
                 .catch(error => {
                     console.log(error);
+                }).finally(() =>{
+                    this.getExpedients();
                 })
         },
         resetExpedient(){
@@ -277,6 +367,16 @@ export default {
             expedient.data_creacio = '';
             expedient.data_ultima_modificacio = '';
             expedient.estats_expedients_id = '';
+        },
+        updateEstatAgencies(agencia_id, estat_agencia){
+            axios
+                .post('/api/cartes_trucades_has_agencies/put/' + this.call.id + '/' + agencia_id + '?estat_agencia=' + estat_agencia)
+                .then(() =>{
+                    this.updateExpedient();
+                })
+                .catch(error => {
+                    console.log(error);
+                })
         }
     }
 }
@@ -350,6 +450,12 @@ export default {
     width: 2%;
 }
 
+::v-deep .codi-exp-th-column{
+    text-align: center;
+    vertical-align: middle;
+    width: 10%;
+}
+
 ::v-deep .created-th-column{
     text-align: center;
     vertical-align: middle;
@@ -393,7 +499,19 @@ export default {
     width: 15%;
 }
 
+::v-deep .num-telf-th-column{
+    text-align: center;
+    vertical-align: middle;
+    width: 10%;
+}
+
 ::v-deep .nota-comuna-th-column{
+    text-align: center;
+    vertical-align: middle;
+    width: 5%;
+}
+
+::v-deep .estats-agencies-th-column{
     text-align: center;
     vertical-align: middle;
     width: 5%;
@@ -413,6 +531,30 @@ export default {
 
 ::v-deep .modal-body{
     padding: 30px !important;
+}
+
+::v-deep .select-agency{
+    width: 100%;
+    text-align: center;
+}
+
+.leyenda{
+    display: flex;
+    align-items: center;
+    background-color: rgb(224, 224, 224);
+    border: 1px;
+    box-shadow: 0px 5px 25px 0px rgb(0 0 0 / 20%);
+    width: fit-content;
+    padding-inline: 10px;
+}
+
+.card-leyenda{
+    height: fit-content;
+    width: fit-content;
+    margin-top: 10px;
+    padding: 5px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 </style>

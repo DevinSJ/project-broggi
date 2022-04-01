@@ -10,7 +10,9 @@ use App\Http\Controllers\Api\MunicipisController;
 use App\Http\Controllers\Api\ProvinciesController;
 use App\Http\Controllers\TipusLocalitzacionsController;
 use App\Http\Controllers\Api\CartesTrucadesController;
+use App\Http\Controllers\Api\CartesTrucadesHasAgenciesController;
 use App\Http\Controllers\Api\Estats_expedientsController;
+use App\Http\Controllers\Api\EstatsAgenciesController;
 use App\Models\Estats_expedients;
 
 /*
@@ -33,9 +35,13 @@ Route::apiResource('towns', MunicipisController::class);
 Route::apiResource('LocationsTypes', TipusLocalitzacionsController::class);
 Route::apiResource('cartestrucades', CartesTrucadesController::class);
 Route::apiResource('estats_expedients', Estats_expedientsController::class);
+Route::apiResource('estats_agencies', EstatsAgenciesController::class);
+
 
 
 // Customized routes
 Route::get('/cartestrucades/list/{id_expedient}', [CartesTrucadesController::class, 'calls_from_expedients']);
 Route::post('/expedients/put/{expedient}', [ExpedientsController::class, 'update']);
+Route::post('cartes_trucades_has_agencies/put/{id_call}/{id_agency}', [CartesTrucadesHasAgenciesController::class, 'update']);
+
 
