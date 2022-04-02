@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Class\Utilitat;
+use App\Utilities\DBUtility;
 use App\Models\Usuaris;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -50,7 +50,7 @@ class UsuarisController extends Controller
                         ->setStatusCode(201);
 
         }catch(QueryException $ex){
-            $mensaje=Utilitat::errorMessage($ex);
+            $mensaje=DBUtility::getPDOErrorMessage($ex);
             $response=\response()
                         ->json(["error"=>$mensaje], 400);
         }
@@ -96,7 +96,7 @@ class UsuarisController extends Controller
                         ->setStatusCode(201);
 
         }catch(QueryException $ex){
-            $mensaje=Utilitat::errorMessage($ex);
+            $mensaje=DBUtility::getPDOErrorMessage($ex);
             $response=\response()
                         ->json(["error"=>$mensaje], 400);
         }
