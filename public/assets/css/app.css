@@ -13011,6 +13011,10 @@ input[type=color].form-control:disabled {
 .view-container {
   padding: 20px;
 }
+#app {
+    height: 100vh;
+}
+
 /* General */
 button:focus {
     box-shadow: none !important;
