@@ -15,10 +15,9 @@
                     </template>
                 </b-table>
 
-                <div v-else class="loading-spinner">
-                    <svg-vue icon="spinner" class="mx-auto my-auto" width="100"/>
-                </div>
-        </b-card>
+        <div class="loading-spinner">
+            <svg-vue v-show="isLoading" icon="spinner" class="mx-auto my-auto" width="100"/>
+        </div>
 
         <!-- Modal -->
             <b-modal v-show="!isLoading2" id="modal-expedients"  class="modal-calls" title="Trucades de l'expedient" size="huge" @ok="updateExpedient" :hide-footer="isLoading2">
