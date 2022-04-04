@@ -8,8 +8,6 @@ use App\Http\Controllers\Api\ComarquesController;
 use App\Http\Controllers\Api\ExpedientsController;
 use App\Http\Controllers\Api\MunicipisController;
 use App\Http\Controllers\Api\ProvinciesController;
-use App\Http\Controllers\Api\TipusLocalitzacions;
-//use App\Http\Controllers\Api\TrucadesController;
 use App\Http\Controllers\TipusLocalitzacionsController;
 use App\Http\Controllers\Api\CartesTrucadesController;
 use App\Http\Controllers\Api\Estats_expedientsController;
@@ -45,5 +43,7 @@ Route::apiResource('estats_expedients', Estats_expedientsController::class);
 Route::get('/cartestrucades/list/{id_expedient}', [CartesTrucadesController::class, 'calls_from_expedients']);
 Route::post('users/put/update/{user}',[UsuarisController::class,"update"]);
 Route::post('users/put/updatePassword/{user}',[UsuarisController::class,"updatePassword"]);
+Route::get('graph-expedients-status', [ExpedientsController::class,"graph_expedients_status"]);
+Route::get('graph-users-perfil', [UsuarisController::class,"graph_users_perfil"]);
 
 

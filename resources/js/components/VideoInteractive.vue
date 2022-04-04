@@ -10,7 +10,8 @@
             id="video-interactive"
             ref="video"
             class="w-100"
-            src="/assets/video/logoAnimado_1.mp4"
+            src="/assets/video/video-interactive.mp4"
+         
             @loadeddata="onVideoLoaded"
             loop
         >
@@ -65,7 +66,6 @@ export default {
         playPauseVideo() {
             if (this.isVideoLoaded) {
                 if (!this.isPlaying) {
-                    this.$refs.video.currentTime = 60;
                     this.$refs.video.play();
                     this.isPlaying = true;
                 } else {
@@ -81,7 +81,10 @@ export default {
 
             this.totalDurationInSeconds = this.$refs.video.duration;
 
-            this.setBubble();
+            this.$refs.video.currentTime = 60;
+            this.$refs.video.play();
+
+            //this.setBubble();
         },
         setBubble() {
             const range = document.querySelector("#rangeVideo");
@@ -106,8 +109,6 @@ export default {
                 bubble.style.left = `calc(${newValue}% + (${newPosition - 17}px))`;
 
                 console.log(currentTimeInSeconds);
-
-                
 
                 //this.$refs.video.play();
             }
