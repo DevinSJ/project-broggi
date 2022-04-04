@@ -295,7 +295,7 @@ export default {
     height: 15px;
 }
 .requested{
-    color: yellow;
+    color: rgb(253, 253, 7);
     border-radius: 50%;
     height: 15px;
 }

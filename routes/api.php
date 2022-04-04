@@ -43,5 +43,7 @@ Route::apiResource('estats_expedients', Estats_expedientsController::class);
 Route::get('/cartestrucades/list/{id_expedient}', [CartesTrucadesController::class, 'calls_from_expedients']);
 Route::post('users/put/update/{user}',[UsuarisController::class,"update"]);
 Route::post('users/put/updatePassword/{user}',[UsuarisController::class,"updatePassword"]);
+Route::get('graph-expedients-status', [ExpedientsController::class,"graph_expedients_status"]);
+Route::get('graph-users-perfil', [UsuarisController::class,"graph_users_perfil"]);
 
 

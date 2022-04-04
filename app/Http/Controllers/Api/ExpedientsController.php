@@ -11,6 +11,8 @@ use Illuminate\Database\QueryException;
 use App\Http\Resources\ExpedientsResource;
 use Illuminate\Support\Facades\DB;
 
+use function PHPSTORM_META\map;
+
 class ExpedientsController extends Controller
 {
     /**
@@ -74,9 +76,9 @@ class ExpedientsController extends Controller
         //     DB::commit();
         // } catch (QueryException $ex) {
         //     DB::rollBack();
-            // $missatge = Utilitat::errorMessage($ex);
-            // $response = \response()
-            //             ->json(['error' => $missatge], 400);
+        // $missatge = Utilitat::errorMessage($ex);
+        // $response = \response()
+        //             ->json(['error' => $missatge], 400);
         // }
 
         try {
@@ -84,16 +86,15 @@ class ExpedientsController extends Controller
             $expedient->save();
 
             $response = (new ExpedientsResource($expedient))
-                        ->response()
-                        ->setStatusCode(201);
+                ->response()
+                ->setStatusCode(201);
         } catch (QueryException $ex) {
             $missatge = Utilitat::errorMessage($ex);
             $response = \response()
-                        ->json(['error' => $missatge], 400);
+                ->json(['error' => $missatge], 400);
         }
 
         return response($response);
-
     }
 
     /**
@@ -106,4 +107,20 @@ class ExpedientsController extends Controller
     {
         //
     }
+
+    public function graph_expedients_status()
+    {
+
+        $data = DB::select("SELECT esexp.id, esexp.estat, COUNT( expe.estats_expedients_id ) as quantity
+                            FROM expedients expe
+                            RIGHT JOIN estats_expedients esexp ON expe.estats_expedients_id = esexp.id
+                            GROUP BY esexp.estat, esexp.id
+                            ORDER BY esexp.id ASC");
+
+        return response($data);
+    }
+
+
+    /*
+    */
 }
