@@ -1,5 +1,6 @@
 @import url(https://fonts.googleapis.com/css?family=Nunito);
 @import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css);
+@import url(https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css);
 @charset "UTF-8";
 /*!
  * Bootstrap v4.6.1 (https://getbootstrap.com/)
@@ -13008,9 +13009,15 @@ input[type=color].form-control:disabled {
   font-size: 125%;
   vertical-align: text-bottom;
 }
+<<<<<<< HEAD
 .view-container {
   padding: 20px;
 }
+=======
+/* General */
+html,
+body,
+>>>>>>> main
 #app {
     height: 100vh;
 }

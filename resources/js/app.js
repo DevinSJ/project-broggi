@@ -9,11 +9,14 @@ require("./bootstrap");
 import { BootstrapVue } from "bootstrap-vue";
 import VueRouter from "vue-router";
 import SvgVue from 'svg-vue';
+import chartjs from 'vue-chartjs';
 
 window.Vue = require("vue").default;
 window.Vue.use(BootstrapVue);
 window.Vue.use(VueRouter);
 window.Vue.use(SvgVue);
+window.Vue.use(chartjs);
+
 
 /**
  * The following block of code may be used to automatically register your

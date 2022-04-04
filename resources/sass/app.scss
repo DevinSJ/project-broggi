@@ -13,8 +13,6 @@
 // Bootstrap vue
 @import '~bootstrap-vue/dist/bootstrap-vue';
 
-.view-container
- {
-     padding: 20px;
- }
+// MapBox
+@import url("https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css");
 

@@ -263,7 +263,6 @@ input[type="range"] {
 
     width: 100%;
 }
-
 input[type="range"]:focus {
     outline: none;
 }
@@ -287,7 +286,6 @@ input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     margin-top: -8px;
 }
-
 input[type="range"]:focus::-webkit-slider-runnable-track {
     background: #03a9f4;
 }

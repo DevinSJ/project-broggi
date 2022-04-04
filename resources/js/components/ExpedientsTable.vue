@@ -1,7 +1,7 @@
 <template>
     <div>
-        <b-card v-show="!isLoading" class="p-5 card-container">
-                <b-table striped hover bordered thead-class="thead-dark" :items="expedients" :fields="fields" >
+        <b-card  title="Expedients" class="p-5 card-container">
+                <b-table v-if="!isLoading" striped hover small thead-class="thead-dark" :items="expedients" :fields="fields" >
                     <template #cell(estats_expedients_id)="data">
                         <div>
                             <i :class="getState(data.item.estats_expedients_id)"></i>
@@ -10,70 +10,64 @@
 
                     <template #cell(see_expedient)="data">
                         <div>
-                            <button class="button-edit" v-b-modal.modal-expedients @click="getCalls(data.item.id, data.item.estats_expedients_id)"> <i class="fa-solid fa-eye mr-2"></i> Veure dades {{data.item.id }}</button>
+                            <button class="button-edit" v-b-modal.modal-expedients @click="loadModal(data.item)"> <i class="fa-solid fa-eye mr-2"></i> Veure dades</button>
                         </div>
                     </template>
                 </b-table>
-        </b-card>
 
         <div class="loading-spinner">
-            <img
-                v-show="isLoading"
-                src="/assets/img/spinner.svg"
-                width="100"/>
+            <svg-vue v-show="isLoading" icon="spinner" class="mx-auto my-auto" width="100"/>
         </div>
 
         <!-- Modal -->
-        <b-modal id="modal-expedients" class="modal-calls" title="Trucades de l'expedient" size="huge">
+            <b-modal v-show="!isLoading2" id="modal-expedients"  class="modal-calls" title="Trucades de l'expedient" size="huge" @ok="updateExpedient" :hide-footer="isLoading2">
+                <b-table v-if="trucades.length > 0" striped hover small thead-class="thead-dark" :items="trucades" :fields="callFields" v-show="!isLoading2">
+                    <template #cell(cartes_trucades_has_agencies)="data">
+                        <p style="display:none">{{data.item.id}}</p>
+                        <button class="button-edit" v-b-modal.modal-info-calls @click="loadAgencies(data.item.cartes_trucades_has_agencies)"> <i class="fa-solid fa-eye m-1"></i></button>
+                    </template>
+                    <template #cell(show-nota-comuna)="data">
+                        <div>
+                            <p style="display: none">{{data.item.id}}</p>
+                            <button class="button-edit" v-b-modal.modal-info-calls @click="loadInfo(data.item.nom_trucada, data.item.nota_comuna_descripcio)"> <i class="fa-solid fa-eye m-1"></i></button>
+                        </div>
+                    </template>
 
-            <b-table v-if="trucades.length > 0" striped hover bordered thead-class="thead-dark" :items="trucades" :fields="callFields" v-show="!isLoading2">
-                <template #cell(cartes_trucades_has_agencies)="data">
-                    <p style="display:none">{{data.item.id}}</p>
-                    <button class="button-edit" v-b-modal.modal-info-calls @click="loadAgencies(data.item.cartes_trucades_has_agencies)"> <i class="fa-solid fa-eye m-1"></i></button>
-                </template>
-                <template #cell(show-nota-comuna)="data">
-                    <div>
-                        <p style="display: none">{{data.item.id}}</p>
-                        <button class="button-edit" v-b-modal.modal-info-calls @click="loadInfo(data.item.nom_trucada, data.item.nota_comuna_descripcio)"> <i class="fa-solid fa-eye m-1"></i></button>
-                    </div>
-                </template>
-            </b-table>
+                </b-table>
 
-            <div v-else v-show="!showTrucades">No hi ha trucades enllaçades a aquest expedient realitzades per aquest usuari.</div>
+                <div v-else v-show="!showTrucades">No hi ha trucades enllaçades a aquest expedient realitzades per aquest usuari.</div>
 
-            <div v-show="!isLoading2" v-if="this.user.perfils_id != 1" class="div-expedient-estate">
-                <p>Estat de l'expedient: </p>
-                <b-form-select
-                v-model="expedientState"
-                :options="renderConditions">
-                </b-form-select>
-            </div>
+                <div v-show="!isLoading2" v-if="user.perfils_id != 1" class="div-expedient-estate">
+                    <p>Estat de l'expedient: </p>
+                    <b-form-select
+                    v-model="expedient.estats_expedients_id"
+                    id="estats_expedients_id"
+                    name="estats_expedients_id"
+                    :options="renderConditions">
+                    </b-form-select>
+                </div>
 
-            <div class="loading-spinner2">
-                <img
-                    v-show="isLoading2"
-                    src="/assets/img/spinner.svg"
-                    width="100"/>
-            </div>
-        </b-modal>
+                <div v-if="this.isLoading2" class="loading-spinner">
+                    <svg-vue icon="spinner" class="mx-auto my-auto" width="100"/>
+                </div>
+
+            </b-modal>
+
 
         <!-- Modal with call information -->
-        <b-modal id="modal-info-calls" class="modal-info-calls" :title="modalTitle2" size="lg">
+        <b-modal id="modal-info-calls" class="modal-info-calls" :title="modalTitle2" size="lg" ok-only>
 
             <div v-if="!this.modal_agencia">
                 <p>Nom: {{this.name_call}}</p>
                 <label for="txtNotaComuna">Descripció:</label>
-                <textarea name="txtNotaComuna" id="txtNotaComuna" class="w-100" cols="30" rows="10" v-model="this.description_call"></textarea>
+                <textarea name="txtNotaComuna" id="txtNotaComuna" class="w-100 p-2" cols="30" rows="10" v-model="this.description_call" readonly></textarea>
             </div>
             <div v-else>
                 <p v-for="relacioAgencia in this.agencies_contactades" :key="relacioAgencia.agencia.id"> {{ relacioAgencia.agencia.nom }} </p>
             </div>
 
-            <div class="loading-spinner2">
-                <img
-                    v-show="isLoading3"
-                    src="/assets/img/spinner.svg"
-                    width="100"/>
+            <div v-if="this.isLoading3" class="loading-spinner">
+                <svg-vue icon="spinner" class="mx-auto my-auto" width="100"/>
             </div>
         </b-modal>
     </div>
@@ -164,12 +158,18 @@ export default {
             trucades: [],
             expedient_conditions: [],
             options: [],
-            expedientState: '',
             name_call: '',
             description_call: '',
             agencies_contactades: [],
             modal_agencia: true,
-            showTrucades: true
+            showTrucades: true,
+            expedient: {
+                id:'',
+                data_creacio:'',
+                data_ultima_modificacio: '',
+                estats_expedients_id: ''
+            },
+            newState:''
         }
     },
     computed: {
@@ -219,14 +219,14 @@ export default {
                 })
                 .finally(() => this.isLoading = false)
         },
-        getCalls(idExpedient, idEstatExpedient){
-            this.expedientState = idEstatExpedient;
+        loadModal(expedient){
+            this.expedient = expedient;
             this.showTrucades = true;
             this.isLoading2 = true;
             let me = this;
 
             axios
-                .get('/api/cartestrucades/list/' + idExpedient + '?id_rol=' + this.user.perfils_id + '&id_user=' + this.user.id)
+                .get('/api/cartestrucades/list/' + this.expedient.id + '?id_rol=' + this.user.perfils_id + '&id_user=' + this.user.id)
                 .then(response =>{
                     me.trucades = response.data;
                     if(me.trucades.length == 0){
@@ -263,6 +263,19 @@ export default {
             this.isLoading3 = false;
             this.modal_agencia = true;
             this.modalTitle2 = "Agències contactades";
+        },
+        updateExpedient(){
+            axios
+                .post('/api/expedients/put/' + this.expedient.id + '?estat_exp=' + this.expedient.estats_expedients_id)
+                .catch(error => {
+                    console.log(error);
+                })
+        },
+        resetExpedient(){
+            expedient.id = '';
+            expedient.data_creacio = '';
+            expedient.data_ultima_modificacio = '';
+            expedient.estats_expedients_id = '';
         }
     }
 }
@@ -315,13 +328,6 @@ export default {
 }
 
 .loading-spinner{
-    width: 100%;
-    text-align: center;
-    justify-content: center;
-    margin-top: 150px;
-}
-
-.loading-spinner2{
     width: 100%;
     text-align: center;
     justify-content: center;
