@@ -44,7 +44,7 @@ class CartesTrucadesController extends Controller
                 ->get();
         }
 
-
+        
 
         return Cartes_trucadesResource::collection($trucades);
         // return response()->json(["id_rol" => $request->input("id_rol")]);

@@ -5,7 +5,7 @@
                 <!--PAnel filtrado-->
                 <b-card class="show-card">
                     <b-row class="text-center">
-                        <b-col cols="3">
+                        <b-col cols="1">
                             <b-button
                                 class="btn-sm btn-success"
                                 area-hidden="true"
@@ -20,51 +20,65 @@
                                 Afegir usuari
                             </b-button></b-col
                         >
-                        <b-col cols="3"> </b-col>
+                        <b-col cols="5"> </b-col>
                         <b-col cols="6">
                             <b-form inline>
+                                <label class="mr-sm-2" for="filtre-usuari"
+                                    >Usuari</label
+                                >
                                 <b-form-input
-                                    id="inline-form-input-name"
+                                    name="filtre-usuari"
+                                    v-model="filtro.usuario"
+                                    id="filtre-usuari"
                                     class="mb-2 mr-sm-2 mb-sm-0 form-control-sm"
                                     placeholder="Exemple: Francisco ..."
                                 ></b-form-input>
 
-                                <label
-                                    class="mr-sm-2"
-                                    for="inline-form-custom-select-pref"
+                                <label class="mr-sm-2" for="filtre-perfil"
                                     >Perfil</label
                                 >
                                 <b-form-select
+                                    id="filtre-perfil"
                                     size="sm"
-                                    id="inline-form-custom-select-pref"
+                                    v-model="filtro.perfil"
+                                    :options="optionsPerfil"
                                     class="mb-2 mr-sm-2 mb-sm-0"
-                                    :options="[
-                                        { text: 'Perfil', value: null },
-                                        'Operador',
-                                        'Supervisor',
-                                        'Administrador',
-                                    ]"
-                                    :value="null"
-                                ></b-form-select>
+                                >
+                                    <template #first>
+                                        <b-form-select-option
+                                            :value="null"
+                                            disabled
+                                            >-- Seleccioni un perfil
+                                            --</b-form-select-option
+                                        >
+                                    </template>
+                                </b-form-select>
 
-                                <label
-                                    class="mr-sm-2"
-                                    for="inline-form-custom-select-pref"
-                                    >Actiu</label
+                                <label class="mr-sm-2" for="filtre-estat"
+                                    >Estat</label
                                 >
                                 <b-form-select
                                     size="sm"
-                                    id="inline-form-custom-select-pref"
+                                    id="filtre-estat"
                                     class="mb-2 mr-sm-2 mb-sm-0"
-                                    :options="[
-                                        { text: 'Tots', value: null },
-                                        'Actius',
-                                        'Inactius',
-                                    ]"
+                                    :options="optionsEstat"
+                                    v-model="filtro.actiu"
                                     :value="null"
-                                ></b-form-select>
+                                >
+                                    <template #first>
+                                        <b-form-select-option
+                                            :value="null"
+                                            disabled
+                                            >-- Seleccioni l'estat
+                                            --</b-form-select-option
+                                        >
+                                    </template>
+                                </b-form-select>
 
-                                <b-button variant="info" class="btn-sm"
+                                <b-button
+                                    variant="info"
+                                    class="btn-sm"
+                                    @click="filtrar"
                                     ><i class="fa-solid fa-filter"></i>
                                     Filtrar</b-button
                                 >
@@ -76,6 +90,10 @@
                                     <i class="fa-solid fa-magnifying-glass"></i>
                                     Mostrar tots</b-button
                                 >
+
+                                <template>
+                                    <div></div>
+                                </template>
                             </b-form>
                         </b-col>
                     </b-row>
@@ -152,21 +170,21 @@
                 </div>
 
                 <pagination
+                    v-show="!isLoading"
                     class="justify-center-center pagination-sm"
                     :data="usuaris"
                     @pagination-change-page="fetchUsuaris"
                 >
                 </pagination>
-                 <!--CARGA-->
-            <div class="centrar-carga">
-                <img
-                    v-show="isLoading"
-                    src="/assets/img/spinner.svg"
-                    width="100"
-                />
-            </div>
+                <!--CARGA-->
+                <div class="centrar-carga">
+                    <img
+                        v-show="isLoading"
+                        src="/assets/img/spinner.svg"
+                        width="100"
+                    />
+                </div>
             </b-card>
-
         </div>
 
         <!-- MODAL USUARIO-->
@@ -191,7 +209,12 @@
                         type="submit"
                         :disabled="disabled_ok_button_modal"
                     >
-                        {{ save_button_title }}
+                        <span v-show="isLoadingButton">
+                            <svg-vue icon="spinner" width="20" /> Guardant
+                        </span>
+                        <span v-show="!isLoadingButton">
+                            {{ save_button_title }}</span
+                        >
                     </b-button>
                     <b-button
                         @click="cancel()"
@@ -409,6 +432,11 @@ export default {
                 perfils_id: "1",
                 actiu: "1",
             },
+            filtro: {
+                usuario: "",
+                perfil: "",
+                actiu: "",
+            },
             showPassword: false,
             repetirContrassenya: "",
             fields: [
@@ -467,9 +495,9 @@ export default {
             showErrorModal: false,
             save_button_title: "Guardar",
             optionsPerfil: [
-                { text: "Operador", value: 1 },
-                { text: "Supervisor", value: 2 },
-                { text: "Administrador", value: 3 },
+                { text: "Operador 112", value: 1 },
+                { text: "Supervisor 112 ", value: 2 },
+                { text: "Administrador Sistema", value: 3 },
             ],
             optionsEstat: [
                 { text: "Actiu", value: "1" },
@@ -481,6 +509,7 @@ export default {
             msgError: "",
             msgInfo: "",
             btnClassForm: "",
+            isLoadingButton: false,
         };
     },
     methods: {
@@ -495,7 +524,11 @@ export default {
             this.repetirContrassenya = "";
         },
         selectUsuaris() {
+            this.filtro.usuario = "";
+            this.filtro.perfil = "";
+            this.filtro.actiu = "";
             this.isLoading = true;
+
             let me = this;
             axios
                 .get("/api/users/")
@@ -522,45 +555,120 @@ export default {
             let me = this;
 
             switch (this.opcionModal) {
-                case 1:
+                /*CREATE*/ case 1:
+                    this.isLoadingButton = true;
+                    this.disabled_ok_button_modal = true;
                     if (me.repetirContrassenya !== me.usuari.contrassenya) {
                         me.msgError =
                             "Les contrasenyes no coincideixen i no poden estar buides";
                         me.repetirContrassenya = "";
+                        me.usuari.contrassenya = "";
+                        this.disabled_ok_button_modal = false;
+                        this.isLoadingButton = false;
                     } else {
                         console.log(me.usuari.actiu);
                         axios
                             .post("/api/users/", me.usuari)
                             .then(function (response) {
-                                console.log(response);
                                 me.selectUsuaris();
                                 me.msgError = "";
                                 me.msgInfo =
                                     "Usuari " +
                                     me.usuari.usuari +
                                     " afegit correctament";
-                                console.log(me.msgInfo);
-
                                 me.$bvModal.hide("modal-usuari");
                             })
                             .catch(function (error) {
-                                console.log(error.status);
-                                console.log(error.response.data);
-                                me.msgError = error.response.data.error;
+                                /*Si el codigo es 1062 es que el registro esta duplicado*/
+                                if (error.response.data.error[1] === 1062) {
+                                    me.usuari.usuari = "";
+                                }
+                                if (error.response.data.error[1] === 2) {
+                                    me.msgError =
+                                        "Error conexio amb el servidor";
+                                }
+                                me.msgError = error.response.data.error[0];
                                 me.msgInfo = "";
-                                console.log = msgError;
+                            })
+                            .finally(() => {
+                                me.isLoadingButton = false;
+                                me.disabled_ok_button_modal = false;
                             });
                     }
-
                     break;
-                case 2:
-                    console.table(this.usuari);
-                    console.log("modificando usuario");
-                    me.$bvModal.hide("modal-usuari");
+                /*UPDATE*/ case 2:
+                    this.isLoadingButton = true;
+                    this.disabled_ok_button_modal = true;
+                    axios
+                        .post(
+                            `/api/users/put/update/${this.usuari.id}`,
+                            this.usuari
+                        )
+                        .then((response) => {
+                            if (response.status === 201) {
+                                me.save_button_title = "Editar";
+                                me.fetchUsuaris();
+                                me.msgInfo =
+                                    "Usuari " +
+                                    me.usuari.usuari +
+                                    " editat correctament";
+                                me.$bvModal.hide("modal-usuari");
+                            }
+                        })
+                        .catch((error) => {
+                            me.msgError = error.response.data.error[0];
+                            me.msgInfo = "";
+                            /*Si el codigo es 1062 es que el registro esta duplicado*/
+                            if (error.response.data.error[1] === 1062) {
+                                me.usuari.usuari = "";
+                            }
+                            if (error.response.data.error[1] === 2) {
+                                me.msgError = "Error conexio amb el servidor";
+                            }
+                        })
+                        .finally(() => {
+                            me.isLoadingButton = false;
+                            me.disabled_ok_button_modal = false;
+                        });
                     break;
-                case 3:
-                    console.log("cambiando contrasenya");
-                    me.$bvModal.hide("modal-usuari");
+                /*CREATE PASSWORD*/ case 3:
+                    this.isLoadingButton = true;
+                    this.disabled_ok_button_modal = true;
+                    if (me.repetirContrassenya !== me.usuari.contrassenya) {
+                        me.msgError =
+                            "Les contrasenyes no coincideixen i no poden estar buides";
+                        me.repetirContrassenya = "";
+                        me.usuari.contrassenya = "";
+                        this.disabled_ok_button_modal = false;
+                        this.isLoadingButton = false;
+                    } else {
+                        axios
+                            .post(
+                                `/api/users/put/updatePassword/${this.usuari.id}`,
+                                this.usuari
+                            )
+                            .then((response) => {
+                                me.save_button_title = "Editar";
+                                me.fetchUsuaris();
+                                me.msgInfo =
+                                    "Usuari " +
+                                    me.usuari.usuari +
+                                    " , contrasenya editada correctament";
+                                me.$bvModal.hide("modal-usuari");
+                            })
+                            .catch((error) => {
+                                me.msgError = error.response.data.error;
+                                me.msgInfo = "";
+                                if (error.response.data.error[1] === 2) {
+                                    me.msgError =
+                                        "Error conexio amb el servidor";
+                                }
+                            })
+                            .finally(() => {
+                                me.isLoadingButton = false;
+                                me.disabled_ok_button_modal = false;
+                            });
+                    }
                     break;
             }
         },
@@ -579,6 +687,7 @@ export default {
             this.showErrorModal = false;
         },
         colorCabezalCrearUsuari() {
+            this.repetirContrassenya = "";
             this.colorCabezal = "header-class-nou-usuari";
             this.iconoModal = "fas fa-user-circle";
             this.save_button_title = "Crear usuari";
@@ -590,6 +699,7 @@ export default {
             console.log(this.usuari);
         },
         colorCabezalEditarUsuari() {
+            this.repetirContrassenya = "";
             this.colorCabezal = "header-class-editar-usuari";
             this.iconoModal = "fas fa-edit";
             this.save_button_title = "Modificar usuari";
@@ -601,6 +711,7 @@ export default {
             console.log(this.usuari);
         },
         colorCabezalEditarContrasenya() {
+            this.repetirContrassenya = "";
             this.colorCabezal = "header-class-editar-contrasenya";
             this.iconoModal = "fa-solid fa-key";
             this.save_button_title = "Cambiar contrasenya usuari";
@@ -629,6 +740,23 @@ export default {
                 })
                 .finally(() => {
                     _this.isLoading = false;
+                });
+        },
+        filtrar() {
+            //JSON.stringify({filtroUsuario:this.filtro.usuario})
+            let consulta = new URLSearchParams({
+                filtroUsuario: this.filtro.usuario,
+                filtroPerfil: this.filtro.perfil,
+                filtroActivo: this.filtro.actiu,
+            });
+            let me = this;
+            axios
+                .get("/api/users?" + consulta)
+                .then((response) => {
+                    me.usuaris = response.data;
+                })
+                .catch((error) => {
+                    console.log(error);
                 });
         },
     },
@@ -663,10 +791,11 @@ export default {
 </script>
 
 <style scoped>
-.show-card{
- background-color: white;
-  border: 1px;
-  box-shadow: 0px 5px 25px 0px rgb(0 0 0 / 20%);}
+.show-card {
+    background-color: white;
+    border: 1px;
+    box-shadow: 0px 5px 25px 0px rgb(0 0 0 / 20%);
+}
 .botones {
     margin-bottom: 20px;
 }
@@ -674,7 +803,6 @@ export default {
     width: 100%;
     text-align: center;
     justify-content: center;
-
 }
 .principal {
     padding: 15px;

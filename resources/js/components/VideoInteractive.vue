@@ -1,162 +1,201 @@
 <template>
-    <b-modal ref="modal" @shown="onShownModal" centered hide-footer title="Video interactiu" size="lg" modal-class="zoominout">
-        <video ref="video" class="w-100" src="/assets/video/video-interactive.mp4" type="video/mp4">
+    <b-modal
+        ref="modal"
+        centered
+        title="Video interactiu"
+        size="lg"
+        modal-class="zoominout"
+    >
+        <video
+            id="video-interactive"
+            ref="video"
+            class="w-100"
+            src="/assets/video/video-interactive.mp4"
+         
+            @loadeddata="onVideoLoaded"
+            loop
+        >
             El teu navegador no suporta el video.
         </video>
-        <div class="d-flex align-items-end">
-            <b-button variant="primary" @click="playPauseVideo">
-                <i :class="'fa-solid fa-fw fa-' + (isPlaying ? 'pause' : 'play')"></i>
-            </b-button>
-            <div class="range-wrap">
-                <div class="range-value" id="rangeV"></div>
-                <b-form-input id="rangeVideo" @input="setBubble" type="range" class="ml-2" step="1" value="0" min="0" :max="duration.totalSeconds"></b-form-input>
+        <template #modal-footer>
+            <div class="d-flex justify-content-center w-100">
+                <b-button variant="primary" @click="playPauseVideo" :disabled="isVideoLoaded ? false : true">
+                    <i
+                        :class="
+                            'fa-solid fa-fw fa-' +
+                            (isPlaying ? 'pause' : 'play')
+                        "
+                    ></i>
+                </b-button>
+                <div class="range-wrap pl-3">
+                    <div class="range-value"><span id="valueBubble">00:00</span></div>
+                    <b-form-input
+                        id="rangeVideo"
+                        @input="setBubble"
+                        type="range"
+                        step="1"
+                        value="0"
+                        min="0"
+                        :max="totalDurationInSeconds"
+                        :disabled="isVideoLoaded ? false : true"
+                    ></b-form-input>
+                </div>
             </div>
-        </div>
+        </template>
     </b-modal>
 </template>
 
 <script>
 export default {
-    mounted() {
-        const allRanges = document.querySelectorAll(".range-wrap");
-        allRanges.forEach(wrap => {
-            const range = wrap.querySelector(".range");
-            const bubble = wrap.querySelector(".bubble");
-
-            range.addEventListener("input", () => {
-                setBubble(range, bubble);
-            });
-            setBubble(range, bubble);
-        });
-
-        function setBubble(range, bubble) {
-
-        }
-    },
+    mounted() {},
     data() {
         return {
             isPlaying: false,
-            duration: {
+            totalDurationInSeconds: 0,
+            currentDuration: {
                 seconds: 0,
                 minutes: 0,
-                totalSeconds: 0
-            }
+            },
+            isVideoLoaded: false
         };
     },
     methods: {
-        onShownModal() {
-            let duration = this.$refs.video.duration;
-
-            this.duration.totalSeconds = duration;
-            this.duration.seconds = duration % 60;
-            this.duration.minutes = parseInt(duration / 60, 10);
-        },
         openModal() {
             this.$refs.modal.show();
         },
         playPauseVideo() {
-            if (!this.isPlaying)
-            {
-                this.$refs.video.play();
-                this.isPlaying = true;
-            }
-            else
-            {
-                this.$refs.video.pause();
-                this.isPlaying = false;
+            if (this.isVideoLoaded) {
+                if (!this.isPlaying) {
+                    this.$refs.video.play();
+                    this.isPlaying = true;
+                } else {
+                    this.$refs.video.pause();
+                    this.isPlaying = false;
+                }
             }
         },
-        setBubble(e) {
-            console.log(e.currentTarget);
-            
-            const range = e.currentTarget;
-            const bubble = range.querySelector('.bubble');
+        onVideoLoaded() {
+            console.log('Video loaded.');
 
-            const val = range.value;
-            const min = range.min ? range.min : 0;
-            const max = range.max ? range.max : 100;
-            const newVal = Number(((val - min) * 100) / (max - min));
-            bubble.innerHTML = val;
+            this.isVideoLoaded = true;
 
-            // Sorta magic numbers based on size of the native UI thumb
-            bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
-        }
-    }
-}
+            this.totalDurationInSeconds = this.$refs.video.duration;
+
+            this.$refs.video.currentTime = 60;
+            this.$refs.video.play();
+
+            //this.setBubble();
+        },
+        setBubble() {
+            const range = document.querySelector("#rangeVideo");
+            const bubble = document.querySelector("#valueBubble");
+
+            if (this.isVideoLoaded) {
+                const currentTimeInSeconds = range.value;
+                const minValue = range.min ? range.min : 0;
+                const maxValue = range.max ? range.max : 100;
+                const newValue = Number(((currentTimeInSeconds - minValue) * 100) / (maxValue - minValue));
+                const newPosition = 10 - (newValue * 0.2);
+
+                this.currentDuration.seconds = currentTimeInSeconds % 60;
+                this.currentDuration.minutes = parseInt(currentTimeInSeconds / 60, 10);
+
+                const numberFormatterTwoDigits = {
+                    minimumIntegerDigits: 2,
+                    useGrouping: false
+                };
+
+                bubble.innerText = `${this.currentDuration.minutes.toLocaleString('en-US', numberFormatterTwoDigits)}:${this.currentDuration.seconds.toLocaleString('en-US', numberFormatterTwoDigits)}`;
+                bubble.style.left = `calc(${newValue}% + (${newPosition - 17}px))`;
+
+                console.log(currentTimeInSeconds);
+
+                //this.$refs.video.play();
+            }
+        },
+    },
+};
 </script>
 
 <style scope>
-input[type=range] {
-  -webkit-appearance: none;
-  width: 100%;
+input[type="range"] {
+    -webkit-appearance: none;
+
+    width: 100%;
 }
-input[type=range]:focus {
-  outline: none;
+input[type="range"]:focus {
+    outline: none;
 }
-input[type=range]::-webkit-slider-runnable-track {
-  width: 100%;
-  height: 4px;
-  cursor: pointer;
-  animate: 0.2s;
-  background: #03a9f4;
-  border-radius: 25px;
+
+input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    animation: 0.2s;
+    background: #03a9f4;
+    border-radius: 25px;
 }
-input[type=range]::-webkit-slider-thumb {
-  height: 20px;
-  width: 20px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 4px 0 rgba(0,0,0, 1);
-  cursor: pointer;
-  -webkit-appearance: none;
-  margin-top: -8px;
+
+input[type="range"]::-webkit-slider-thumb {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 1);
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -8px;
 }
-input[type=range]:focus::-webkit-slider-runnable-track {
-  background: #03a9f4;
+input[type="range"]:focus::-webkit-slider-runnable-track {
+    background: #03a9f4;
 }
-.range-wrap{
-  width: 100%;
+
+.range-wrap {
+    width: 100%;
 }
-.range-value{
-  position: absolute;
-  top: -50%;
+
+.range-value {
+    position: relative;
+    top: -5%;
 }
-.range-value span{
-  width: 30px;
-  height: 24px;
-  line-height: 24px;
-  text-align: center;
-  background: #03a9f4;
-  color: #fff;
-  font-size: 12px;
-  display: block;
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, 0);
-  border-radius: 6px;
+
+.range-value span {
+    width: 35px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    background: #03a9f4;
+    color: #fff;
+    font-size: 12px;
+    display: block;
+    left: -0.9%;
+    top: -5px;
+    position: relative;
+    border-radius: 6px;
 }
-.range-value span:before{
-  content: "";
-  position: absolute;
-  width: 0;
-  height: 0;
-  border-top: 10px solid #03a9f4;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  top: 100%;
-  left: 50%;
-  margin-left: -5px;
-  margin-top: -1px;
+
+.range-value span:before {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 10px solid #03a9f4;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    margin-top: -1px;
 }
 
 .zoominout {
     transform: scale(0);
-    transition: all .4s ease-in-out;
+    transition: all 0.4s ease-in-out;
     display: block !important;
 }
 
 .zoominout.show {
     transform: scale(1);
-    transition: all .4s ease-in-out;
+    transition: all 0.4s ease-in-out;
 }
 </style>
