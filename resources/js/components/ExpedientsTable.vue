@@ -17,10 +17,7 @@
         </b-card>
 
         <div class="loading-spinner">
-            <img
-                v-show="isLoading"
-                src="/assets/img/spinner.svg"
-                width="100"/>
+            <svg-vue v-show="isLoading" icon="spinner" class="mx-auto my-auto" width="100"/>
         </div>
 
         <!-- Modal -->

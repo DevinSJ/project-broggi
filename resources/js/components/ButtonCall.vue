@@ -1,61 +1,93 @@
 <template>
-  <div class="col-12 d-flex">
-        <div class="col-8">
-        <b-card class="" :class="checkboxValue ? 'show-card' : 'hide-card'">
-            <b-card-body>
-            <nav class="menu">
-                <input
-                type="checkbox"
-                v-model="checkboxValue"
-                class="menu-open"
-                name="menu-open"
-                id="menu-open"
-                />
+  <div class="row">
+    <div class="col-lg-8 p-2">
+      <b-card class="" :class="checkboxValue ? 'show-card' : 'hide-card'">
+        <b-card-body>
+          <nav class="menu">
+            <input
+              type="checkbox"
+              v-model="checkboxValue"
+              class="menu-open"
+              name="menu-open"
+              id="menu-open"
+            />
 
-                <label
-                class="menu-open-button"
-                for="menu-open"
-                id="text-call"
-                @click="!checkboxValue ? start() : stop()"
-                >
-                <i
-                    :class="
-                    'fas ' +
-                    (!checkboxValue ? 'fa-phone mr-1' : 'fa-phone-slash mr-1')
-                    "
-                ></i>
-                {{ !checkboxValue ? "Iniciar trucada" : "Finalitzar trucada" }}
-                </label>
-                <div class="form-floating user-select-none menu-item">
-                <b-form-input
-                    class="input-phone"
-                    type="number"
-                    name=""
-                    id="input-phone"
-                    placeholder="Nº telèfon"
-                />
-                <label class="user-select-none" for="input-phone"
-                    >Nº telèfon</label
-                >
-                </div>
-                <div class="form-floating user-select-none menu-item m-top">
-                <p class="m4">{{ time }}</p>
-                </div>
-            </nav>
-            <div class="row">
-                <div class="col">
-                <form-call v-show="checkboxValue == true"></form-call>
-                </div>
+            <label
+              class="menu-open-button"
+              for="menu-open"
+              id="text-call"
+              @click="!checkboxValue ? start() : stop()"
+            >
+              <i
+                :class="
+                  'fas ' +
+                  (!checkboxValue ? 'fa-phone mr-1' : 'fa-phone-slash mr-1')
+                "
+              ></i>
+              {{ !checkboxValue ? "Iniciar trucada" : "Finalitzar trucada" }}
+            </label>
+            <div class="form-floating user-select-none menu-item">
+              <b-form-input
+                class="input-phone"
+                type="number"
+                name=""
+                id="input-phone"
+                placeholder="Nº telèfon"
+              />
+              <label class="user-select-none" for="input-phone"
+                >Nº telèfon
+              </label>
             </div>
-            </b-card-body>
-        </b-card>
-        </div>
 
-        <div class="col-4">
-            <b-card class="" :class="checkboxValue ? 'show-card' : 'hide-card'">
-                <expedients-call v-show="checkboxValue == true"></expedients-call>
-            </b-card>
-        </div>
+            <div class="form-floating user-select-none menu-item">
+              <b-form-input
+                class="input-phone"
+                type="text"
+                name=""
+                id="input-code"
+                placeholder="Codi de trucada"
+                v-model="codigo"
+                disabled
+              />
+              <label class="user-select-none" for="input-phone"
+                >Codi de trucada
+              </label>
+            </div>
+
+            <div class="form-floating user-select-none menu-item m-top">
+              <p class="m4">{{ time }}</p>
+            </div>
+            <div class="form-floating user-select-none menu-item">
+              <b-form-input
+                class="input-phone"
+                type="text"
+                name=""
+                id="input-date"
+                placeholder="Inici de turcada"
+                v-model="dateTime"
+                disabled
+              />
+              <label class="user-select-none" for="input-date"
+                >Inici de turcada
+              </label>
+            </div>
+          </nav>
+          <div class="row">
+            <div class="col">
+              <form-call
+                v-show="checkboxValue == true"
+                :checkOpen="checkboxValue"
+              ></form-call>
+            </div>
+          </div>
+        </b-card-body>
+      </b-card>
+    </div>
+    <div class="col-lg-4 p-2">
+      <b-card :class="checkboxValue ? 'show-card' : 'hide-card'">
+        <expedients-call v-show="checkboxValue"></expedients-call>
+      </b-card>
+    </div>
   </div>
 </template>
 
@@ -80,6 +112,8 @@ export default {
       timeBegan: null,
       timeStopped: null,
       stoppedDuration: 0,
+      dateTime: '',
+      codigo: "LLA4545",
     };
   },
   methods: {
@@ -98,6 +132,8 @@ export default {
       }
       this.started = setInterval(this.clockRunning, 10);
       this.running = true;
+
+      this.getDateTime();
     },
     stop() {
       this.running = false;
@@ -142,11 +178,18 @@ export default {
       }
       return (zero + num).slice(-digit);
     },
+    getDateTime() {
+      let today = new Date().toISOString().split('T')[0];
+      this.dateTime = today + '      ' + new Date().toLocaleTimeString();
+    },
   },
 };
 </script>
 
 <style scoped>
+.card, .card-body {
+    height: 100% !important;
+}
 a {
   color: inherit;
 }
@@ -198,20 +241,20 @@ h1 {
 .menu-open {
   display: none;
 }
-.menu-open:checked + .menu-open-button .hamburger-1 {
-  transform: translate3d(0, 0, 0) rotate(45deg);
-}
-.menu-open:checked + .menu-open-button .hamburger-2 {
-  transform: translate3d(0, 0, 0) scale(0.1, 1);
-}
-.menu-open:checked + .menu-open-button .hamburger-3 {
-  transform: translate3d(0, 0, 0) rotate(-45deg);
-}
+
 .menu-item:nth-child(3) {
   transition-duration: 180ms;
   opacity: 0;
 }
 .menu-item:nth-child(4) {
+  transition-duration: 180ms;
+  opacity: 0;
+}
+.menu-item:nth-child(5) {
+  transition-duration: 180ms;
+  opacity: 0;
+}
+.menu-item:nth-child(6) {
   transition-duration: 180ms;
   opacity: 0;
 }
@@ -245,9 +288,22 @@ h1 {
   transform: translate3d(430px, 0, 0);
   opacity: 1;
 }
+.menu-open:checked ~ .menu-item:nth-child(5) {
+  transition-duration: 390ms;
+  transform: translate3d(1000px, 0, 0);
+  opacity: 1;
+}
+.menu-open:checked ~ .menu-item:nth-child(6) {
+  transition-duration: 390ms;
+  transform: translate3d(700px, 0, 0);
+  opacity: 1;
+}
 .input-phone {
   height: 10px !important;
   border: 0px;
+}
+.input-code {
+  background-color: white;
 }
 .input-phone::-webkit-outer-spin-button,
 .input-phone::-webkit-inner-spin-button {
@@ -277,6 +333,6 @@ h1 {
   width: 60%;
 }
 .w-card2 {
-    width: 40%;
+  width: 40%;
 }
 </style>
