@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Class\Utilitat;
+use App\Utilities\DBUtility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -69,7 +69,7 @@ class CartesTrucadesHasAgenciesController extends Controller
                         ->setStatusCode(201);
 
         } catch (QueryException $ex) {
-            $missatge = Utilitat::errorMessage($ex);
+            $missatge = DBUtility::getPDOErrorMessage($ex);
             $response = \response()
                         ->json(['error' => $missatge], 400);
         }
