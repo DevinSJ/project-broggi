@@ -33,7 +33,6 @@
     <!-- Modal -->
     <b-modal
       id="modal-calls"
-      class="modal-calls"
       title="Dades de la trucada"
       size="huge"
       ok-only
@@ -47,12 +46,14 @@
                   id="input-group-2"
                   label="Codi trucada:"
                   label-for="input-2"
+                  label-class="font-weight-bold"
                 >
                   <b-form-input
                     id="input-2"
                     v-model="call.codi_trucada"
                     disabled
                     required
+                    plaintext
                   ></b-form-input>
                 </b-form-group>
               </div>
@@ -61,12 +62,13 @@
                   id="input-group-2"
                   label="Duració de trucada:"
                   label-for="input-2"
+                  label-class="font-weight-bold"
                 >
                   <b-form-input
                     id="input-2"
                     v-model="call.temps_trucada"
                     disabled
-                    required
+                    plaintext
                   ></b-form-input>
                 </b-form-group>
               </div>
@@ -75,12 +77,13 @@
                   id="input-group-2"
                   label="Data de la trucada:"
                   label-for="input-2"
+                  label-class="font-weight-bold"
                 >
                   <b-form-input
                     id="input-2"
                     v-model="call.data_hora"
                     disabled
-                    required
+                    plaintext
                   ></b-form-input>
                 </b-form-group>
               </div>
@@ -89,12 +92,13 @@
                   id="input-group-2"
                   label="Nom:"
                   label-for="input-2"
+                  label-class="font-weight-bold"
                 >
                   <b-form-input
                     id="input-2"
                     v-model="call.nom_trucada"
                     disabled
-                    required
+                    plaintext
                   ></b-form-input>
                 </b-form-group>
               </div>
@@ -104,14 +108,18 @@
                 <b-form-textarea
                   id="description"
                   v-model="call.nota_comuna_descripcio"
-                  class="mt-3 h-150"
+                  class="mt-3 h-100 text-area-disabled"
                   type="text"
-                  required
-                  disabled
                   rows="5"
+                  no-auto-shrink
+                  no-resize
+                  disabled
                 />
-                <label class="user-select-none" for="input-relation">
-                  Descripció incident
+                <label
+                  class="user-select-none font-weight-bold"
+                  for="input-relation"
+                >
+                  Descripció de l'incident
                 </label>
               </div>
             </div>
@@ -124,11 +132,13 @@
                   id="input-group-2"
                   label="Provincia:"
                   label-for="input-2"
+                  label-class="font-weight-bold"
                 >
                   <b-form-input
                     id="input-2"
                     v-model="call.provincia.nom"
                     disabled
+                    plaintext
                   ></b-form-input>
                 </b-form-group>
               </div>
@@ -137,11 +147,13 @@
                   id="input-group-2"
                   label="Comarca:"
                   label-for="input-2"
+                  label-class="font-weight-bold"
                 >
                   <b-form-input
                     id="input-2"
                     v-model="call.municipi.comarca.nom"
                     disabled
+                    plaintext
                   ></b-form-input>
                 </b-form-group>
               </div>
@@ -150,12 +162,13 @@
                   id="input-group-2"
                   label="Municipi:"
                   label-for="input-2"
+                  label-class="font-weight-bold"
                 >
                   <b-form-input
                     id="input-2"
                     v-model="call.municipi.nom"
                     disabled
-                    required
+                    plaintext
                   ></b-form-input>
                 </b-form-group>
               </div>
@@ -164,36 +177,99 @@
                   id="input-group-2"
                   label="Tipus de localització:"
                   label-for="input-2"
+                  label-class="font-weight-bold"
                 >
                   <b-form-input
                     id="input-2"
                     v-model="call.tipo_localitzacio.tipus"
                     disabled
-                    required
+                    plaintext
                   ></b-form-input>
                 </b-form-group>
               </div>
             </div>
             <div class="col-12 p-0">
-              <div class="form-floating user-select-none">
-                <b-form-textarea
-                  id="description"
-                  v-model="call.descripcio_localitzacio"
-                  class="mt-3 h-150"
-                  type="text"
-                  required
-                  disabled
-                  rows="5"
-                />
-                <label class="user-select-none" for="input-relation">
-                  Informació rellevant de la localització
-                </label>
+              <b-form-group
+                  id="input-group-2"
+                  label="Adreça de la trucada:"
+                  label-for="input-2"
+                  label-class="font-weight-bold"
+                >
+                  <b-form-input
+                    id="input-2"
+                    v-model="call.adreca_trucada"
+                    disabled
+                    plaintext
+                  ></b-form-input>
+                </b-form-group>
+            </div>
+            <div class="col-12 p-0">
+              <b-form-group
+                  id="input-group-2"
+                  label="Informació rellevant de la localització:"
+                  label-for="input-2"
+                  label-class="font-weight-bold"
+                >
+                  <b-form-input
+                    id="input-2"
+                    v-model="call.descripcio_localitzacio"
+                    disabled
+                    plaintext
+                  ></b-form-input>
+                </b-form-group>
+            </div>
+          </b-tab>
+          <b-tab title="Tipificació de l'emergència">
+            <div class="col-12 row mt-3 justify-content-between">
+              <div class="col-3">
+                <b-form-group
+                  id="input-group-2"
+                  label="Tipus d'incident:"
+                  label-for="input-2"
+                  label-class="font-weight-bold"
+                >
+                  <b-form-input
+                    id="input-2"
+                    v-model="call.incident.tipo_incident.descripcio"
+                    disabled
+                    plaintext
+                  ></b-form-input>
+                </b-form-group>
+              </div>
+              <div class="col-4">
+                <b-form-group
+                  id="input-group-2"
+                  label="Incident:"
+                  label-for="input-2"
+                  label-class="font-weight-bold"
+                >
+                  <b-form-input
+                    id="input-2"
+                    v-model="call.incident.descripcio"
+                    disabled
+                    plaintext
+                  ></b-form-input>
+                </b-form-group>
+              </div>
+              <div class="col-5">
+                <b-form-group
+                  id="input-group-2"
+                  label="Agència/es associades:"
+                  label-for="input-2"
+                  label-class="font-weight-bold"
+                >
+                  <b-form-input
+                    v-for="agencia in call.cartes_trucades_has_agencies"
+                    :key="agencia.agencia.id"
+                    id="input-2"
+                    v-model="agencia.agencia.nom"
+                    disabled
+                    plaintext
+                  ></b-form-input>
+                </b-form-group>
               </div>
             </div>
           </b-tab>
-          <b-tab title="Dades de l'incident"
-            ><p>Tab amb les dades generals de la trucada</p></b-tab
-          >
         </b-tabs>
       </div>
     </b-modal>
@@ -248,13 +324,15 @@ export default {
       ],
       calls: {},
       call: {
-          provincia: '',
-          municipi: {
-              comarca: {}
-          },
-          tipo_localitzacio: ''
+        provincia: "",
+        municipi: {
+          comarca: {},
+        },
+        tipo_localitzacio: "",
+        incident:{
+            tipo_incident:{},
+        },
       },
-
     };
   },
   methods: {
@@ -345,7 +423,7 @@ export default {
 @media (min-width: 992px) {
   ::v-deep .modal .modal-huge {
     max-width: 90% !important;
-    width: 90% !important;
+    width: 70% !important;
   }
 }
 
@@ -403,4 +481,9 @@ export default {
   color: black !important;
   box-shadow: 0 0 0 0.1rem black !important;
 }
+
+::v-deep .text-area-disabled:disabled {
+  background: white;
+}
+
 </style>

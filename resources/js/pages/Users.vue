@@ -842,11 +842,11 @@ export default {
 }
 
 .column-boton-afegir{
-text-align: start;
+text-align: flex-start;
 }
 .column-botons-filtrar{
-text-align: end;
-justify-content: end;
+text-align: flex-end;
+justify-content: flex-end;
 align-items: flex-end;
 display: flex;
 }

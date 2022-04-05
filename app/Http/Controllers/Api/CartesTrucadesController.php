@@ -16,7 +16,7 @@ class CartesTrucadesController extends Controller
      */
     public function index()
     {
-        $trucades = Cartes_trucades::with('cartes_trucades_has_agencies')
+        $trucades = Cartes_trucades::with('cartes_trucades_has_agencies.agencia')
                                     ->with('usuari')
                                     ->with('tipo_localitzacio')
                                     ->with('expedient')
@@ -24,7 +24,7 @@ class CartesTrucadesController extends Controller
                                     ->with('provincia')
                                     ->with('municipi.comarca')
                                     ->with('municipi_trucada')
-                                    ->with('incident')
+                                    ->with('incident.tipo_incident')
                                     ->get();
 
 
