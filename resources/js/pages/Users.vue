@@ -177,11 +177,7 @@
                 </pagination>
                 <!--CARGA-->
                 <div class="centrar-carga">
-                    <svg-vue
-                        v-show="isLoading"
-                        icon="spinner"
-                        width="100"
-                    />
+                    <svg-vue v-show="isLoading" icon="spinner" width="100" />
                 </div>
             </b-card>
         </div>
@@ -840,14 +836,13 @@ export default {
 ::v-deep .header-class-editar-contrasenya {
     background: rgb(218, 218, 218);
 }
-
-.column-boton-afegir{
-text-align: start;
+.column-boton-afegir {
+    text-align: flex-start;
 }
-.column-botons-filtrar{
-text-align: end;
-justify-content: end;
-align-items: flex-end;
-display: flex;
+.column-botons-filtrar {
+    text-align: flex-end;
+    justify-content: flex-end;
+    align-items: flex-end;
+    display: flex;
 }
 </style>

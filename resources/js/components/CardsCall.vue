@@ -1,27 +1,10 @@
 <template>
     <div class="row">
-        <div class="col-lg-8 p-2">
+        <div class="col-xl-9 p-2">
             <b-card class="hide">
                 <b-card-body>
                     <div class="row">
-                        <div class="col-md-3 my-1">
-                            <div class="form-floating user-select-none">
-                                <b-form-input
-                                    type="search"
-                                    id="input-phone"
-                                    v-model="phone"
-                                    :state="!isEmpty(phone)"
-                                    aria-describedby="input-phone-feedback"
-                                    placeholder="Nº telèfon"
-                                    required
-                                />
-                                <label class="user-select-none" for="input-phone">Nº telèfon</label>
-                                <b-form-invalid-feedback
-                                    id="input-phone-feedback"
-                                >Aquest camp es obligatori.</b-form-invalid-feedback>
-                            </div>
-                        </div>
-                        <div class="col-md-3 my-1">
+                        <div class="col-lg-4 my-1">
                             <div class="form-floating user-select-none">
                                 <b-form-input
                                     type="text"
@@ -33,7 +16,7 @@
                                 <label class="user-select-none" for="input-code">Codi de trucada</label>
                             </div>
                         </div>
-                        <div class="col-md-3 my-1">
+                        <div class="col-lg-4 my-1">
                             <div class="form-floating user-select-none">
                                 <b-form-input
                                     type="text"
@@ -48,7 +31,7 @@
                                 >Inici de trucada</label>
                             </div>
                         </div>
-                        <div class="col-md-3 my-1 text-center">
+                        <div class="col-lg-4 my-1 text-center">
                             <h5
                                 class="font-weight-bold user-select-none d-block"
                             >Duració de la trucada</h5>
@@ -64,9 +47,9 @@
                 </b-card-body>
             </b-card>
         </div>
-        <div class="col-lg-4 p-2">
+        <div class="col-xl-3 p-2">
             <b-card class="hide">
-                <!--<expedients-call v-show="checkboxValue"></expedients-call>-->
+                <expedients-call></expedients-call>
             </b-card>
         </div>
     </div>
@@ -74,10 +57,8 @@
 
 <script>
 import moment from 'moment';
-import InputAutocomplete from './InputAutocomplete.vue';
 
 export default {
-  components: { InputAutocomplete },
     mounted() {
         const cards = [...document.querySelectorAll(".card")];
 
@@ -95,7 +76,6 @@ export default {
     data() {
         return {
             crono: true,
-            phone: "",
             time: "00:00:00",
             running: false,
             intervalCrono: null,

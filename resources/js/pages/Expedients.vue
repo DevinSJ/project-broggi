@@ -11,12 +11,15 @@
             class="label-button-call user-select-none"
             for="input-button-call"
         >
-            <i :class="'fas ' + (!showCardsCall ? 'fa-phone mr-1' : 'fa-phone-slash mr-1')"></i>
-            {{
-                !showCardsCall ? "Iniciar trucada" : "Finalitzar trucada"
-            }}
+            <i
+                :class="
+                    'fas ' +
+                    (!showCardsCall ? 'fa-phone mr-1' : 'fa-phone-slash mr-1')
+                "
+            ></i>
+            {{ !showCardsCall ? "Iniciar trucada" : "Finalitzar trucada" }}
         </label>
-        <cards-call v-if="showCardsCall"/>
+        <cards-call v-if="showCardsCall" />
         <!-- <expedients-table /> -->
     </main>
 </template>
@@ -31,8 +34,8 @@ export default {
     methods: {
         toggleCardsCall() {
             this.showCardsCall = !this.showCardsCall;
-        }
-    }
+        },
+    },
 };
 </script>
 
