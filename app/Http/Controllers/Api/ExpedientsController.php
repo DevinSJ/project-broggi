@@ -16,9 +16,38 @@ class ExpedientsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $expedients = Expedients::with('cartes_trucades')->get();
+        $values = [];
+
+        if($request->input('filtreEstat1') == 'true'){
+            array_push($values, 1);
+        }
+        if($request->input('filtreEstat2') == 'true'){
+            array_push($values, 2);
+        }
+        if($request->input('filtreEstat3') == 'true'){
+            array_push($values, 3);
+        }
+        if($request->input('filtreEstat4') == 'true'){
+            array_push($values, 4);
+        }
+        if($request->input('filtreEstat5') == 'true'){
+            array_push($values, 5);
+        }
+
+        $query = Expedients::query();
+
+        if($request->input('filtreCodi')){
+            $query->where('codi', '=', $request->input('filtreCodi'));
+        }
+
+        if(count($values) > 0){
+            $query->whereIn('estats_expedients_id', $values);
+        }
+
+
+        $expedients = $query->paginate(10);
 
         return ExpedientsResource::collection($expedients);
     }
