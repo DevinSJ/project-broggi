@@ -1,5 +1,41 @@
 <template>
   <div>
+      <div class="mb-2">
+      <!--Panel filtrado-->
+      <b-card class="show-card" body-class="card_body">
+        <b-row class="text-center">
+          <b-col cols="3"> </b-col>
+          <b-col cols="9" class="col-filtrar">
+            <b-form inline class="justify-content-end">
+              <label class="mr-sm-2" for="filtre-codi">Codi de trucada</label>
+              <b-form-input
+                name="filtre-codi"
+                id="filtre-codi"
+                v-model="filtre.call_code"
+                class="mb-2 mr-sm-2 mb-sm-0 form-control-sm"
+                placeholder="Exemple: CA-..."
+              ></b-form-input>
+              <label class="mr-sm-2" for="filtre-codi">Codi de l'expedient</label>
+              <b-form-input
+                name="filtre-codi"
+                id="filtre-codi"
+                v-model="filtre.exp_code"
+                class="mb-2 mr-sm-2 mb-sm-0 form-control-sm"
+                placeholder="Exemple: EXP-..."
+              ></b-form-input>
+              <b-button variant="info" class="btn-sm"
+                ><i class="fa-solid fa-filter"></i> Filtrar</b-button
+              >
+              <b-button class="btn-sm" variant="secondary ml-2" @click="getCalls(false)">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                Mostrar tots</b-button
+              >
+            </b-form>
+          </b-col>
+        </b-row>
+      </b-card>
+    </div>
+
     <b-card class="p-3 card-container">
       <b-table
         v-if="!isLoading"
@@ -333,6 +369,10 @@ export default {
             tipo_incident:{},
         },
       },
+      filtre:{
+          call_code:'',
+          exp_code:''
+      }
     };
   },
   methods: {
