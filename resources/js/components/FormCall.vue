@@ -441,9 +441,7 @@ export default {
       let regions = this.regions;
 
       if (this.provinceSelected) {
-        regions = regions.filter(
-          (region) => region.provincies_id == this.provinceSelected
-        );
+        regions = regions.filter((region) => region.provincies_id == this.provinceSelected);
       }
 
       regions = regions.map((region) => {
