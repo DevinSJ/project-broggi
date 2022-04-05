@@ -122,3 +122,11 @@ button:focus {
     transition: all 0.4s ease-in-out;
 }
 /* ================================================================= */
+
+.vbt-autcomplete-list {
+    max-height: 350px;
+    overflow-y: auto;
+    padding-top: 5px;
+    position: absolute;
+    z-index: 999;
+}

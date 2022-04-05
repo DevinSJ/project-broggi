@@ -25,9 +25,7 @@
                         ><span class="desactivar-click">Expedients</span>
                     </router-link>
                     <router-link to="trucades">
-                        <i
-                            class="fa-solid fa-phone mr-2 desactivar-click"
-                        ></i
+                        <i class="fa-solid fa-phone mr-2 desactivar-click"></i
                         ><span class="desactivar-click">Trucades</span>
                     </router-link>
                     <router-link to="grafics">
@@ -37,19 +35,16 @@
                         ><span class="desactivar-click">Grafics</span>
                     </router-link>
                     <router-link to="usuaris">
-                        <i
-                            class="fa-solid fa-users mr-2 desactivar-click"
-                        ></i>
+                        <i class="fa-solid fa-users mr-2 desactivar-click"></i>
                         <span class="desactivar-click"
                             >Usuaris</span
                         ></router-link
                     >
+                    <!--
                     <router-link to="parametres">
-                        <i
-                            class="fa-solid fa-gear mr-2 desactivar-click"
-                        ></i
+                        <i class="fa-solid fa-gear mr-2 desactivar-click"></i
                         ><span class="desactivar-click">Paràmetres</span>
-                    </router-link>
+                    </router-link>-->
                 </div>
                 <!--CERRAR SESION-->
             </b-navbar-nav>
@@ -57,9 +52,7 @@
             <b-navbar-nav class="ml-auto">
                 <b-nav-item-dropdown class="ml-2" right>
                     <template #button-content>
-                        <em class="mr-2"
-                            >{{ user.cognoms }}, {{ user.nom }}</em
-                        >
+                        <em class="mr-2">{{ user.cognoms }}, {{ user.nom }}</em>
                     </template>
                     <b-dropdown-item href="#"
                         ><i class="fa-solid fa-address-card mr-2"></i
@@ -97,6 +90,7 @@ export default {
         function setActiveSlide(target) {
             var left = getLeftValue(target);
 
+            slide.style.display = "";
             slide.style.left = `${left}px`;
         }
 
@@ -107,7 +101,8 @@ export default {
             return targetLeft - topNavigationLeft;
         }
 
-        setActiveSlide(activeLink);
+        if (activeLink) setActiveSlide(activeLink);
+        else slide.style.display = "none";
     },
 };
 </script>
@@ -122,7 +117,6 @@ export default {
 .item-transition {
     transition: all 0.4s ease;
 }
-
 .top-navigation {
     padding: 0 1rem;
     border-radius: 0.75rem;
@@ -132,7 +126,6 @@ export default {
     box-shadow: 0px 15px 15px rgba (0, 0, 0, 0);
     position: relative;
 }
-
 .top-navigation a {
     padding: 1.5rem 1rem;
     display: inline-block;
@@ -141,17 +134,14 @@ export default {
     width: 180px;
     text-align: center;
 }
-
 .top-navigation a.active {
     color: #aa2727;
     font-weight: bold;
 }
-
 .top-navigation a:hover {
     background: #eef3f5;
     font-weight: bold;
 }
-
 .active-link {
     content: "";
     position: absolute;
@@ -163,7 +153,6 @@ export default {
     border-top-right-radius: 5px;
     border-top-left-radius: 5px;
 }
-
 .router-link-exact-active {
     font-weight: bold;
     font-size: 15px;
@@ -171,7 +160,6 @@ export default {
 .router-link-exact-active i {
     color: #06adc4;
 }
-
 .router-link-exact-active span {
     color: #06adc4;
 }

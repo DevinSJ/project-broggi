@@ -20,7 +20,11 @@
                     El teu navegador no suporta el video.
                 </video>
                 <div class="d-flex justify-content-center w-100 mt-2">
-                    <b-button variant="primary" @click="playPauseVideo" :disabled="isVideoLoaded ? false : true">
+                    <b-button
+                        variant="primary"
+                        @click="playPauseVideo"
+                        :disabled="isVideoLoaded ? false : true"
+                    >
                         <i
                             :class="
                                 'fa-solid fa-fw fa-' +
@@ -29,7 +33,9 @@
                         ></i>
                     </b-button>
                     <div class="range-wrap pl-3">
-                        <div class="range-value"><span ref="valueBubble">00:00</span></div>
+                        <div class="range-value">
+                            <span ref="valueBubble">00:00</span>
+                        </div>
                         <b-form-input
                             ref="rangeVideo"
                             @input="setBubble"
@@ -44,16 +50,36 @@
                 </div>
             </div>
             <div class="col-lg-5 p-2">
-                <b-list-group ref="listPartsVideo" v-if="!isLoading" class="listPartsVideo">
-                    <b-list-group-item :ref="`partVideo${partVideo.id}`" :active="partVideo.id === currentPartVideo.id" href="#" v-for="(partVideo, index) in partsVideo" :key="index" @click="goTo(partVideo)" class="d-flex justify-content-between align-items-center font-weight-bold">
-                        {{index + " - " + partVideo.description}}
-                        <b-badge variant="danger" style="font-size: 12px;" pill>
-                            {{getMinutesSeconds(partVideo.timeInSecondsIni) + ' - ' + getMinutesSeconds(partVideo.timeInSecondsFin)}}
+                <b-list-group
+                    ref="listPartsVideo"
+                    v-if="!isLoading"
+                    class="listPartsVideo"
+                >
+                    <b-list-group-item
+                        :ref="`partVideo${partVideo.id}`"
+                        :active="partVideo.id === currentPartVideo.id"
+                        href="#"
+                        v-for="(partVideo, index) in partsVideo"
+                        :key="index"
+                        @click="goTo(partVideo)"
+                        class="d-flex justify-content-between align-items-center font-weight-bold"
+                    >
+                        {{ index + " - " + partVideo.description }}
+                        <b-badge variant="danger" style="font-size: 12px" pill>
+                            {{
+                                getMinutesSeconds(partVideo.timeInSecondsIni) +
+                                " - " +
+                                getMinutesSeconds(partVideo.timeInSecondsFin)
+                            }}
                         </b-badge>
                     </b-list-group-item>
                 </b-list-group>
                 <div v-else class="d-flex h-100">
-                    <svg-vue icon="spinner" class="mx-auto my-auto" width="100"/>
+                    <svg-vue
+                        icon="spinner"
+                        class="mx-auto my-auto"
+                        width="100"
+                    />
                 </div>
             </div>
         </div>
@@ -68,13 +94,13 @@ export default {
             totalDurationInSeconds: 0,
             currentDuration: {
                 seconds: 0,
-                minutes: 0
+                minutes: 0,
             },
             isVideoLoaded: false,
             partsVideo: [],
             currentPartVideo: null,
             lastPartVideo: null,
-            isLoading: true
+            isLoading: true,
         };
     },
     methods: {
@@ -84,7 +110,11 @@ export default {
         playPauseVideo() {
             if (this.isVideoLoaded) {
                 if (!this.isPlaying) {
-                    if (this.totalDurationInSeconds === Math.round(this.$refs.video.currentTime)) this.$refs.video.currentTime = 0;
+                    if (
+                        this.totalDurationInSeconds ===
+                        Math.round(this.$refs.video.currentTime)
+                    )
+                        this.$refs.video.currentTime = 0;
 
                     this.$refs.video.play();
                     this.isPlaying = true;
@@ -95,7 +125,7 @@ export default {
             }
         },
         onVideoLoaded() {
-            console.log('Video loaded.');
+            console.log("Video loaded.");
 
             this.isVideoLoaded = true;
 
@@ -115,82 +145,11 @@ export default {
                     timeInSecondsFin: 16,
                 },
                 {
-                    id: 2,
-                    description: "Explicació",
-                    timeInSecondsIni: 12,
-                    timeInSecondsFin: 16,
-                },
-                {
-                    id: 2,
-                    description: "Explicació",
-                    timeInSecondsIni: 12,
-                    timeInSecondsFin: 16,
-                },
-                {
-                    id: 2,
-                    description: "Explicació",
-                    timeInSecondsIni: 12,
-                    timeInSecondsFin: 16,
-                },
-                {
-                    id: 2,
-                    description: "Explicació",
-                    timeInSecondsIni: 12,
-                    timeInSecondsFin: 16,
-                },
-                {
-                    id: 2,
-                    description: "Explicació",
-                    timeInSecondsIni: 12,
-                    timeInSecondsFin: 16,
-                },
-                {
-                    id: 2,
-                    description: "Explicació",
-                    timeInSecondsIni: 12,
-                    timeInSecondsFin: 16,
-                },
-                {
-                    id: 2,
-                    description: "Explicació",
-                    timeInSecondsIni: 12,
-                    timeInSecondsFin: 16,
-                },
-                {
-                    id: 2,
-                    description: "Explicació",
-                    timeInSecondsIni: 12,
-                    timeInSecondsFin: 16,
-                },
-                {
-                    id: 2,
-                    description: "Explicació",
-                    timeInSecondsIni: 12,
-                    timeInSecondsFin: 16,
-                },
-                {
-                    id: 2,
-                    description: "Explicació",
-                    timeInSecondsIni: 12,
-                    timeInSecondsFin: 16,
-                },
-                {
-                    id: 2,
-                    description: "Explicació",
-                    timeInSecondsIni: 12,
-                    timeInSecondsFin: 16,
-                },{
-                    id: 2,
-                    description: "Explicació",
-                    timeInSecondsIni: 12,
-                    timeInSecondsFin: 16,
-                },
-                {
                     id: 3,
                     description: "Final",
                     timeInSecondsIni: 16,
                     timeInSecondsFin: Math.round(this.$refs.video.duration),
-                }
+                },
             ];
 
             this.currentPartVideo = this.partsVideo[0];
@@ -205,12 +164,17 @@ export default {
                 const currentTimeInSeconds = range.value;
                 const minValue = range.min ? range.min : 0;
                 const maxValue = range.max ? range.max : 100;
-                const newValue = Number(((currentTimeInSeconds - minValue) * 100) / (maxValue - minValue));
-                const newPosition = 10 - (newValue * 0.2);
+                const newValue = Number(
+                    ((currentTimeInSeconds - minValue) * 100) /
+                        (maxValue - minValue)
+                );
+                const newPosition = 10 - newValue * 0.2;
 
                 bubble.innerText = this.getMinutesSeconds(currentTimeInSeconds);
 
-                bubble.style.left = `calc(${newValue}% + (${newPosition - 17}px))`;
+                bubble.style.left = `calc(${newValue}% + (${
+                    newPosition - 17
+                }px))`;
 
                 if (isDrag) this.$refs.video.currentTime = currentTimeInSeconds;
             }
@@ -220,18 +184,33 @@ export default {
 
             this.setBubble(false);
 
-            this.currentPartVideo = this.partsVideo.find((partVideo) => partVideo.timeInSecondsIni <= this.$refs.video.currentTime &&
-                                                                        partVideo.timeInSecondsFin > this.$refs.video.currentTime);
+            this.currentPartVideo = this.partsVideo.find(
+                (partVideo) =>
+                    partVideo.timeInSecondsIni <=
+                        this.$refs.video.currentTime &&
+                    partVideo.timeInSecondsFin > this.$refs.video.currentTime
+            );
 
-            if (this.currentPartVideo && this.currentPartVideo !== this.lastPartVideo) {
-                let position = this.$refs[`partVideo${this.currentPartVideo.id}`][0].$el.offsetTop;
+            if (
+                this.currentPartVideo &&
+                this.currentPartVideo !== this.lastPartVideo
+            ) {
+                let position =
+                    this.$refs[`partVideo${this.currentPartVideo.id}`][0].$el
+                        .offsetTop;
 
-                this.$refs.listPartsVideo.scrollTo({ top: position, behavior: "smooth" });
+                this.$refs.listPartsVideo.scrollTo({
+                    top: position,
+                    behavior: "smooth",
+                });
 
                 this.lastPartVideo = this.currentPartVideo;
             }
 
-            if (this.totalDurationInSeconds === Math.round(this.$refs.video.currentTime)) {
+            if (
+                this.totalDurationInSeconds ===
+                Math.round(this.$refs.video.currentTime)
+            ) {
                 this.$refs.video.pause();
                 this.isPlaying = false;
             }
@@ -248,11 +227,14 @@ export default {
 
             const numberFormatterTwoDigits = {
                 minimumIntegerDigits: 2,
-                useGrouping: false
+                useGrouping: false,
             };
 
-            return `${minutes.toLocaleString('en-US', numberFormatterTwoDigits)}:${seconds.toLocaleString('en-US', numberFormatterTwoDigits)}`;
-        }
+            return `${minutes.toLocaleString(
+                "en-US",
+                numberFormatterTwoDigits
+            )}:${seconds.toLocaleString("en-US", numberFormatterTwoDigits)}`;
+        },
     },
 };
 </script>

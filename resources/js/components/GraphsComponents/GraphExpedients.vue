@@ -71,29 +71,26 @@ export default {
             },
         };
     },
-    methods:{
-        obtenerLabelsEstados(){
+    methods: {
+        obtenerLabelsEstados() {
             let me = this;
             axios
                 .get("/api/estats_expedients/")
                 .then((response) => {
                     let estados = response.data;
-                    estados.forEach(element => {
+                    estados.forEach((element) => {
                         me.chartData.labels.push(JSON.stringify(element.estat));
                     });
-
                 })
                 .catch((error) => {
                     console.log(error);
                 })
                 .finally(() => (me.isLoading = false));
-
-        }
+        },
     },
     mounted() {
-         this.obtenerLabelsEstados()
+        this.obtenerLabelsEstados();
         this.renderChart(this.chartData, this.options);
-
     },
 };
 </script>

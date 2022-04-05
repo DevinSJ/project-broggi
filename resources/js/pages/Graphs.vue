@@ -60,8 +60,12 @@ export default {
     <div>
         <b-card class="show-card">
             <b-tabs content-class="mt-3" fill>
-                <b-tab title="Estat dels expedients" lazy><graph1></graph1></b-tab>
-                <b-tab title="Estadistiques dels usuaris" lazy><graph2></graph2></b-tab>
+                <b-tab title="Estat dels expedients" lazy
+                    ><graph1></graph1
+                ></b-tab>
+                <b-tab title="Estadistiques dels usuaris" lazy
+                    ><graph2></graph2
+                ></b-tab>
                 <b-tab title="Very, very long title" lazy></b-tab>
             </b-tabs>
         </b-card>
@@ -74,7 +78,7 @@ import Graph2 from "../components/GraphsComponents/GraphOperators";
 export default {
     components: {
         Graph1,
-        Graph2
+        Graph2,
     },
 };
 </script>

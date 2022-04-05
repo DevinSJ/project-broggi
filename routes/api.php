@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\AgenciesController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UsuarisController;
 use App\Http\Controllers\Api\AjudesFrasesController;
@@ -14,10 +13,7 @@ use App\Http\Controllers\Api\CartesTrucadesController;
 use App\Http\Controllers\Api\Estats_expedientsController;
 use App\Http\Controllers\Api\IncidentsController;
 use App\Http\Controllers\Api\TipusIncidentsController;
-use App\Models\Estats_expedients;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Storage;
-use App\Models\Tipus_incidents;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,5 +62,3 @@ Route::get('/video-interactive', function () {
 Route::get('/cartestrucades/list/{id_expedient}', [CartesTrucadesController::class, 'calls_from_expedients']);
 Route::post('users/put/update/{user}',[UsuarisController::class,"update"]);
 Route::post('users/put/updatePassword/{user}',[UsuarisController::class,"updatePassword"]);
-
-

@@ -13009,15 +13009,6 @@ input[type=color].form-control:disabled {
   font-size: 125%;
   vertical-align: text-bottom;
 }
-<<<<<<< HEAD
-.view-container {
-  padding: 20px;
-}
-=======
-/* General */
-html,
-body,
->>>>>>> main
 #app {
     height: 100vh;
 }
@@ -13155,6 +13146,14 @@ button:focus {
     transition: all 0.4s ease-in-out;
 }
 /* ================================================================= */
+
+.vbt-autcomplete-list {
+    max-height: 350px;
+    overflow-y: auto;
+    padding-top: 5px;
+    position: absolute;
+    z-index: 999;
+}
 
 /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
 
