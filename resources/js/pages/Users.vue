@@ -5,7 +5,7 @@
                 <!--PAnel filtrado-->
                 <b-card class="show-card">
                     <b-row class="text-center">
-                        <b-col cols="1">
+                        <b-col cols="3" class="column-boton-afegir">
                             <b-button
                                 class="btn-sm btn-success"
                                 area-hidden="true"
@@ -20,8 +20,8 @@
                                 Afegir usuari
                             </b-button></b-col
                         >
-                        <b-col cols="5"> </b-col>
-                        <b-col cols="6">
+
+                        <b-col cols="9" class="column-botons-filtrar">
                             <b-form inline>
                                 <label class="mr-sm-2" for="filtre-usuari"
                                     >Usuari</label
@@ -90,7 +90,6 @@
                                     <i class="fa-solid fa-magnifying-glass"></i>
                                     Mostrar tots</b-button
                                 >
-
                                 <template>
                                     <div></div>
                                 </template>
@@ -178,9 +177,9 @@
                 </pagination>
                 <!--CARGA-->
                 <div class="centrar-carga">
-                    <img
+                    <svg-vue
                         v-show="isLoading"
-                        src="/assets/img/spinner.svg"
+                        icon="spinner"
                         width="100"
                     />
                 </div>
@@ -840,5 +839,15 @@ export default {
 }
 ::v-deep .header-class-editar-contrasenya {
     background: rgb(218, 218, 218);
+}
+
+.column-boton-afegir{
+text-align: start;
+}
+.column-botons-filtrar{
+text-align: end;
+justify-content: end;
+align-items: flex-end;
+display: flex;
 }
 </style>
