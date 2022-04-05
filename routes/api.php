@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AgenciesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UsuarisController;
@@ -13,7 +14,10 @@ use App\Http\Controllers\Api\CartesTrucadesController;
 use App\Http\Controllers\Api\CartesTrucadesHasAgenciesController;
 use App\Http\Controllers\Api\Estats_expedientsController;
 use App\Http\Controllers\Api\EstatsAgenciesController;
+use App\Http\Controllers\Api\IncidentsController;
+use App\Http\Controllers\Api\TipusIncidentsController;
 use App\Models\Estats_expedients;
+use App\Models\Tipus_incidents;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +45,9 @@ Route::apiResource('estats_expedients', Estats_expedientsController::class);
 Route::apiResource('estats_agencies', EstatsAgenciesController::class);
 
 
+Route::apiResource('types_incidents', TipusIncidentsController::class);
+Route::apiResource('incidents', IncidentsController::class);
+Route::apiResource('agencies', AgenciesController::class);
 
 // Customized routes
 Route::get('/cartestrucades/list/{id_expedient}', [CartesTrucadesController::class, 'calls_from_expedients']);
