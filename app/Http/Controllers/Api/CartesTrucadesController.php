@@ -16,7 +16,17 @@ class CartesTrucadesController extends Controller
      */
     public function index()
     {
-        $trucades = Cartes_trucades::all();
+        $trucades = Cartes_trucades::with('cartes_trucades_has_agencies')
+                                    ->with('usuari')
+                                    ->with('tipo_localitzacio')
+                                    ->with('expedient')
+                                    ->with('dada_personal')
+                                    ->with('provincia')
+                                    ->with('municipi.comarca')
+                                    ->with('municipi_trucada')
+                                    ->with('incident')
+                                    ->get();
+
 
         return Cartes_trucadesResource::collection($trucades);
     }
@@ -44,7 +54,7 @@ class CartesTrucadesController extends Controller
                 ->get();
         }
 
-        
+
 
         return Cartes_trucadesResource::collection($trucades);
         // return response()->json(["id_rol" => $request->input("id_rol")]);
