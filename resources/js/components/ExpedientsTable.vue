@@ -4,7 +4,7 @@
       <!--Panel filtrado-->
       <b-card class="show-card" body-class="card_body">
         <b-row class="text-center">
-          <b-col cols="4">
+          <b-col cols="5">
               <div class="leyenda">
                       <b-form-checkbox v-model="filtre.estat.in_progress" name="check-button" button button-variant="btn-estat" @change="filtrar">
                           <i class="fa-solid fa-circle in-progress mr-2"></i>En progrés
@@ -23,7 +23,7 @@
                       </b-form-checkbox>
                 </div>
           </b-col>
-          <b-col cols="3"> </b-col>
+          <b-col cols="2"> </b-col>
           <b-col cols="5" class="col-filtrar">
             <b-form inline class="justify-content-end">
               <label class="mr-sm-2" for="filtre-codi">Codi</label>
@@ -586,7 +586,7 @@ export default {
       let me = this;
 
       axios
-        .get(`api/expedients?page=${page}`)
+        .get(`api/expedients/?page=${page}`)
         .then((response) => {
           me.expedients = response.data;
         })
@@ -609,7 +609,7 @@ export default {
         console.log(consulta);
         let me = this;
         axios
-            .get("/api/expedients?" + consulta)
+            .get("/api/expedients/?" + consulta)
             .then((response) => {
                 me.expedients = response.data;
             })
@@ -629,7 +629,7 @@ export default {
 }
 
 .in-progress {
-  color: rgb(0, 255, 21);
+  color: rgb(5, 100, 8);
   border-radius: 50%;
   height: 15px;
 }
