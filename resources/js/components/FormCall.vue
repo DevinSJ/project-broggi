@@ -1,93 +1,109 @@
 <template>
     <div class="container-fluid p-0">
-        <b-tabs>
-            <!-- TAB Nota comuna -->
-            <b-tab title="Nota comuna" active lazy>
-                <div class="col-12 row mt-3 justify-content-around">
-                    <div>
-                        <b-form-group
-                            id="input-group-2"
-                            label="Nom:"
-                            label-for="input-2"
-                        >
-                            <b-form-input
-                                id="input-2"
-                                v-model="name"
-                                placeholder="nom"
-                                required
-                            ></b-form-input>
-                        </b-form-group>
-                    </div>
-                    <div>
-                        <b-form-group
-                            id="input-group-2"
-                            label="Cognom:"
-                            label-for="input-2"
-                        >
-                            <b-form-input
-                                id="input-2"
-                                v-model="carrer"
-                                placeholder="surname"
-                                required
-                            ></b-form-input>
-                        </b-form-group>
-                    </div>
-                    <div>
-                        <b-form-group
-                            id="input-group-2"
-                            label="Nacionalitat:"
-                            label-for="input-2"
-                        >
-                            <b-form-input
-                                id="input-2"
-                                v-model="nationality"
-                                placeholder="nacionalitat"
-                                required
-                            ></b-form-input>
-                        </b-form-group>
-                    </div>
-                    <div>
-                        <b-form-group
-                            id="input-group-2"
-                            label="Relació amb l'incident:"
-                            label-for="input-2"
-                        >
-                            <b-form-input
-                                id="input-2"
-                                v-model="relation"
-                                placeholder="Relació amb l'incident:"
-                                required
-                            ></b-form-input>
-                        </b-form-group>
+        <b-tabs fill lazy>
+            <!-- TAB Identificació de la trucada -->
+            <b-tab title="Identificació de la trucada" active>
+                <div class="row">
+                    <div class="col-lg-12 my-2">
+                        <div class="autocomplete w-100">
+                            <div class="form-floating user-select-none">
+                                <b-form-input
+                                    type="tel"
+                                    id="input-phone"
+                                    v-model="call.phone"
+                                    :state="!isEmpty(call.phone)"
+                                    @input="handleInputPhone"
+                                    aria-describedby="input-phone-feedback"
+                                    placeholder="Nº telèfon"
+                                    required
+                                />
+                                <label class="user-select-none" for="input-phone">Nº telèfon</label>
+                                <b-form-invalid-feedback
+                                    id="input-phone-feedback"
+                                >{{ isEmpty(call.phone) ? "Aquest camp és obligatori" : inputPhoneFeedback }}.</b-form-invalid-feedback>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-12 p-0">
-                    <div class="form-floating user-select-none">
-                        <b-form-textarea
-                            id="description"
-                            v-model="description"
-                            class="mt-3 h-150"
-                            type="text"
-                            placeholder="Relació incident"
-                            aria-describedby="input-description-feedback"
-                            :state="!isEmpty(description)"
-                            rows="5"
-                            required
-                        />
-                        <label
-                            class="user-select-none"
-                            for="input-relation"
-                        >
-                            Descripció incident
-                        </label>
-                        <b-form-invalid-feedback id="input-description-feedback">
-                            Aquest camp es obligatori.
-                        </b-form-invalid-feedback>
+                <div class="row">
+                    <div class="col-lg-6 my-2">
+                        <div class="form-floating user-select-none">
+                            <b-form-input
+                                type="text"
+                                id="input-firstname-caller"
+                                v-model="call.firstnameCaller"
+                                placeholder="Nom del trucant"
+                            />
+                            <label class="user-select-none" for="input-firstname-caller">Nom del trucant</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 my-2">
+                        <div class="form-floating user-select-none">
+                            <b-form-input
+                                type="text"
+                                id="input-lastname-caller"
+                                v-model="call.lastnameCaller"
+                                placeholder="Cognom del trucant"
+                            />
+                            <label class="user-select-none" for="input-lastname-caller">Cognom del trucant</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row my-2">
+                    <div class="col-lg-6 my-2">
+                        <div class="form-floating user-select-none">
+                            <b-form-input
+                                type="text"
+                                id="input-provenance"
+                                v-model="call.provenance"
+                                placeholder="Procedència"
+                            />
+                            <label class="user-select-none" for="input-provenance">Procedència</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 my-2">
+                        <div class="form-floating user-select-none">
+                            <b-form-input
+                                type="text"
+                                id="input-relation-incident"
+                                v-model="call.relationIncident"
+                                placeholder="Relació amb l'incident"
+                            />
+                            <label class="user-select-none" for="input-relation-incident">Relació amb l'incident</label>
+                        </div>
                     </div>
                 </div>
             </b-tab>
-            <!-- TAB Identificació / Localització de la trucada -->
-            <b-tab title="Identificació / Localització de la trucada" lazy>
+            <!-- TAB Descripció de l'incident-->
+            <b-tab title="Descripció de l'incident">
+                <div class="row">
+                    <div class="col-lg-12 my-2">
+                        <div class="form-floating user-select-none">
+                            <b-form-textarea
+                                type="text"
+                                class="h-150"
+                                id="input-description"
+                                v-model="call.description"
+                                placeholder="Relació incident"
+                                aria-describedby="input-description-feedback"
+                                :state="!isEmpty(call.description)"
+                                rows="5"
+                                required
+                            />
+                            <label class="user-select-none" for="input-description">
+                                Descripció incident
+                            </label>
+                            <b-form-invalid-feedback
+                                id="input-description-feedback"
+                            >
+                                Aquest camp és obligatori.
+                            </b-form-invalid-feedback>
+                        </div>
+                    </div>
+                </div>
+            </b-tab>
+            <!-- TAB Localització de la trucada -->
+            <b-tab title="Localització de la trucada">
                 <div class="row">
                     <b-form-checkbox
                         id="checkbox-1"
@@ -152,8 +168,7 @@
                         >
                             <template #first>
                                 <b-form-select-option :value="null"
-                                    >Tipus
-                                    localització</b-form-select-option
+                                    >Tipus localització</b-form-select-option
                                 >
                             </template>
                         </b-form-select>
@@ -214,7 +229,7 @@
                                 >
                                     <b-form-input
                                         id="input-2"
-                                        v-model="carrer"
+                                        v-model="street"
                                         placeholder="tipus"
                                         required
                                     ></b-form-input>
@@ -326,23 +341,20 @@
                     <div class="form-floating user-select-none">
                         <b-form-textarea
                             id="information"
-                            class="mt-3 h-150"
+                            class="h-150"
                             type="text"
                             placeholder="Informació rellevant de la localització"
                             required
                             rows="5"
                         />
-                        <label
-                            class="user-select-none"
-                            for="input-information"
-                        >
+                        <label class="user-select-none" for="input-information">
                             Informació rellevant de la localització
                         </label>
                     </div>
                 </div>
             </b-tab>
             <!-- TAB Tipificació de l'emergència -->
-            <b-tab title="Tipificació de l'emergència" lazy>
+            <b-tab title="Tipificació de l'emergència">
                 <div>
                     <label class="user-select-none"> Tipus incident </label>
                     <b-form-select
@@ -372,7 +384,7 @@
                 </div>
             </b-tab>
             <!-- TAB Agencies -->
-            <b-tab title="Agencies" lazy>
+            <b-tab title="Agencies">
                 <map-box></map-box>
             </b-tab>
         </b-tabs>
@@ -382,7 +394,6 @@
 <script>
 export default {
     mounted() {
-        document.title = "Trucada - Broggi";
         this.getProvincias();
         this.getRegions();
         this.getTowns();
@@ -392,7 +403,15 @@ export default {
     },
     data() {
         return {
-            selected: null,
+            call: {
+                phone: "",
+                firstnameCaller: "",
+                lastnameCaller: "",
+                provenance: "",
+                relationIncident: "",
+                description: "",
+            },
+            inputPhoneFeedback: "",
             provinceSelected: null,
             regionSelected: null,
             townSelected: null,
@@ -400,21 +419,18 @@ export default {
             typeIncidentSelected: null,
             incidentSelected: null,
             outCataluyna: false,
-            agenciaSelected: null,
             provincias: [],
             regions: [],
             towns: [],
             types: [],
             typesIncidents: [],
             incidents: [],
-            name: "",
-            carrer: "",
-            nationality: "",
+
+            street: "",
             relation: "",
             nameStreet: "",
             numberStreet: "",
             locationType: "",
-            description: "",
             street: "",
             flour: "",
             door: "",
@@ -519,7 +535,7 @@ export default {
                     text: incident.descripcio,
                 };
             });
-        }
+        },
     },
     watch: {
         regionSelected() {
@@ -607,23 +623,20 @@ export default {
                     console.log(error);
                 });
         },
+        handleInputPhone() {
+            if (this.call.phone) {
+
+            }
+        },
         isEmpty(value) {
             return value.trim().length === 0;
-        }
+        },
     },
 };
 </script>
 
 <!-- STYLES -->
 <style scoped>
-.form-floating > .form-control,
-.form-floating > .form-select {
-    height: 40px;
-}
-
-.m-top-20 {
-    margin-top: 20px;
-}
 .h-150 {
     height: 150px !important;
 }
@@ -631,7 +644,35 @@ export default {
     display: flex;
     justify-content: space-between;
 }
-.p-0 {
-    padding: 0px;
+.autocomplete {
+  /*the container must be positioned relative:*/
+  position: relative;
+  display: inline-block;
+}
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+}
+.autocomplete-items div:hover {
+  /*when hovering an item:*/
+  background-color: #e9e9e9;
+}
+.autocomplete-active {
+  /*when navigating through the items using the arrow keys:*/
+  background-color: DodgerBlue !important;
+  color: #ffffff;
 }
 </style>
