@@ -49,7 +49,7 @@
         </div>
         <div class="col-xl-3 p-2">
             <b-card class="hide">
-                <!--<expedients-call v-show="checkboxValue"></expedients-call>-->
+                <expedients-call></expedients-call>
             </b-card>
         </div>
     </div>
