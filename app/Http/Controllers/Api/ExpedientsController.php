@@ -5,11 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Class\Utilitat;
 use App\Models\Expedients;
 use Illuminate\Http\Request;
+use function PHPSTORM_META\map;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+
 use Illuminate\Database\QueryException;
 use App\Http\Resources\ExpedientsResource;
-
-use function PHPSTORM_META\map;
 
 class ExpedientsController extends Controller
 {
