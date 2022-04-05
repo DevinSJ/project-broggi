@@ -1,14 +1,21 @@
 <template>
     <main>
-        <h1>Trucades</h1>
-        <calls-table />
+        <button-call @toggleButton="showCardsCall = !showCardsCall"/>
+        <cards-call v-if="showCardsCall"/>
+        <calls-table v-else/>
     </main>
 </template>
 
 <script>
-import CallsTable from '../components/CallsTable.vue';
 export default {
-    components: { CallsTable },
+    mounted() {
+        document.title = "Trucades - Broggi";
+    },
+    data() {
+        return {
+            showCardsCall: false,
+        };
+    },
 }
 </script>
 

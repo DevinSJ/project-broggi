@@ -105,73 +105,101 @@
             <!-- TAB Localització de la trucada -->
             <b-tab title="Localització de la trucada">
                 <div class="row">
-                    <b-form-checkbox
-                        id="checkbox-1"
-                        v-model="outCataluyna"
-                        name="checkbox-1"
-                    >
-                        Fora de Catalyuña
-                    </b-form-checkbox>
-                </div>
-                <div class="row mt-3" v-show="outCataluyna">
-                    <b-form-group
-                        id="input-group-2"
-                        label="Provincia:"
-                        label-for="input-2"
-                    >
-                        <b-form-input
-                            id="input-2"
-                            placeholder="Provincia"
-                            required
-                        ></b-form-input>
-                    </b-form-group>
-                </div>
-                <div class="row center mt-3" v-show="!outCataluyna">
-                    <div>
-                        <label class="user-select-none">Provincia: </label>
-                        <b-form-select
-                            v-model="provinceSelected"
-                            :options="allProvinces"
-                            class="mb-3"
+                    <div class="col-lg-12 my-2">
+                        <b-form-checkbox
+                            id="checkbox-1"
+                            v-model="outCataluyna"
+                            name="checkbox-1"
                         >
-                        </b-form-select>
-                    </div>
-                    <div>
-                        <label class="user-select-none">Comarca: </label>
-                        <b-form-select
-                            v-model="regionSelected"
-                            :options="allRegions"
-                            class="mb-3"
-                        >
-                        </b-form-select>
-                    </div>
-                    <div>
-                        <label class="user-select-none">Municipi: </label>
-                        <b-form-select
-                            v-model="townSelected"
-                            :options="allTowns"
-                            class="mb-3"
-                        >
-                        </b-form-select>
+                            Fora de Cataluña
+                        </b-form-checkbox>
                     </div>
                 </div>
-
-                <div class="row center mt-3" v-show="!outCataluyna">
-                    <div>
-                        <label class="user-select-none"
-                            >Tipus localització:
-                        </label>
-                        <b-form-select
-                            v-model="typeSelected"
-                            :options="allTypes"
-                            class="mb-3"
-                        >
+                <div class="row" v-if="outCataluyna">
+                    <div class="col-lg-12 my-2">
+                        <div class="form-floating user-select-none">
+                            <b-form-input
+                                type="text"
+                                id="input-province"
+                                v-model="call.province"
+                                placeholder="Provincia"
+                            />
+                            <label class="user-select-none" for="input-province">Provincia</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" v-else>
+                    <div class="col-lg-4 my-2">
+                        <div class="form-floating user-select-none">
+                            <b-form-select
+                                type="text"
+                                id="select-provinces"
+                                :options="allProvinces"
+                                v-model="provinceSelected"
+                                placeholder="Provincia"
+                            >
                             <template #first>
                                 <b-form-select-option :value="null"
-                                    >Tipus localització</b-form-select-option
+                                    >Seleccionar provincia</b-form-select-option
                                 >
                             </template>
-                        </b-form-select>
+                            </b-form-select>
+                            <label class="user-select-none" for="select-provinces">Provincia</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 my-2">
+                        <div class="form-floating user-select-none">
+                            <b-form-select
+                                type="text"
+                                id="select-regions"
+                                :options="allRegions"
+                                v-model="regionSelected"
+                                placeholder="Comarca"
+                            >
+                            <template #first>
+                                <b-form-select-option :value="null"
+                                    >Seleccionar comarca</b-form-select-option
+                                >
+                            </template>
+                            </b-form-select>
+                            <label class="user-select-none" for="select-regions">Comarca</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 my-2">
+                        <div class="form-floating user-select-none">
+                            <b-form-select
+                                type="text"
+                                id="select-towns"
+                                :options="allTowns"
+                                v-model="townSelected"
+                                placeholder="Municipi"
+                            >
+                            <template #first>
+                                <b-form-select-option :value="null"
+                                    >Seleccionar municipi</b-form-select-option
+                                >
+                            </template>
+                            </b-form-select>
+                            <label class="user-select-none" for="select-towns">Municipi</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" v-if="!outCataluyna">
+                    <div class="col-lg-12 my-2">
+                        <div class="form-floating user-select-none">
+                            <b-form-select
+                                type="text"
+                                id="select-towns"
+                                :options="allTypes"
+                                v-model="typeSelected"
+                                placeholder="Tipus localització"
+                            >
+                            <template #first>
+                                <b-form-select-option :value="null">Seleccionar tipus localització</b-form-select-option>
+                            </template>
+                            </b-form-select>
+                            <label class="user-select-none" for="select-towns">Tipus localització</label>
+                        </div>
                     </div>
                     <!-- OPTION 1 CARRERS -->
                     <div class="col-12" v-show="locationType == 1">
@@ -355,32 +383,43 @@
             </b-tab>
             <!-- TAB Tipificació de l'emergència -->
             <b-tab title="Tipificació de l'emergència">
-                <div>
-                    <label class="user-select-none"> Tipus incident </label>
-                    <b-form-select
-                        v-model="typeIncidentSelected"
-                        :options="allTypesIncidents"
-                        class="mb-3"
-                    >
-                        <template #first>
-                            <b-form-select-option :value="null"
-                                >Select</b-form-select-option
+                <div class="row">
+                    <div class="col-lg-6 my-2">
+                        <div class="form-floating user-select-none">
+                            <b-form-select
+                                type="text"
+                                id="select-type-incident"
+                                :options="allTypesIncidents"
+                                v-model="typeIncidentSelected"
+                                placeholder="Tipus incident"
                             >
-                        </template>
-                    </b-form-select>
-
-                    <label class="user-select-none"> Incident </label>
-                    <b-form-select
-                        v-model="incidentSelected"
-                        :options="allIncidents"
-                        class="mb-3"
-                    >
-                        <template #first>
-                            <b-form-select-option :value="null"
-                                >Select</b-form-select-option
+                             <template #first>
+                                <b-form-select-option :value="null"
+                                    >Seleccionar tipus incident</b-form-select-option
+                                >
+                            </template>
+                            </b-form-select>
+                            <label class="user-select-none" for="select-type-incident">Tipus incident</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 my-2">
+                        <div class="form-floating user-select-none">
+                            <b-form-select
+                                type="text"
+                                id="select-incident"
+                                :options="allIncidents"
+                                v-model="incidentSelected"
+                                placeholder="Incident"
                             >
-                        </template>
-                    </b-form-select>
+                             <template #first>
+                                <b-form-select-option :value="null"
+                                    >Seleccionar incident</b-form-select-option
+                                >
+                            </template>
+                            </b-form-select>
+                            <label class="user-select-none" for="select-incident">Incident</label>
+                        </div>
+                    </div>
                 </div>
             </b-tab>
             <!-- TAB Agencies -->
@@ -410,6 +449,7 @@ export default {
                 provenance: "",
                 relationIncident: "",
                 description: "",
+                province: "",
             },
             inputPhoneFeedback: "",
             provinceSelected: null,
@@ -457,10 +497,6 @@ export default {
                 };
             });
 
-            provinces.unshift({
-                value: null,
-                text: "select",
-            });
 
             return provinces;
         },
@@ -480,11 +516,6 @@ export default {
                 };
             });
 
-            regions.unshift({
-                value: null,
-                text: "select",
-            });
-
             return regions;
         },
         allTowns() {
@@ -501,11 +532,6 @@ export default {
                     value: town.id,
                     text: town.nom,
                 };
-            });
-
-            towns.unshift({
-                value: null,
-                text: "select",
             });
 
             return towns;

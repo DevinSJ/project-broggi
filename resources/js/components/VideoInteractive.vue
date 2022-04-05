@@ -125,8 +125,6 @@ export default {
             }
         },
         onVideoLoaded() {
-            console.log("Video loaded.");
-
             this.isVideoLoaded = true;
 
             this.totalDurationInSeconds = Math.round(this.$refs.video.duration);
@@ -240,15 +238,16 @@ export default {
 </script>
 
 <style scoped>
+video {
+    max-height: 500px;
+}
 input[type="range"] {
     -webkit-appearance: none;
-
     width: 100%;
 }
 input[type="range"]:focus {
     outline: none;
 }
-
 input[type="range"]::-webkit-slider-runnable-track {
     width: 100%;
     height: 4px;
@@ -271,16 +270,13 @@ input[type="range"]::-webkit-slider-thumb {
 input[type="range"]:focus::-webkit-slider-runnable-track {
     background: #03a9f4;
 }
-
 .range-wrap {
     width: 100%;
 }
-
 .range-value {
     position: relative;
     top: -5%;
 }
-
 .range-value span {
     width: 35px;
     height: 24px;
@@ -295,12 +291,10 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
     position: relative;
     border-radius: 6px;
 }
-
 .listPartsVideo {
     max-height: 600px;
     overflow-y: scroll;
 }
-
 .range-value span:before {
     content: "";
     position: absolute;
@@ -314,7 +308,6 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
     margin-left: -5px;
     margin-top: -1px;
 }
-
 ::v-deep .modal .modal-huge {
     max-width: 90%;
     width: 90%;

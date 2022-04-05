@@ -2,7 +2,7 @@
     <main>
         <div class="principal">
             <div class="botones">
-                <!--PAnel filtrado-->
+                <!--Panel filtrado-->
                 <b-card class="show-card">
                     <b-row class="text-center">
                         <b-col cols="3" class="column-boton-afegir">
@@ -415,6 +415,9 @@
 
 <script>
 export default {
+    mounted() {
+        document.title = "Usuaris - Broggi";
+    },
     data() {
         return {
             usuaris: {},
@@ -761,9 +764,6 @@ export default {
     },
     refresh() {
         this.selectUsuaris();
-    },
-    mounted() {
-        document.title = "Usuaris - ibroggi";
     },
     computed: {
         validationUsuari() {

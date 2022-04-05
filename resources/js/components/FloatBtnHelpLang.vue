@@ -325,6 +325,7 @@ export default {
 <style scoped>
 .float-btn-help-lang {
     position: fixed;
+    z-index: 9999;
     right: 0;
     bottom: 0;
     margin: 10px;

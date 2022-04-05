@@ -1,8 +1,15 @@
 <template>
-    <div class="row">
-        <div class="col-xl-9 p-2">
-            <b-card class="hide">
-                <b-card-body>
+    <main>
+        <div class="row">
+            <div class="col-xl-8 p-2">
+                <b-card class="hide" header-bg-variant="primary" header-text-variant="white">
+                    <template #header>
+                        <div class="d-flex">
+                            <h6 class="font-weight-bold my-auto">
+                                Formulari de la carta trucada
+                            </h6>
+                        </div>
+                    </template>
                     <div class="row">
                         <div class="col-lg-4 my-1">
                             <div class="form-floating user-select-none">
@@ -13,7 +20,9 @@
                                     v-model="codeCall"
                                     disabled
                                 />
-                                <label class="user-select-none" for="input-code">Codi de trucada</label>
+                                <label class="user-select-none" for="input-code"
+                                    >Codi de trucada</label
+                                >
                             </div>
                         </div>
                         <div class="col-lg-4 my-1">
@@ -28,13 +37,16 @@
                                 <label
                                     class="user-select-none"
                                     for="input-ini-call"
-                                >Inici de trucada</label>
+                                    >Inici de trucada</label
+                                >
                             </div>
                         </div>
                         <div class="col-lg-4 my-1 text-center">
                             <h5
                                 class="font-weight-bold user-select-none d-block"
-                            >Duració de la trucada</h5>
+                            >
+                                Duració de la trucada
+                            </h5>
                             <h5>{{ time }}</h5>
                         </div>
                     </div>
@@ -44,19 +56,26 @@
                             <form-call></form-call>
                         </div>
                     </div>
-                </b-card-body>
-            </b-card>
+                </b-card>
+            </div>
+            <div class="col-xl-4 p-2">
+                <b-card class="hide" body-class="p-0" header-bg-variant="primary" header-text-variant="white">
+                    <template #header>
+                        <div class="d-flex">
+                            <h6 class="font-weight-bold my-auto">
+                                Llistat d'expedients relacionat
+                            </h6>
+                        </div>
+                    </template>
+                    <expedients-call @loadModalExpedient="loadModalExpedient"></expedients-call>
+                </b-card>
+            </div>
         </div>
-        <div class="col-xl-3 p-2">
-            <b-card class="hide">
-                <expedients-call></expedients-call>
-            </b-card>
-        </div>
-    </div>
+    </main>
 </template>
 
 <script>
-import moment from 'moment';
+import moment from "moment";
 
 export default {
     mounted() {
@@ -87,10 +106,13 @@ export default {
         };
     },
     methods: {
+        loadModalExpedient(expedient) {
+            this.$emit('loadModalExpedient', expedient);
+        },
         generateCodeCall() {
-            let today = moment().locale('es');
+            let today = moment().locale("es");
 
-            this.callDateTimeIni = today.format('DD/MM/yyyy HH:mm:ss');
+            this.callDateTimeIni = today.format("DD/MM/yyyy HH:mm:ss");
 
             this.codeCall = "CA-" + today.format("DDMMyyyyHHmmssS");
         },
@@ -128,7 +150,9 @@ export default {
         },
         clockRunning() {
             var currentTime = new Date(),
-                timeElapsed = new Date(currentTime - this.timeBegan - this.stoppedDuration),
+                timeElapsed = new Date(
+                    currentTime - this.timeBegan - this.stoppedDuration
+                ),
                 hour = timeElapsed.getUTCHours(),
                 min = timeElapsed.getUTCMinutes(),
                 sec = timeElapsed.getUTCSeconds();
@@ -138,7 +162,7 @@ export default {
                 ":" +
                 this.zeroPrefix(min, 2) +
                 ":" +
-                this.zeroPrefix(sec, 2)
+                this.zeroPrefix(sec, 2);
         },
         zeroPrefix(num, digit) {
             var zero = "";
@@ -151,11 +175,9 @@ export default {
         },
         isEmpty(value) {
             return value.trim().length === 0;
-        }
+        },
     },
-    computed: {
-
-    }
+    computed: {},
 };
 </script>
 

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="my-2">
         <div id="map" :style="`filter: ${isLoading ? 'brightness(0.3)' : 'none'};`"></div>
         <div v-if="isLoading" class="loading-text">Carregant agencies...</div>
     </div>

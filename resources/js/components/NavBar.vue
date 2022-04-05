@@ -32,9 +32,9 @@
                         <i
                             class="fa-solid fa-chart-pie mr-2 desactivar-click"
                         ></i
-                        ><span class="desactivar-click">Grafics</span>
+                        ><span class="desactivar-click">Gràfics</span>
                     </router-link>
-                    <router-link to="usuaris">
+                    <router-link to="usuaris" v-if="user.perfils_id === 3">
                         <i class="fa-solid fa-users mr-2 desactivar-click"></i>
                         <span class="desactivar-click"
                             >Usuaris</span
