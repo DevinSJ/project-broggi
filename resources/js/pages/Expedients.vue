@@ -17,7 +17,7 @@
             }}
         </label>
         <cards-call v-if="showCardsCall"/>
-        <!-- <expedients-table /> -->
+        <expedients-table />
     </main>
 </template>
 
