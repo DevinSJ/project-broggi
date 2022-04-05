@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use DateTime;
-use App\Class\Utilitat;
+use App\Utilities\DBUtility;
 use App\Models\Expedients;
 use Illuminate\Http\Request;
+use function PHPSTORM_META\map;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+
 use Illuminate\Database\QueryException;
 use App\Http\Resources\ExpedientsResource;
-use Illuminate\Support\Facades\DB;
 
 class ExpedientsController extends Controller
 {
@@ -18,9 +19,38 @@ class ExpedientsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $expedients = Expedients::with('cartes_trucades')->get();
+        $values = [];
+
+        if($request->input('filtreEstat1') == 'true'){
+            array_push($values, 1);
+        }
+        if($request->input('filtreEstat2') == 'true'){
+            array_push($values, 2);
+        }
+        if($request->input('filtreEstat3') == 'true'){
+            array_push($values, 3);
+        }
+        if($request->input('filtreEstat4') == 'true'){
+            array_push($values, 4);
+        }
+        if($request->input('filtreEstat5') == 'true'){
+            array_push($values, 5);
+        }
+
+        $query = Expedients::query();
+
+        if($request->input('filtreCodi')){
+            $query->where('codi', '=', $request->input('filtreCodi'));
+        }
+
+        if(count($values) > 0){
+            $query->whereIn('estats_expedients_id', $values);
+        }
+
+
+        $expedients = $query->paginate(10);
 
         return ExpedientsResource::collection($expedients);
     }
@@ -56,44 +86,26 @@ class ExpedientsController extends Controller
      */
     public function update(Request $request, Expedients $expedient)
     {
-
-        $new_date = new DateTime();
-        $new_date->format('Y-m-d H:i:s');
+        date_default_timezone_set('Europe/Madrid');
+        $new_date = date('Y-m-d H:i:s');
 
         $expedient->data_ultima_modificacio = $new_date;
         $expedient->estats_expedients_id = $request->input('estat_exp');
-        // DB::beginTransaction();
-
-        // try {
-        //     DB::delete($expedient);
-        //     DB::insert($new_expedient);
-
-        //     $response = \response()
-        //                 ->json(['missatge' => 'Registre esborrat correctament'], 200);
-
-        //     DB::commit();
-        // } catch (QueryException $ex) {
-        //     DB::rollBack();
-            // $missatge = Utilitat::errorMessage($ex);
-            // $response = \response()
-            //             ->json(['error' => $missatge], 400);
-        // }
 
         try {
 
             $expedient->save();
 
             $response = (new ExpedientsResource($expedient))
-                        ->response()
-                        ->setStatusCode(201);
+                ->response()
+                ->setStatusCode(201);
         } catch (QueryException $ex) {
-            $missatge = Utilitat::errorMessage($ex);
+            $missatge = DBUtility::getPDOErrorMessage($ex);
             $response = \response()
-                        ->json(['error' => $missatge], 400);
+                ->json(['error' => $missatge], 400);
         }
 
         return response($response);
-
     }
 
     /**
@@ -106,4 +118,20 @@ class ExpedientsController extends Controller
     {
         //
     }
+
+    public function graph_expedients_status()
+    {
+
+        $data = DB::select("SELECT esexp.id, esexp.estat, COUNT( expe.estats_expedients_id ) as quantity
+                            FROM expedients expe
+                            RIGHT JOIN estats_expedients esexp ON expe.estats_expedients_id = esexp.id
+                            GROUP BY esexp.estat, esexp.id
+                            ORDER BY esexp.id ASC");
+
+        return response($data);
+    }
+
+
+    /*
+    */
 }

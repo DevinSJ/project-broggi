@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Utilities\DBUtility;
 use App\Models\Usuaris;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UsuarisResource;
 use Illuminate\Database\QueryException;
@@ -147,5 +148,17 @@ class UsuarisController extends Controller
     public function destroy(Usuaris $usuaris)
     {
         //
+    }
+
+
+    public function graph_users_perfil()
+    {
+
+        $data = DB::select("SELECT usperfil.id,usperfil.nom ,COUNT( us.perfils_id ) as quantity FROM usuaris us
+                            RIGHT JOIN perfils usperfil ON us.perfils_id = usperfil.id
+                            GROUP BY usperfil.id,usperfil.nom
+                            ORDER BY usperfil.id ASC");
+
+        return response($data);
     }
 }
