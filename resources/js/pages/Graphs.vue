@@ -1,80 +1,38 @@
-<!-- <template>
-    <main>
-        <b-card class="show-card">
-
-        </b-card>
-    </main>
-</template>
-
-<script>
-import { Line } from 'vue-chartjs'
-
-export default {
-    data() {
-        return {
-            expedients: {},
-            expedient: {
-                id: "",
-                data_creacio: "",
-                data_ultima_modificacio: "",
-                estat_expedients_id: "",
-                codi: "",
-            },
-        };
-    },
-    mounted() {
-        document.title = "Grafics - ibroggi";
-    },
-    methods: {
-        selectExpedients() {
-            let me = this;
-
-            axios
-                .get("/api/expedients/")
-                .then((response) => {
-                    me.expedients = response.data;
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        },
-    },
-    created() {
-        this.selectExpedients();
-    },
-};
-</script>
-
-<style>
-.show-card {
-    background-color: white;
-    border: 1px;
-    box-shadow: 0px 5px 25px 0px rgb(0 0 0 / 20%);
-}
-</style>
-
-
-
- -->
 <template>
     <div>
         <b-card class="show-card">
             <b-tabs content-class="mt-3" fill>
-                <b-tab title="Estat dels expedients" lazy><graph1></graph1></b-tab>
-                <b-tab title="Estadistiques dels usuaris" lazy><graph2></graph2></b-tab>
-                <b-tab title="Very, very long title" lazy></b-tab>
+                <b-tab title="Estat dels expedients" lazy
+                    ><div class="container-fluid">
+                        <graph1 :opcionGraph="1" @returnDatos="returnDatos=$event"></graph1>
+                    </div>
+                </b-tab>
+                <b-tab title="Estadistiques de trucades" lazy
+                    ><graph1 :opcionGraph="2"></graph1
+                ></b-tab>
+                <b-tab title="Estadistiques d'usuaris" lazy
+                    ><graph1 :opcionGraph="3"></graph1
+                ></b-tab>
             </b-tabs>
         </b-card>
     </div>
 </template>
 <script>
-import Graph1 from "../components/GraphsComponents/GraphExpedients";
-import Graph2 from "../components/GraphsComponents/GraphOperators";
+import Graph1 from "../components/GraphsComponents/Graph";
 
 export default {
+    data() {
+        return {
+            datosExpedientes:"",
+        };
+    },
     components: {
         Graph1,
-        Graph2
+    },
+    methods: {
+        cambio(grafico) {
+            this.graph = grafico;
+        },
     },
 };
 </script>
@@ -85,4 +43,15 @@ export default {
     border: 1px;
     box-shadow: 0px 5px 25px 0px rgb(0 0 0 / 20%);
 }
+.div-table{
+width: 100%;
+background-color: aquamarine;
+
+}.col-table{
+align-items: center;
+padding: 10px;
+}
+.table{
+width: 100%}
+
 </style>
