@@ -1,408 +1,821 @@
 <template>
-    <div>
-        <b-card v-show="!isLoading" class="p-5 card-container">
-                <b-table striped hover bordered thead-class="thead-dark" :items="expedients" :fields="fields" >
-                    <template #cell(estats_expedients_id)="data">
-                        <div>
-                            <i :class="getState(data.item.estats_expedients_id)"></i>
-                        </div>
-                    </template>
-
-                    <template #cell(see_expedient)="data">
-                        <div>
-                            <button class="button-edit" v-b-modal.modal-expedients @click="getCalls(data.item.id, data.item.estats_expedients_id)"> <i class="fa-solid fa-eye mr-2"></i> Veure dades {{data.item.id }}</button>
-                        </div>
-                    </template>
-                </b-table>
-        </b-card>
-
-        <div class="loading-spinner">
-            <svg-vue v-show="isLoading" icon="spinner" class="mx-auto my-auto" width="100"/>
-        </div>
-
-        <!-- Modal -->
-        <b-modal id="modal-expedients" class="modal-calls" title="Trucades de l'expedient" size="huge">
-
-            <b-table v-if="trucades.length > 0" striped hover bordered thead-class="thead-dark" :items="trucades" :fields="callFields" v-show="!isLoading2">
-                <template #cell(cartes_trucades_has_agencies)="data">
-                    <p style="display:none">{{data.item.id}}</p>
-                    <button class="button-edit" v-b-modal.modal-info-calls @click="loadAgencies(data.item.cartes_trucades_has_agencies)"> <i class="fa-solid fa-eye m-1"></i></button>
-                </template>
-                <template #cell(show-nota-comuna)="data">
-                    <div>
-                        <p style="display: none">{{data.item.id}}</p>
-                        <button class="button-edit" v-b-modal.modal-info-calls @click="loadInfo(data.item.nom_trucada, data.item.nota_comuna_descripcio)"> <i class="fa-solid fa-eye m-1"></i></button>
-                    </div>
-                </template>
-            </b-table>
-
-            <div v-else v-show="!showTrucades">No hi ha trucades enllaçades a aquest expedient realitzades per aquest usuari.</div>
-
-            <div v-show="!isLoading2" v-if="this.user.perfils_id != 1" class="div-expedient-estate">
-                <p>Estat de l'expedient: </p>
-                <b-form-select
-                v-model="expedientState"
-                :options="renderConditions">
-                </b-form-select>
-            </div>
-
-            <div class="loading-spinner2">
-                <img
-                    v-show="isLoading2"
-                    src="/assets/img/spinner.svg"
-                    width="100"/>
-            </div>
-        </b-modal>
-
-        <!-- Modal with call information -->
-        <b-modal id="modal-info-calls" class="modal-info-calls" :title="modalTitle2" size="lg">
-
-            <div v-if="!this.modal_agencia">
-                <p>Nom: {{this.name_call}}</p>
-                <label for="txtNotaComuna">Descripció:</label>
-                <textarea name="txtNotaComuna" id="txtNotaComuna" class="w-100" cols="30" rows="10" v-model="this.description_call"></textarea>
-            </div>
-            <div v-else>
-                <p v-for="relacioAgencia in this.agencies_contactades" :key="relacioAgencia.agencia.id"> {{ relacioAgencia.agencia.nom }} </p>
-            </div>
-
-            <div class="loading-spinner2">
-                <img
-                    v-show="isLoading3"
-                    src="/assets/img/spinner.svg"
-                    width="100"/>
-            </div>
-        </b-modal>
+  <div>
+    <div class="mb-2">
+      <!--Panel filtrado-->
+      <b-card class="show-card" body-class="card_body">
+        <b-row class="text-center">
+          <b-col cols="4">
+              <div class="leyenda">
+                      <b-form-checkbox v-model="filtre.estat.in_progress" name="check-button" button button-variant="btn-estat" @change="filtrar">
+                          <i class="fa-solid fa-circle in-progress mr-2"></i>En progrés
+                      </b-form-checkbox>
+                      <b-form-checkbox v-model="filtre.estat.requested" name="check-button" button button-variant="btn-estat" @change="filtrar">
+                          <i class="fa-solid fa-circle requested mr-2"></i>Sol·licitat
+                      </b-form-checkbox>
+                      <b-form-checkbox v-model="filtre.estat.accepted" name="check-button" button button-variant="btn-estat" @change="filtrar">
+                          <i class="fa-solid fa-circle accepted mr-2"></i>Acceptat
+                      </b-form-checkbox>
+                      <b-form-checkbox v-model="filtre.estat.closed" name="check-button" button button-variant="btn-estat" @change="filtrar">
+                          <i class="fa-solid fa-circle closed mr-2"></i>Tancat
+                      </b-form-checkbox>
+                      <b-form-checkbox v-model="filtre.estat.immobilized" name="check-button" button button-variant="btn-estat" @change="filtrar">
+                          <i class="fa-solid fa-circle immobilized mr-2"></i>Immobilitzat
+                      </b-form-checkbox>
+                </div>
+          </b-col>
+          <b-col cols="3"> </b-col>
+          <b-col cols="5" class="col-filtrar">
+            <b-form inline class="justify-content-end">
+              <label class="mr-sm-2" for="filtre-codi">Codi</label>
+              <b-form-input
+                name="filtre-codi"
+                id="filtre-codi"
+                v-model="filtre.codi"
+                class="mb-2 mr-sm-2 mb-sm-0 form-control-sm"
+                placeholder="Exemple: EXP-1"
+              ></b-form-input>
+              <b-button variant="info" class="btn-sm" @click="filtrar"
+                ><i class="fa-solid fa-filter"></i> Filtrar</b-button
+              >
+              <b-button class="btn-sm" variant="secondary ml-2" @click="getExpedients(false)">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                Mostrar tots</b-button
+              >
+            </b-form>
+          </b-col>
+        </b-row>
+      </b-card>
     </div>
+
+    <b-card class="p-3 card-container">
+      <b-table
+        v-if="!isLoading"
+        striped
+        hover
+        small
+        thead-class="thead-dark"
+        :items="expedients.data"
+        :fields="fields"
+      >
+        <template #cell(estats_expedients_id)="data">
+          <div>
+            <i :class="getState(data.item.estats_expedients_id)"></i>
+          </div>
+        </template>
+
+        <template #cell(see_expedient)="data">
+          <div>
+            <button
+              type="button"
+              class="btn btn-sm button-edit"
+              title="Veure dades"
+              v-b-modal.modal-expedients
+              @click="loadModal(data.item)"
+            >
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </template>
+      </b-table>
+
+      <div v-else class="loading-spinner">
+        <svg-vue icon="spinner" class="mx-auto my-auto" width="100" />
+      </div>
+
+      <pagination
+        v-show="!isLoading"
+        class="justify-center-center pagination-sm"
+        :data="expedients"
+        @pagination-change-page="fetchExpedients"
+      >
+      </pagination>
+    </b-card>
+
+    <!-- Modal -->
+    <b-modal
+      v-show="!isLoading2"
+      id="modal-expedients"
+      class="modal-calls"
+      title="Trucades de l'expedient"
+      size="huge"
+      @ok="updateExpedient"
+      :hide-footer="isLoading2"
+    >
+      <b-table
+        v-if="trucades.length > 0"
+        striped
+        hover
+        small
+        thead-class="thead-dark"
+        :items="trucades"
+        :fields="callFields"
+        v-show="!isLoading2"
+      >
+        <template #cell(cartes_trucades_has_agencies)="data">
+          <p style="display: none">{{ data.item.id }}</p>
+          <button
+            class="button-edit"
+            v-b-modal.modal-info-calls
+            @click="
+              loadAgencies(data.item.cartes_trucades_has_agencies, data.item)
+            "
+          >
+            <i class="fa-solid fa-eye m-1"></i>
+          </button>
+        </template>
+        <template #cell(show-nota-comuna)="data">
+          <div>
+            <p style="display: none">{{ data.item.id }}</p>
+            <button
+              class="button-edit"
+              v-b-modal.modal-info-calls
+              @click="
+                loadInfo(
+                  data.item.nom_trucada,
+                  data.item.nota_comuna_descripcio
+                )
+              "
+            >
+              <i class="fa-solid fa-eye m-1"></i>
+            </button>
+          </div>
+        </template>
+      </b-table>
+
+      <div v-else v-show="!showTrucades">
+        No hi ha trucades enllaçades a aquest expedient realitzades per aquest
+        usuari.
+      </div>
+
+      <div
+        v-show="!isLoading2"
+        v-if="user.perfils_id != 1"
+        class="div-expedient-estate"
+      >
+        <p>Estat de l'expedient:</p>
+        <b-form-select
+          v-model="expedient.estats_expedients_id"
+          id="estats_expedients_id"
+          name="estats_expedients_id"
+          :options="renderConditions"
+        >
+        </b-form-select>
+      </div>
+
+      <div v-if="this.isLoading2" class="loading-spinner">
+        <svg-vue icon="spinner" class="mx-auto my-auto" width="100" />
+      </div>
+    </b-modal>
+
+    <!-- Modal with call information -->
+    <b-modal
+      id="modal-info-calls"
+      class="modal-info-calls"
+      :title="modalTitle2"
+      size="lg"
+      ok-only
+      @ok="updateExpedient"
+    >
+      <div v-if="!this.modal_agencia">
+        <p>Nom: {{ this.name_call }}</p>
+        <label for="txtNotaComuna">Descripció:</label>
+        <textarea
+          name="txtNotaComuna"
+          id="txtNotaComuna"
+          class="w-100 p-2"
+          cols="30"
+          rows="10"
+          v-model="this.description_call"
+          readonly
+        ></textarea>
+      </div>
+      <div v-else>
+        <b-table
+          striped
+          hover
+          small
+          bordered
+          thead-class="thead-dark"
+          :items="agencies_contactades"
+          :fields="agenciesFields"
+          v-show="!isLoading3"
+        >
+          <template #cell(estats_agencies_id)="data">
+            <p style="display: none">{{ data.item.id }}</p>
+
+            <b-form-select
+              class="select-agency"
+              v-model="data.item.estats_agencies_id"
+              id="estats_agencies_id"
+              name="estats_agencies_id"
+              @change="
+                updateEstatAgencies(
+                  data.item.agencia.id,
+                  data.item.estats_agencies_id
+                )
+              "
+              :options="renderEstatsAgencies"
+            >
+            </b-form-select>
+          </template>
+        </b-table>
+      </div>
+
+      <div v-if="this.isLoading3" class="loading-spinner">
+        <svg-vue icon="spinner" class="mx-auto my-auto" width="100" />
+      </div>
+    </b-modal>
+  </div>
 </template>
 
 <script>
 export default {
-    mounted() {
-      document.title = "Expedients - Broggi";
-      this.getExpedients();
-      this.getEstatsExpedients();
-      this.user = window.Vue.prototype.$user;
+  mounted() {
+    document.title = "Expedients - Broggi";
+    this.getExpedients(true);
+    this.getEstatsExpedients();
+    this.getEstatsAgencies();
+    this.user = window.Vue.prototype.$user;
+  },
+  created() {
+    this.fetchExpedients();
+  },
+  data() {
+    return {
+      request: null,
+      isCancel: false,
+      isSearching: false,
+      isLoading: true,
+      isLoading2: true,
+      isLoading3: true,
+      modalTitle2: "",
+      user: {},
+      fields: [
+        {
+          key: "estats_expedients_id",
+          label: "Estat",
+          sortable: true,
+          tdClass: "centered-text-class",
+          thClass: "estat-th-column",
+        },
+        {
+          key: "id",
+          label: "Id",
+          sortable: true,
+          tdClass: "centered-text-class",
+          thClass: "id-th-column",
+        },
+        {
+          key: "codi",
+          label: "Codi Expedient",
+          sortable: true,
+          tdClass: "centered-text-class",
+          thClass: "codi-exp-th-column",
+        },
+        {
+          key: "data_creacio",
+          label: "Data creació",
+          sortable: true,
+          tdClass: "centered-text-class",
+          thClass: "created-th-column",
+        },
+        {
+          key: "data_ultima_modificacio",
+          label: "Ultima modificació",
+          sortable: true,
+          tdClass: "centered-text-class",
+          thClass: "modified-th-column",
+        },
+        {
+          key: "see_expedient",
+          label: "Més dades",
+          tdClass: "centered-text-class",
+          thClass: "edit-th-column",
+        },
+      ],
+      callFields: [
+        {
+          key: "codi_trucada",
+          label: "Codi",
+          sortable: true,
+          tdClass: "centered-text-class",
+          thClass: "codi-th-column",
+        },
+        {
+          key: "telefon",
+          label: "Número de telèfon",
+          tdClass: "centered-text-class",
+          thClass: "num-telf-th-column",
+        },
+        {
+          key: "descripcio_localitzacio",
+          label: "Localització",
+          tdClass: "centered-text-class",
+          thClass: "localitzacio-th-column",
+        },
+        {
+          key: "incident.descripcio",
+          label: "Incident",
+          tdClass: "centered-text-class",
+          thClass: "incident-th-column",
+        },
+        {
+          key: "cartes_trucades_has_agencies",
+          label: "Agències",
+          tdClass: "centered-text-class",
+          thClass: "agencies-th-column",
+        },
+        {
+          key: "show-nota-comuna",
+          label: "Nota comuna",
+          tdClass: "centered-text-class",
+          thClass: "nota-comuna-th-column",
+        },
+      ],
+      agenciesFields: [
+        {
+          key: "agencia.id",
+          label: "Id",
+          sortable: true,
+          tdClass: "centered-text-class",
+          thClass: "id-th-column",
+        },
+        {
+          key: "agencia.nom",
+          label: "Nom",
+          tdClass: "centered-text-class",
+          thClass: "localitzacio-th-column",
+        },
+        {
+          key: "estats_agencies_id",
+          label: "Estat",
+          tdClass: "centered-text-class",
+          thClass: "estats-agencies-th-column",
+        },
+      ],
+      expedients: {},
+      trucades: [],
+      expedient_conditions: [],
+      estats_agencies: [],
+      options: [],
+      name_call: "",
+      description_call: "",
+      agencies_contactades: [],
+      modal_agencia: true,
+      showTrucades: true,
+      expedient: {
+        id: "",
+        data_creacio: "",
+        data_ultima_modificacio: "",
+        estats_expedients_id: "",
+      },
+      call: {
+        id: "",
+        expedients_id: "",
+        cartes_trucades_has_agencies: {},
+      },
+      filtre:{
+          codi: '',
+          estat: {
+              in_progress: false,
+              accepted: false,
+              requested: false,
+              closed: false,
+              immobilized: false
+          }
+      }
+    };
+  },
+  computed: {
+    renderConditions() {
+      return this.expedient_conditions.map((condition) => {
+        return {
+          value: condition.id,
+          text: condition.estat,
+        };
+      });
     },
-    data(){
-        return{
-            isLoading: true,
-            isLoading2: true,
-            isLoading3: true,
-            modalTitle2: "",
-            user: {},
-            fields: [
-                {
-                    key: 'estats_expedients_id',
-                    label: 'Estat' ,
-                    sortable: true,
-                    tdClass: 'centered-text-class',
-                    thClass: 'estat-th-column'
-                },
-                {
-                    key: 'id',
-                    label: 'Id',
-                    sortable: true,
-                    tdClass: 'centered-text-class',
-                    thClass: 'id-th-column'
-                },
-                {
-                    key: 'data_creacio',
-                    label: 'Data creació',
-                    sortable: true,
-                    tdClass: 'centered-text-class',
-                    thClass: 'created-th-column'
-                },
-                {
-                    key: 'data_ultima_modificacio',
-                    label: 'Ultima modificació',
-                    sortable: true,
-                    tdClass: 'centered-text-class',
-                    thClass: 'modified-th-column'
-                },
-                {
-                    key:'see_expedient',
-                    label: '',
-                    tdClass: 'centered-text-class',
-                    thClass: 'edit-th-column'
-                }
+    renderEstatsAgencies() {
+      return this.estats_agencies.map((condition) => {
+        return {
+          value: condition.id,
+          text: condition.estat,
+        };
+      });
+    },
+  },
+  methods: {
+    getState(state) {
+      let classname = "";
+      switch (state) {
+        case 1:
+          classname = "fa-solid fa-circle in-progress";
+          break;
+        case 2:
+          classname = "fa-solid fa-circle requested";
+          break;
+        case 3:
+          classname = "fa-solid fa-circle accepted";
+          break;
+        case 4:
+          classname = "fa-solid fa-circle closed";
+          break;
+        case 5:
+          classname = "fa-solid fa-circle immobilized";
+          break;
+      }
 
-            ],
-            callFields:[
-                {
-                    key: 'codi_trucada',
-                    label: 'Codi',
-                    sortable: true,
-                    tdClass: 'centered-text-class',
-                    thClass: 'codi-th-column'
-                },{
-                    key: 'tipus_localitzacions_id',
-                    label: 'Localització',
-                    tdClass: 'centered-text-class',
-                    thClass: 'localitzacio-th-column'
-                },{
-                    key: 'incident.descripcio',
-                    label: 'Incident',
-                    tdClass: 'centered-text-class',
-                    thClass: 'incident-th-column'
-                },{
-                    key: 'cartes_trucades_has_agencies',
-                    label: 'Agències',
-                    tdClass: 'centered-text-class',
-                    thClass: 'agencies-th-column'
-                },{
-                    key: 'show-nota-comuna',
-                    label: 'Nota comuna',
-                    tdClass: 'centered-text-class',
-                    thClass: 'nota-comuna-th-column'
-                }
-            ],
-            expedients: [],
-            trucades: [],
-            expedient_conditions: [],
-            options: [],
-            expedientState: '',
-            name_call: '',
-            description_call: '',
-            agencies_contactades: [],
-            modal_agencia: true,
-            showTrucades: true
-        }
+      return classname;
     },
-    computed: {
-        renderConditions() {
-            return this.expedient_conditions.map((condition) => {
-                return {
-                    value: condition.id,
-                    text: condition.estat
-                }
-            })
-        }
+    getExpedients(firstTime) {
+      firstTime == true ? (this.isLoading = true) : false;
+      this.filtre.estat.in_progress = false;
+      this.filtre.estat.requested = false;
+      this.filtre.estat.accepted = false;
+      this.filtre.estat.closed = false;
+      this.filtre.estat.immobilized = false;
+      this.filtre.codi = '';
+
+      let me = this;
+      axios
+        .get("/api/expedients/")
+        .then((response) => {
+          me.expedients = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => (this.isLoading = false));
     },
-    methods:{
-        getState(state){
-            let classname = '';
-            switch(state){
-                case 1:
-                    classname = 'fa-solid fa-circle in-progress';
-                    break;
-                case 2:
-                    classname = 'fa-solid fa-circle requested';
-                    break;
-                case 3:
-                    classname = 'fa-solid fa-circle accepted';
-                    break;
-                case 4:
-                    classname = 'fa-solid fa-circle closed';
-                    break;
-                case 5:
-                    classname = 'fa-solid fa-circle immobilized';
-                    break;
+    loadModal(expedient) {
+      if (this.request) this.request.cancel();
+
+      let axiosSource = axios.CancelToken.source();
+      this.request = { cancel: axiosSource.cancel };
+
+      this.expedient = expedient;
+      this.showTrucades = true;
+      this.isLoading2 = true;
+      let me = this;
+
+      axios
+        .get(
+          "/api/cartestrucades/list/" +
+            this.expedient.id +
+            "?id_rol=" +
+            this.user.perfils_id +
+            "&id_user=" +
+            this.user.id, {
+                cancelToken: axiosSource.token,
+        })
+        .then((response) => {
+            if(response.status === 200){
+                me.trucades = response.data;
+                if (me.trucades.length == 0) {
+                    me.showTrucades = false;
+                }
+            }else{
+                me.errorMessagePopoverCall = 'No s\'ha pogut cargar les dades...';
             }
 
-            return classname;
-        },
+        })
+        .catch(function (error) {
+                 if(!axios.isCancel(error)) {
+                    me.errorMessagePopoverCall = 'No s\'ha pogut cargar les dades...';
 
-        getExpedients(){
-            this.isLoading = true;
-            let me = this;
-            axios
-                .get('/api/expedients/')
-                .then(response =>{
-                    me.expedients = response.data;
-                })
-                .catch(error => {
-                    console.log(error)
-                })
-                .finally(() => this.isLoading = false)
-        },
-        getCalls(idExpedient, idEstatExpedient){
-            this.expedientState = idEstatExpedient;
-            this.showTrucades = true;
-            this.isLoading2 = true;
-            let me = this;
+                    console.error(error);
+                } else {
+                    me.isCancel = true;
+                }
+            })
+            .finally(() => {
+                me.request = null;
 
-            axios
-                .get('/api/cartestrucades/list/' + idExpedient + '?id_rol=' + this.user.perfils_id + '&id_user=' + this.user.id)
-                .then(response =>{
-                    me.trucades = response.data;
-                    if(me.trucades.length == 0){
-                        me.showTrucades = false;
-                    }
-                })
-                .catch(error => {
-                    console.log(error)
-                })
-                .finally(() => this.isLoading2 = false)
-        },
-        getEstatsExpedients(){
-            let me = this;
-            this.isLoading2 = true;
-            axios
-                .get('/api/estats_expedients/')
-                .then(response =>{
-                    me.expedient_conditions = response.data;
-                })
-                .catch(error =>{
-                    console.log(error)
-                })
-                .finally(() => this.isLoading2 = false)
-        },
-        loadInfo(name, nota_comuna_descripcio){
-            this.name_call = name;
-            this.description_call = nota_comuna_descripcio;
-            this.isLoading3 = false;
-            this.modal_agencia = false;
-            this.modalTitle2 = "Nota comuna";
-        },
-        loadAgencies(agencies){
-            this.agencies_contactades = agencies;
-            this.isLoading3 = false;
-            this.modal_agencia = true;
-            this.modalTitle2 = "Agències contactades";
-        }
-    }
-}
+                if (!me.isCancel) {
+                    me.isLoading2 = false;
+                    me.isSearching = false;
+                }
+
+                me.isCancel = false;
+            });
+    },
+    getEstatsExpedients() {
+      let me = this;
+      this.isLoading2 = true;
+      axios
+        .get("/api/estats_expedients/")
+        .then((response) => {
+          me.expedient_conditions = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => (this.isLoading2 = false));
+    },
+    getEstatsAgencies() {
+      let me = this;
+      this.isLoading3 = true;
+      axios
+        .get("/api/estats_agencies/")
+        .then((response) => {
+          me.estats_agencies = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => (this.isLoading3 = false));
+    },
+    loadInfo(name, nota_comuna_descripcio) {
+      this.name_call = name;
+      this.description_call = nota_comuna_descripcio;
+      this.isLoading3 = false;
+      this.modal_agencia = false;
+      this.modalTitle2 = "Nota comuna";
+    },
+    loadAgencies(agencies, call) {
+      this.call = call;
+      this.agencies_contactades = agencies;
+      this.isLoading3 = false;
+      this.modal_agencia = true;
+      this.modalTitle2 = "Agències contactades";
+    },
+    updateExpedient() {
+      axios
+        .post(
+          "/api/expedients/put/" +
+            this.expedient.id +
+            "?estat_exp=" +
+            this.expedient.estats_expedients_id
+        )
+        .then((response) => {
+          if (response.status === 201) {
+            this.fetchExpedients();
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => {
+          this.getExpedients(false);
+        });
+    },
+    resetExpedient() {
+      expedient.id = "";
+      expedient.data_creacio = "";
+      expedient.data_ultima_modificacio = "";
+      expedient.estats_expedients_id = "";
+    },
+    updateEstatAgencies(agencia_id, estat_agencia) {
+      axios
+        .post(
+          "/api/cartes_trucades_has_agencies/put/" +
+            this.call.id +
+            "/" +
+            agencia_id +
+            "?estat_agencia=" +
+            estat_agencia
+        )
+        .then(() => {
+          this.updateExpedient();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    fetchExpedients(page = 1) {
+      let me = this;
+
+      axios
+        .get(`api/expedients?page=${page}`)
+        .then((response) => {
+          me.expedients = response.data;
+        })
+        .catch((error) => {
+          console.error(error, error.response.data);
+        })
+        .finally(() => {
+          me.isLoading = false;
+        });
+    },
+    filtrar(){
+        let consulta = new URLSearchParams({
+            filtreCodi: this.filtre.codi,
+            filtreEstat1: this.filtre.estat.in_progress,
+            filtreEstat2: this.filtre.estat.requested,
+            filtreEstat3: this.filtre.estat.accepted,
+            filtreEstat4: this.filtre.estat.closed,
+            filtreEstat5: this.filtre.estat.immobilized
+        });
+        console.log(consulta);
+        let me = this;
+        axios
+            .get("/api/expedients?" + consulta)
+            .then((response) => {
+                me.expedients = response.data;
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    },
+  },
+};
 </script>
 
 <style scoped>
-.card-container{
+.card-container {
+  background-color: white;
+  border: 1px;
+  box-shadow: 0px 5px 25px 0px rgb(0 0 0 / 20%);
+}
+
+.in-progress {
+  color: rgb(0, 255, 21);
+  border-radius: 50%;
+  height: 15px;
+}
+.requested {
+  color: yellow;
+  border-radius: 50%;
+  height: 15px;
+}
+.accepted {
+  color: rgb(3, 250, 3);
+  border-radius: 50%;
+  height: 15px;
+}
+.closed {
+  color: blue;
+  border-radius: 50%;
+  height: 15px;
+}
+.immobilized {
+  color: rgb(150, 22, 150);
+  border-radius: 50%;
+  height: 15px;
+}
+
+.button-edit {
+  border-radius: 5px;
+  border: 0px;
+  background-color: #06adc4;
+  padding-inline: 10px;
+  color: white;
+}
+
+.button-edit:hover {
+  transform: scale(1.1);
+  transition: 500ms;
+}
+
+.loading-spinner {
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+}
+::v-deep .centered-text-class {
+  text-align: center;
+  vertical-align: middle;
+}
+
+::v-deep .estat-th-column {
+  text-align: center;
+  width: 2%;
+  vertical-align: middle;
+}
+
+::v-deep .id-th-column {
+  text-align: center;
+  vertical-align: middle;
+  width: 2%;
+}
+
+::v-deep .codi-exp-th-column {
+  text-align: center;
+  vertical-align: middle;
+  width: 10%;
+}
+
+::v-deep .created-th-column {
+  text-align: center;
+  vertical-align: middle;
+  width: 20%;
+}
+
+::v-deep .modified-th-column {
+  text-align: center;
+  vertical-align: middle;
+  width: 20%;
+}
+
+::v-deep .edit-th-column {
+  text-align: center;
+  vertical-align: middle;
+  width: 10%;
+}
+
+/* 2nd table */
+::v-deep .codi-th-column {
+  text-align: center;
+  vertical-align: middle;
+  width: 5%;
+}
+
+::v-deep .agencies-th-column {
+  text-align: center;
+  vertical-align: middle;
+  width: 5%;
+}
+
+::v-deep .incident-th-column {
+  text-align: center;
+  vertical-align: middle;
+  width: 20%;
+}
+
+::v-deep .localitzacio-th-column {
+  text-align: center;
+  vertical-align: middle;
+  width: 15%;
+}
+
+::v-deep .num-telf-th-column {
+  text-align: center;
+  vertical-align: middle;
+  width: 10%;
+}
+
+::v-deep .nota-comuna-th-column {
+  text-align: center;
+  vertical-align: middle;
+  width: 5%;
+}
+
+::v-deep .estats-agencies-th-column {
+  text-align: center;
+  vertical-align: middle;
+  width: 5%;
+}
+
+@media (min-width: 992px) {
+  ::v-deep .modal .modal-huge {
+    max-width: 90% !important;
+    width: 90% !important;
+  }
+}
+
+.div-expedient-estate {
+  width: 150px;
+  padding-top: 30px;
+}
+
+::v-deep .modal-body {
+  padding: 30px !important;
+}
+
+::v-deep .select-agency {
+  width: 100%;
+  text-align: center;
+}
+
+/* CSS FILTROS */
+.leyenda {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  vertical-align: middle;
+  justify-content: space-around;
+}
+
+.col-filtrar{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.show-card {
     background-color: white;
     border: 1px;
     box-shadow: 0px 5px 25px 0px rgb(0 0 0 / 20%);
 }
 
-.in-progress{
-    color: rgb(0, 255, 21);
-    border-radius: 50%;
-    height: 15px;
-}
-.requested{
-    color: yellow;
-    border-radius: 50%;
-    height: 15px;
-}
-.accepted{
-    color: rgb(3, 250, 3);
-    border-radius: 50%;
-    height: 15px;
-}
-.closed{
-    color: blue;
-    border-radius: 50%;
-    height: 15px;
-}
-.immobilized{
-    color: rgb(150, 22, 150);
-    border-radius: 50%;
-    height: 15px;
+::v-deep .card_body{
+  padding: 1rem;
+  padding-inline: 2.25rem;
 }
 
-.button-edit{
-    border-radius: 5px;
+.btn-estat{
+    background: transparent;
+    color: black;
     border: 0px;
-    background-color: #06adc4;
-    padding: 10px;
-    color: white;
 }
 
-.button-edit:hover{
-    transform: scale(1.1);
-    transition: 500ms;
+::v-deep .leyenda .focus{
+    box-shadow: 0 0 0 0 !important;
 }
 
-.loading-spinner{
-    width: 100%;
-    text-align: center;
-    justify-content: center;
-    margin-top: 150px;
-}
-
-.loading-spinner2{
-    width: 100%;
-    text-align: center;
-    justify-content: center;
-}
-::v-deep .centered-text-class{
-    text-align: center;
-    vertical-align: middle;
-}
-
-::v-deep .estat-th-column{
-    text-align: center;
-    width: 2%;
-    vertical-align: middle;
-}
-
-::v-deep .id-th-column{
-    text-align: center;
-    vertical-align: middle;
-    width: 2%;
-}
-
-::v-deep .created-th-column{
-    text-align: center;
-    vertical-align: middle;
-    width: 20%;
-}
-
-::v-deep .modified-th-column{
-    text-align: center;
-    vertical-align: middle;
-    width: 20%;
-}
-
-::v-deep .edit-th-column{
-    text-align: center;
-    vertical-align: middle;
-    width: 10%;
-}
-
-/* 2nd table */
-::v-deep .codi-th-column{
-    text-align: center;
-    vertical-align: middle;
-    width: 5%;
-}
-
-::v-deep .agencies-th-column{
-    text-align: center;
-    vertical-align: middle;
-    width: 5%;
-}
-
-::v-deep .incident-th-column{
-    text-align: center;
-    vertical-align: middle;
-    width: 20%;
-}
-
-::v-deep .localitzacio-th-column{
-    text-align: center;
-    vertical-align: middle;
-    width: 15%;
-}
-
-::v-deep .nota-comuna-th-column{
-    text-align: center;
-    vertical-align: middle;
-    width: 5%;
-}
-
-@media (min-width: 992px) {
-   ::v-deep .modal .modal-huge {
-      max-width: 90% !important;
-      width: 90% !important;;
-    }
- }
-
-.div-expedient-estate{
-    width: 150px;
-    padding-top: 30px;
-}
-
-::v-deep .modal-body{
-    padding: 30px !important;
+::v-deep .leyenda .active{
+    background: transparent !important;
+    color: black !important;
+    box-shadow: 0 0 0 0.1rem black !important;
 }
 
 </style>

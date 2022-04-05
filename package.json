@@ -25,9 +25,12 @@
         "vue-template-compiler": "^2.6.12"
     },
     "dependencies": {
+        "@vue/composition-api": "^1.4.9",
         "bootstrap-vue": "^2.21.2",
+        "chart.js": "^2.7.1",
         "laravel-mix-svg-vue": "^0.4.1",
         "laravel-vue-pagination": "^2.3",
+        "vue-chartjs": "^3.4.0",
         "mapbox-gl": "^2.7.1"
     }
 }
