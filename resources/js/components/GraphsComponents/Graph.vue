@@ -10,7 +10,7 @@ export default {
                 labels: [],
                 datasets: [
                     {
-                        label: "Estat ",
+                        label: "",
                         borderWidth: 2,
                         backgroundColor: [],
                         borderColor: [],
@@ -34,7 +34,7 @@ export default {
                     xAxes: [
                         {
                             gridLines: {
-                                display: false,
+                                display: true,
                             },
                         },
                     ],
@@ -53,10 +53,13 @@ export default {
             axios
                 .get("/api/graph-expedients-status/")
                 .then((response) => {
+                    me.chartData.datasets[0].label = "Estat dels expedients";
                     me.chartData.labels = [];
                     response.data.forEach((element) => {
                         me.chartData.labels.push(element.estat);
                     });
+
+                    me.returnDatos=me.chartData.labels
 
                     me.chartData.datasets[0].data = [];
                     response.data.forEach((element) => {
@@ -65,7 +68,7 @@ export default {
 
                     me.chartData.datasets[0].backgroundColor = [];
                     me.chartData.datasets[0].backgroundColor = [
-                        "rgb(0, 255, 21 , 0.2)",
+                        "rgb(5, 100, 8 , 0.2)",
                         "rgb(253, 253, 7, 0.2)",
                         "rgb(3, 250, 3,0.2)",
                         "rgb(0, 0, 255, 0.2)",
@@ -74,7 +77,7 @@ export default {
 
                     me.chartData.datasets[0].borderColor = [];
                     me.chartData.datasets[0].borderColor = [
-                        "rgb(0, 255, 21 , 1)",
+                        "rgb(5, 100, 8 , 1)",
                         "rgb(253, 253, 7, 1)",
                         "rgb(3, 250, 3,1)",
                         "rgb(0, 0, 255, 1)",
@@ -92,6 +95,7 @@ export default {
             axios
                 .get("/api/graph-users-perfil/")
                 .then((response) => {
+                    me.chartData.datasets[0].label = "Perfils d'usuaris";
                     me.chartData.labels = [];
                     response.data.forEach((element) => {
                         me.chartData.labels.push(element.nom);
