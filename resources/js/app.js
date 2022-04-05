@@ -9,14 +9,15 @@ require("./bootstrap");
 import { BootstrapVue } from "bootstrap-vue";
 import VueRouter from "vue-router";
 import SvgVue from 'svg-vue';
-import chartjs from 'vue-chartjs';
+import ChartJs from 'vue-chartjs';
+import Moment from 'vue-moment';
 
 window.Vue = require("vue").default;
 window.Vue.use(BootstrapVue);
 window.Vue.use(VueRouter);
 window.Vue.use(SvgVue);
-window.Vue.use(chartjs);
-
+window.Vue.use(ChartJs);
+window.Vue.use(Moment);
 
 /**
  * The following block of code may be used to automatically register your
@@ -50,6 +51,7 @@ const Users = Vue.component("users", require("./pages/Users.vue").default);
 const NotFound = Vue.component("notfound", require("./pages/NotFound.vue").default);
 
 const router = new VueRouter({
+    base: '/',
     mode: "history",
     routes: [
         { path: "/expedients", component: Expedients },

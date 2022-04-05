@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Class\Utilitat;
+use App\Utilities\DBUtility;
 use App\Models\Expedients;
 use Illuminate\Http\Request;
 use function PHPSTORM_META\map;
@@ -100,7 +100,7 @@ class ExpedientsController extends Controller
                 ->response()
                 ->setStatusCode(201);
         } catch (QueryException $ex) {
-            $missatge = Utilitat::errorMessage($ex);
+            $missatge = DBUtility::getPDOErrorMessage($ex);
             $response = \response()
                 ->json(['error' => $missatge], 400);
         }
