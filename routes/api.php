@@ -55,5 +55,7 @@ Route::post('/expedients/put/{expedient}', [ExpedientsController::class, 'update
 Route::post('cartes_trucades_has_agencies/put/{id_call}/{id_agency}', [CartesTrucadesHasAgenciesController::class, 'update']);
 Route::post('users/put/update/{user}',[UsuarisController::class,"update"]);
 Route::post('users/put/updatePassword/{user}',[UsuarisController::class,"updatePassword"]);
+Route::get('graph-expedients-status', [ExpedientsController::class,"graph_expedients_status"]);
+Route::get('graph-users-perfil', [UsuarisController::class,"graph_users_perfil"]);
 
 
