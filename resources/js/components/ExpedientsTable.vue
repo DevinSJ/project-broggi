@@ -817,5 +817,4 @@ export default {
     color: black !important;
     box-shadow: 0 0 0 0.1rem black !important;
 }
-
 </style>

@@ -4,13 +4,19 @@
             <b-button
                 variant="secondary"
                 class="btn-circle order-1 mr-2 align-self-end"
-                title="2Video interactiu"
+                title="Video interactiu"
                 @click="openModalVideoInteractive"
             >
                 <i class="fa fa-play"></i>
             </b-button>
-            <div class="d-flex flex-column order-2" v-click-outside="hideItemsLang">
-                <div class="d-flex flex-column-reverse align-items-center mb-2" id="buttons-langs">
+            <div
+                class="d-flex flex-column order-2"
+                v-click-outside="hideItemsLang"
+            >
+                <div
+                    class="d-flex flex-column-reverse align-items-center mb-2"
+                    id="buttons-langs"
+                >
                     <b-button
                         id="en-lang"
                         variant="secondary"
@@ -50,55 +56,99 @@
                 </b-button>
             </div>
         </div>
-        <div id="popoverLang"
-            :class="isShowPopover ? 'popover' : 'popover d-none'">
+        <div
+            id="popoverLang"
+            :class="isShowPopover ? 'popover' : 'popover d-none'"
+        >
             <div class="popover-header">
                 <div class="d-flex w-100">
-                    <svg-vue v-if="isLoadingPopoverLang" icon="spinner" class="mx-auto my-auto" width="20"/>
+                    <svg-vue
+                        v-if="isLoadingPopoverLang"
+                        icon="spinner"
+                        class="mx-auto my-auto"
+                        width="20"
+                    />
                     <template v-else>
-                        <b-input type="text" v-model="search" v-on:input="inputSearchChange" class="form-control-sm mr-2" placeholder="Buscar traducció"/>
-                        <img :src="imageSrcLang"/>
+                        <b-input
+                            type="text"
+                            v-model="search"
+                            v-on:input="inputSearchChange"
+                            class="form-control-sm mr-2"
+                            placeholder="Buscar traducció"
+                        />
+                        <img :src="imageSrcLang" />
                     </template>
                 </div>
             </div>
             <div class="popover-body">
                 <div class="container-fluid h-100 w-100 p-2 d-flex flex-column">
                     <label v-if="!isChrome" class="text-danger">
-                        Para escuchar las traducciones recomendamos usar el Chrome.
+                        Para escuchar las traducciones recomendamos usar el
+                        Chrome.
                     </label>
-                    <label v-if="errorMessagePopoverLang && !isLoadingPopoverLang && !isSearching" class="text-danger">
+                    <label
+                        v-if="
+                            errorMessagePopoverLang &&
+                            !isLoadingPopoverLang &&
+                            !isSearching
+                        "
+                        class="text-danger"
+                    >
                         {{ errorMessagePopoverLang }}
                     </label>
-                    <svg-vue v-if="isLoadingPopoverLang || isSearching" icon="spinner" class="mx-auto my-auto" width="50"/>
-                    <div v-for="lang in langsData" :key="lang.id" class="border-bottom mb-2">
-                        <label class="d-block font-weight-bold">{{lang[selectedLang.replace('-', '_')]}}<i class="ml-2 fa-solid fa-volume-high" role="button" @click="() => speechText(lang[selectedLang.replace('-', '_')])"></i></label>
-                        <label class="text-secondary">{{lang.ca_lang}}</label>
+                    <svg-vue
+                        v-if="isLoadingPopoverLang || isSearching"
+                        icon="spinner"
+                        class="mx-auto my-auto"
+                        width="50"
+                    />
+                    <div
+                        v-for="lang in langsData"
+                        :key="lang.id"
+                        class="border-bottom mb-2"
+                    >
+                        <label class="d-block font-weight-bold"
+                            >{{ lang[selectedLang.replace("-", "_")]
+                            }}<i
+                                class="ml-2 fa-solid fa-volume-high"
+                                role="button"
+                                @click="
+                                    () =>
+                                        speechText(
+                                            lang[selectedLang.replace('-', '_')]
+                                        )
+                                "
+                            ></i
+                        ></label>
+                        <label class="text-secondary">{{ lang.ca_lang }}</label>
                     </div>
                 </div>
             </div>
         </div>
-        <VideoInteractive ref="modalVideoInteractive"/>
+        <VideoInteractive ref="modalVideoInteractive" />
     </div>
 </template>
 
 <script>
-window.Vue.directive('click-outside', {
+window.Vue.directive("click-outside", {
     bind: function (el, binding, vnode) {
         window.event = function (event) {
             if (!(el == event.target || el.contains(event.target))) {
                 vnode.context[binding.expression](event);
             }
         };
-        document.body.addEventListener('click', window.event)
+        document.body.addEventListener("click", window.event);
     },
     unbind: function (el) {
-        document.body.removeEventListener('click', window.event)
+        document.body.removeEventListener("click", window.event);
     },
 });
 
 export default {
     mounted() {
-        this.buttonsLangsElements = Array.prototype.slice.call(document.querySelectorAll('#buttons-langs > button'));
+        this.buttonsLangsElements = Array.prototype.slice.call(
+            document.querySelectorAll("#buttons-langs > button")
+        );
     },
     data() {
         return {
@@ -109,13 +159,14 @@ export default {
             isShowPopover: false,
             isLoadingPopoverLang: false,
             isSearching: false,
-            errorMessagePopoverLang: '',
-            selectedLang: '',
-            imageSrcLang: '',
+            errorMessagePopoverLang: "",
+            selectedLang: "",
+            imageSrcLang: "",
             langsData: [],
-            search: '',
+            search: "",
             timeoutSearch: null,
-            isChrome: window.navigator.userAgent.toLowerCase().indexOf('chrome') > -1
+            isChrome:
+                window.navigator.userAgent.toLowerCase().indexOf("chrome") > -1,
         };
     },
     methods: {
@@ -128,11 +179,11 @@ export default {
                 let promise = new Promise((resolve) =>
                     setTimeout(() => {
                         if (!me.showItemsLang) {
-                            element.classList.remove('bounceOut');
-                            element.classList.add('bounceIn');
+                            element.classList.remove("bounceOut");
+                            element.classList.add("bounceIn");
                         } else {
-                            element.classList.remove('bounceIn');
-                            element.classList.add('bounceOut');
+                            element.classList.remove("bounceIn");
+                            element.classList.add("bounceOut");
                         }
 
                         resolve();
@@ -141,20 +192,20 @@ export default {
 
                 promise.then(function () {
                     setTimeout(() => {
-                        element.classList.toggle('d-none');
-                    }, 50 * index)
+                        element.classList.toggle("d-none");
+                    }, 50 * index);
                 });
             });
 
             this.isLoadingPopoverLang = true;
             this.isShowPopover = false;
-            this.selectedLang = '';
-            this.search = '';
+            this.selectedLang = "";
+            this.search = "";
 
             this.buttonsLangsElements = this.buttonsLangsElements.reverse();
         },
         hideItemsLang(e) {
-            let popoverLangElement = document.querySelector('#popoverLang');
+            let popoverLangElement = document.querySelector("#popoverLang");
 
             if (popoverLangElement && popoverLangElement.contains(e.target))
                 return;
@@ -168,25 +219,25 @@ export default {
                 this.isShowPopover = true;
                 this.isLoadingPopoverLang = true;
                 this.selectedLang = e.currentTarget.id;
-                this.search = '';
-                this.imageSrcLang = '';
-                this.errorMessagePopoverLang = '';
+                this.search = "";
+                this.imageSrcLang = "";
+                this.errorMessagePopoverLang = "";
                 this.langsData = [];
 
                 this.fetchLang();
             } else {
                 this.isLoadingPopoverLang = true;
                 this.isShowPopover = false;
-                this.selectedLang = '';
-                this.search = '';
-                this.imageSrcLang = '';
-                this.errorMessagePopoverLang = '';
+                this.selectedLang = "";
+                this.search = "";
+                this.imageSrcLang = "";
+                this.errorMessagePopoverLang = "";
                 this.langsData = [];
             }
         },
         inputSearchChange() {
             this.isSearching = true;
-            this.errorMessagePopoverLang = '';
+            this.errorMessagePopoverLang = "";
             this.langsData = [];
 
             clearTimeout(this.timeoutSearch);
@@ -205,58 +256,69 @@ export default {
 
             let me = this;
 
-            this.imageSrcLang = `/assets/img/ca-${this.selectedLang.split('-')[0]}.png`;
+            this.imageSrcLang = `/assets/img/ca-${
+                this.selectedLang.split("-")[0]
+            }.png`;
 
-            axios.get(`/api/help-phrases?search=${this.search}&type=${this.selectedLang.replace('-', '_')}`, {
-                cancelToken: axiosSource.token,
-            })
-            .then(function (data) {
-                if (data.status === 200) {
-                    me.langsData = data.data;
-                } else {
-                    me.errorMessagePopoverLang = 'No s\'ha pogut cargar les dades...';
+            axios
+                .get(
+                    `/api/help-phrases?search=${
+                        this.search
+                    }&type=${this.selectedLang.replace("-", "_")}`,
+                    {
+                        cancelToken: axiosSource.token,
+                    }
+                )
+                .then(function (data) {
+                    if (data.status === 200) {
+                        me.langsData = data.data;
+                    } else {
+                        me.errorMessagePopoverLang =
+                            "No s'ha pogut cargar les dades...";
 
-                    console.error(data);
-                }
-            })
-            .catch(function (error) {
-                 if(!axios.isCancel(error)) {
-                    me.errorMessagePopoverLang = 'No s\'ha pogut cargar les dades...';
+                        console.error(data);
+                    }
+                })
+                .catch(function (error) {
+                    if (!axios.isCancel(error)) {
+                        me.errorMessagePopoverLang =
+                            "No s'ha pogut cargar les dades...";
 
-                    console.error(error);
-                } else {
-                    me.isCancel = true;
-                }
-            })
-            .finally(() => {
-                me.request = null;
+                        console.error(error);
+                    } else {
+                        me.isCancel = true;
+                    }
+                })
+                .finally(() => {
+                    me.request = null;
 
-                if (!me.isCancel) {
-                    me.isLoadingPopoverLang = false;
-                    me.isSearching = false;
-                }
+                    if (!me.isCancel) {
+                        me.isLoadingPopoverLang = false;
+                        me.isSearching = false;
+                    }
 
-                me.isCancel = false;
-            });
+                    me.isCancel = false;
+                });
         },
         speechText(text) {
-            if ( 'speechSynthesis' in window ) {
+            if ("speechSynthesis" in window) {
                 window.speechSynthesis.cancel();
-                let lang = this.selectedLang.split('-')[0];
+                let lang = this.selectedLang.split("-")[0];
                 let msg = new SpeechSynthesisUtterance();
                 let voices = window.speechSynthesis.getVoices();
-                msg.voice = voices.filter(function (voice) { return voice.lang.split("-")[0] === lang; })[0];
+                msg.voice = voices.filter(function (voice) {
+                    return voice.lang.split("-")[0] === lang;
+                })[0];
                 msg.text = text;
                 msg.lang = lang;
                 window.speechSynthesis.speak(msg);
             } else {
-                alert('El teu navegador no suporta aquesta funció.');
+                alert("El teu navegador no suporta aquesta funció.");
             }
-
         },
         openModalVideoInteractive() {
             this.$refs.modalVideoInteractive.openModal();
-        }
+        },
     },
 };
 </script>
@@ -295,7 +357,7 @@ export default {
     transform: scale(0);
 }
 
-button[id$=lang] {
+button[id$="lang"] {
     background-size: cover;
     background-repeat: no-repeat;
     background-color: white;
@@ -303,19 +365,19 @@ button[id$=lang] {
 }
 
 #en-lang {
-    background-image: url('/assets/img/uk.png');
+    background-image: url("/assets/img/uk.png");
 }
 
 #de-lang {
-    background-image: url('/assets/img/de.png');
+    background-image: url("/assets/img/de.png");
 }
 
 #es-lang {
-    background-image: url('/assets/img/es.png');
+    background-image: url("/assets/img/es.png");
 }
 
 #fr-lang {
-    background-image: url('/assets/img/fr.png');
+    background-image: url("/assets/img/fr.png");
 }
 
 #popoverLang {

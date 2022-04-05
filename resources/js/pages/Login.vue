@@ -4,10 +4,7 @@
             class="col-lg-4 col-md-8 col-sm-8 p-4 shadow-lg user-select-none"
             no-body
         >
-            <img
-                src="/assets/img/logo.svg"
-                class="card-img mb-4"
-            />
+            <img src="/assets/img/logo.svg" class="card-img mb-4" />
             <b-card-body class="p-0">
                 <b-form @submit.prevent="login">
                     <div class="form-floating user-select-none">
@@ -65,7 +62,7 @@
                         class="w-100"
                         :disabled="isLoading"
                     >
-                        <svg-vue v-show="isLoading" icon="spinner" width="20"/>
+                        <svg-vue v-show="isLoading" icon="spinner" width="20" />
                         <span v-show="!isLoading">Accedir</span>
                     </b-button>
                 </b-form>
@@ -106,7 +103,8 @@ export default {
                         if (data.status === 200) {
                             window.location.href = data.data.home;
                         } else {
-                            me.errorMessage = "Usuari o contrasenya incorrecte.";
+                            me.errorMessage =
+                                "Usuari o contrasenya incorrecte.";
 
                             console.error(data);
 

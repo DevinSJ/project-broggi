@@ -3,51 +3,91 @@
         ref="modal"
         centered
         title="Video interactiu"
-        size="lg"
+        size="huge"
         modal-class="zoominout"
+        hide-footer
     >
-        <video
-            id="video-interactive"
-            ref="video"
-            class="w-100"
-            src="/assets/video/video-interactive.mp4"
-         
-            @loadeddata="onVideoLoaded"
-            loop
-        >
-            El teu navegador no suporta el video.
-        </video>
-        <template #modal-footer>
-            <div class="d-flex justify-content-center w-100">
-                <b-button variant="primary" @click="playPauseVideo" :disabled="isVideoLoaded ? false : true">
-                    <i
-                        :class="
-                            'fa-solid fa-fw fa-' +
-                            (isPlaying ? 'pause' : 'play')
-                        "
-                    ></i>
-                </b-button>
-                <div class="range-wrap pl-3">
-                    <div class="range-value"><span id="valueBubble">00:00</span></div>
-                    <b-form-input
-                        id="rangeVideo"
-                        @input="setBubble"
-                        type="range"
-                        step="1"
-                        value="0"
-                        min="0"
-                        :max="totalDurationInSeconds"
+        <div class="row">
+            <div class="col-lg-7 p-2">
+                <video
+                    ref="video"
+                    src="/api/video-interactive"
+                    type="video/mp4"
+                    class="w-100"
+                    @loadeddata="onVideoLoaded"
+                    @timeupdate="onTimeUpdateVideo"
+                >
+                    El teu navegador no suporta el video.
+                </video>
+                <div class="d-flex justify-content-center w-100 mt-2">
+                    <b-button
+                        variant="primary"
+                        @click="playPauseVideo"
                         :disabled="isVideoLoaded ? false : true"
-                    ></b-form-input>
+                    >
+                        <i
+                            :class="
+                                'fa-solid fa-fw fa-' +
+                                (isPlaying ? 'pause' : 'play')
+                            "
+                        ></i>
+                    </b-button>
+                    <div class="range-wrap pl-3">
+                        <div class="range-value">
+                            <span ref="valueBubble">00:00</span>
+                        </div>
+                        <b-form-input
+                            ref="rangeVideo"
+                            @input="setBubble"
+                            type="range"
+                            step="1"
+                            value="0"
+                            min="0"
+                            :max="totalDurationInSeconds"
+                            :disabled="isVideoLoaded ? false : true"
+                        ></b-form-input>
+                    </div>
                 </div>
             </div>
-        </template>
+            <div class="col-lg-5 p-2">
+                <b-list-group
+                    ref="listPartsVideo"
+                    v-if="!isLoading"
+                    class="listPartsVideo"
+                >
+                    <b-list-group-item
+                        :ref="`partVideo${partVideo.id}`"
+                        :active="partVideo.id === currentPartVideo.id"
+                        href="#"
+                        v-for="(partVideo, index) in partsVideo"
+                        :key="index"
+                        @click="goTo(partVideo)"
+                        class="d-flex justify-content-between align-items-center font-weight-bold"
+                    >
+                        {{ index + " - " + partVideo.description }}
+                        <b-badge variant="danger" style="font-size: 12px" pill>
+                            {{
+                                getMinutesSeconds(partVideo.timeInSecondsIni) +
+                                " - " +
+                                getMinutesSeconds(partVideo.timeInSecondsFin)
+                            }}
+                        </b-badge>
+                    </b-list-group-item>
+                </b-list-group>
+                <div v-else class="d-flex h-100">
+                    <svg-vue
+                        icon="spinner"
+                        class="mx-auto my-auto"
+                        width="100"
+                    />
+                </div>
+            </div>
+        </div>
     </b-modal>
 </template>
 
 <script>
 export default {
-    mounted() {},
     data() {
         return {
             isPlaying: false,
@@ -56,7 +96,11 @@ export default {
                 seconds: 0,
                 minutes: 0,
             },
-            isVideoLoaded: false
+            isVideoLoaded: false,
+            partsVideo: [],
+            currentPartVideo: null,
+            lastPartVideo: null,
+            isLoading: true,
         };
     },
     methods: {
@@ -66,6 +110,12 @@ export default {
         playPauseVideo() {
             if (this.isVideoLoaded) {
                 if (!this.isPlaying) {
+                    if (
+                        this.totalDurationInSeconds ===
+                        Math.round(this.$refs.video.currentTime)
+                    )
+                        this.$refs.video.currentTime = 0;
+
                     this.$refs.video.play();
                     this.isPlaying = true;
                 } else {
@@ -75,49 +125,121 @@ export default {
             }
         },
         onVideoLoaded() {
-            console.log('Video loaded.');
+            console.log("Video loaded.");
 
             this.isVideoLoaded = true;
 
-            this.totalDurationInSeconds = this.$refs.video.duration;
+            this.totalDurationInSeconds = Math.round(this.$refs.video.duration);
 
-            this.$refs.video.currentTime = 60;
-            this.$refs.video.play();
+            this.partsVideo = [
+                {
+                    id: 1,
+                    description: "Introducció",
+                    timeInSecondsIni: 0,
+                    timeInSecondsFin: 12,
+                },
+                {
+                    id: 2,
+                    description: "Explicació",
+                    timeInSecondsIni: 12,
+                    timeInSecondsFin: 16,
+                },
+                {
+                    id: 3,
+                    description: "Final",
+                    timeInSecondsIni: 16,
+                    timeInSecondsFin: Math.round(this.$refs.video.duration),
+                },
+            ];
 
-            //this.setBubble();
+            this.currentPartVideo = this.partsVideo[0];
+
+            this.isLoading = false;
         },
-        setBubble() {
-            const range = document.querySelector("#rangeVideo");
-            const bubble = document.querySelector("#valueBubble");
+        setBubble(isDrag = true) {
+            const range = this.$refs.rangeVideo.$el;
+            const bubble = this.$refs.valueBubble;
 
             if (this.isVideoLoaded) {
                 const currentTimeInSeconds = range.value;
                 const minValue = range.min ? range.min : 0;
                 const maxValue = range.max ? range.max : 100;
-                const newValue = Number(((currentTimeInSeconds - minValue) * 100) / (maxValue - minValue));
-                const newPosition = 10 - (newValue * 0.2);
+                const newValue = Number(
+                    ((currentTimeInSeconds - minValue) * 100) /
+                        (maxValue - minValue)
+                );
+                const newPosition = 10 - newValue * 0.2;
 
-                this.currentDuration.seconds = currentTimeInSeconds % 60;
-                this.currentDuration.minutes = parseInt(currentTimeInSeconds / 60, 10);
+                bubble.innerText = this.getMinutesSeconds(currentTimeInSeconds);
 
-                const numberFormatterTwoDigits = {
-                    minimumIntegerDigits: 2,
-                    useGrouping: false
-                };
+                bubble.style.left = `calc(${newValue}% + (${
+                    newPosition - 17
+                }px))`;
 
-                bubble.innerText = `${this.currentDuration.minutes.toLocaleString('en-US', numberFormatterTwoDigits)}:${this.currentDuration.seconds.toLocaleString('en-US', numberFormatterTwoDigits)}`;
-                bubble.style.left = `calc(${newValue}% + (${newPosition - 17}px))`;
-
-                console.log(currentTimeInSeconds);
-
-                //this.$refs.video.play();
+                if (isDrag) this.$refs.video.currentTime = currentTimeInSeconds;
             }
+        },
+        onTimeUpdateVideo() {
+            this.$refs.rangeVideo.$el.value = this.$refs.video.currentTime;
+
+            this.setBubble(false);
+
+            this.currentPartVideo = this.partsVideo.find(
+                (partVideo) =>
+                    partVideo.timeInSecondsIni <=
+                        this.$refs.video.currentTime &&
+                    partVideo.timeInSecondsFin > this.$refs.video.currentTime
+            );
+
+            if (
+                this.currentPartVideo &&
+                this.currentPartVideo !== this.lastPartVideo
+            ) {
+                let position =
+                    this.$refs[`partVideo${this.currentPartVideo.id}`][0].$el
+                        .offsetTop;
+
+                this.$refs.listPartsVideo.scrollTo({
+                    top: position,
+                    behavior: "smooth",
+                });
+
+                this.lastPartVideo = this.currentPartVideo;
+            }
+
+            if (
+                this.totalDurationInSeconds ===
+                Math.round(this.$refs.video.currentTime)
+            ) {
+                this.$refs.video.pause();
+                this.isPlaying = false;
+            }
+        },
+        goTo(partVideo) {
+            this.$refs.video.currentTime = partVideo.timeInSecondsIni;
+            this.$refs.rangeVideo.$el.value = this.$refs.video.currentTime;
+
+            this.setBubble(false);
+        },
+        getMinutesSeconds(timeInSeconds) {
+            let seconds = timeInSeconds % 60;
+            let minutes = parseInt(timeInSeconds / 60, 10);
+
+            const numberFormatterTwoDigits = {
+                minimumIntegerDigits: 2,
+                useGrouping: false,
+            };
+
+            return `${minutes.toLocaleString(
+                "en-US",
+                numberFormatterTwoDigits
+            )}:${seconds.toLocaleString("en-US", numberFormatterTwoDigits)}`;
         },
     },
 };
 </script>
 
-<style scope>
+<style scoped>
 input[type="range"] {
     -webkit-appearance: none;
 
@@ -174,6 +296,11 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
     border-radius: 6px;
 }
 
+.listPartsVideo {
+    max-height: 600px;
+    overflow-y: scroll;
+}
+
 .range-value span:before {
     content: "";
     position: absolute;
@@ -188,14 +315,8 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
     margin-top: -1px;
 }
 
-.zoominout {
-    transform: scale(0);
-    transition: all 0.4s ease-in-out;
-    display: block !important;
-}
-
-.zoominout.show {
-    transform: scale(1);
-    transition: all 0.4s ease-in-out;
+::v-deep .modal .modal-huge {
+    max-width: 90%;
+    width: 90%;
 }
 </style>
