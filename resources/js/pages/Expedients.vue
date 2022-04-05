@@ -1,7 +1,7 @@
 <template>
   <main>
     <button-call />
-    <!-- <expedients-table /> -->
+    <expedients-table />
   </main>
 </template>
 
