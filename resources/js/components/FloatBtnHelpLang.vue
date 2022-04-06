@@ -83,8 +83,7 @@
             <div class="popover-body">
                 <div class="container-fluid h-100 w-100 p-2 d-flex flex-column">
                     <label v-if="!isChrome" class="text-danger">
-                        Para escuchar las traducciones recomendamos usar el
-                        Chrome.
+                        Per escoltar les traduccions recomanem fer servir el Chrome.
                     </label>
                     <label
                         v-if="
@@ -323,9 +322,10 @@ export default {
 };
 </script>
 
-<style scope>
+<style scoped>
 .float-btn-help-lang {
     position: fixed;
+    z-index: 9999;
     right: 0;
     bottom: 0;
     margin: 10px;

@@ -1,57 +1,91 @@
 <template>
     <div>
-        <b-card class="show-card">
+        <button-call @toggleButton="showCardsCall = !showCardsCall"/>
+        <cards-call v-if="showCardsCall"/>
+        <b-card v-else class="show-card">
             <b-tabs content-class="mt-3" fill>
-                <b-tab title="Estat dels expedients" lazy
-                    ><div class="container-fluid">
-                        <graph1 :opcionGraph="1" @returnDatos="returnDatos=$event"></graph1>
-                    </div>
+                <b-tab title="Estat dels expedients" lazy>
+                    <graph
+                        opcionGraph="1"
+                        @startRequest="isLoading = true"
+                        @finishedRequest="isLoading = false"
+                    ></graph>
+                    <svg-vue
+                        v-show="isLoading"
+                        icon="spinner"
+                        class="spinner"
+                        width="100"
+                    />
                 </b-tab>
-                <b-tab title="Estadistiques de trucades" lazy
-                    ><graph1 :opcionGraph="2"></graph1
-                ></b-tab>
-                <b-tab title="Estadistiques d'usuaris" lazy
-                    ><graph1 :opcionGraph="3"></graph1
-                ></b-tab>
+                <b-tab title="Estadistiques de trucades" disabled lazy>
+                    <graph
+                        opcionGraph="2"
+                        @startRequest="isLoading = true"
+                        @finishedRequest="isLoading = false"
+                    ></graph>
+                    <svg-vue
+                        v-show="isLoading"
+                        icon="spinner"
+                        class="spinner"
+                        width="100"
+                    />
+                </b-tab>
+                <b-tab title="Estadistiques d'usuaris" lazy>
+                    <graph
+                        opcionGraph="3"
+                        @startRequest="isLoading = true"
+                        @finishedRequest="isLoading = false"
+                    ></graph>
+                    <svg-vue
+                        v-show="isLoading"
+                        icon="spinner"
+                        class="spinner"
+                        width="100"
+                    />
+                </b-tab>
             </b-tabs>
         </b-card>
     </div>
 </template>
 <script>
-import Graph1 from "../components/GraphsComponents/Graph";
-
 export default {
+    mounted() {
+        document.title = "Gràfics - Broggi";
+    },
     data() {
         return {
-            datosExpedientes:"",
+            showCardsCall: false,
+            isLoading: true,
         };
     },
-    components: {
-        Graph1,
-    },
-    methods: {
-        cambio(grafico) {
-            this.graph = grafico;
-        },
-    },
+    methods: {},
 };
 </script>
 
-<style>
+<style scoped>
 .show-card {
     background-color: white;
     border: 1px;
     box-shadow: 0px 5px 25px 0px rgb(0 0 0 / 20%);
 }
-.div-table{
-width: 100%;
-background-color: aquamarine;
-
-}.col-table{
-align-items: center;
-padding: 10px;
+.div-table {
+    width: 100%;
+    background-color: aquamarine;
 }
-.table{
-width: 100%}
-
+.col-table {
+    align-items: center;
+    padding: 10px;
+}
+.table {
+    width: 100%;
+}
+.tab-pane {
+    position: relative;
+}
+.spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 </style>

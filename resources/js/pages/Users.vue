@@ -2,7 +2,7 @@
     <main>
         <div class="principal">
             <div class="botones">
-                <!--PAnel filtrado-->
+                <!--Panel filtrado-->
                 <b-card class="show-card">
                     <b-row class="text-center">
                         <b-col cols="3" class="column-boton-afegir">
@@ -177,11 +177,7 @@
                 </pagination>
                 <!--CARGA-->
                 <div class="centrar-carga">
-                    <svg-vue
-                        v-show="isLoading"
-                        icon="spinner"
-                        width="100"
-                    />
+                    <svg-vue v-show="isLoading" icon="spinner" width="100" />
                 </div>
             </b-card>
         </div>
@@ -419,6 +415,9 @@
 
 <script>
 export default {
+    mounted() {
+        document.title = "Usuaris - Broggi";
+    },
     data() {
         return {
             usuaris: {},
@@ -766,9 +765,6 @@ export default {
     refresh() {
         this.selectUsuaris();
     },
-    mounted() {
-        document.title = "Usuaris - ibroggi";
-    },
     computed: {
         validationUsuari() {
             return this.usuari.usuari !== "";
@@ -840,6 +836,7 @@ export default {
 ::v-deep .header-class-editar-contrasenya {
     background: rgb(218, 218, 218);
 }
+<<<<<<< HEAD
 
 .column-boton-afegir{
 text-align: flex-start;
@@ -849,5 +846,15 @@ text-align: flex-end;
 justify-content: flex-end;
 align-items: flex-end;
 display: flex;
+=======
+.column-boton-afegir {
+    text-align: flex-start;
+}
+.column-botons-filtrar {
+    text-align: flex-end;
+    justify-content: flex-end;
+    align-items: flex-end;
+    display: flex;
+>>>>>>> feffc9e7a76c1eed78253e8ec8b8bb23c1f3ea4c
 }
 </style>

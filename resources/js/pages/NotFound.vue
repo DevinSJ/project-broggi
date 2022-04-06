@@ -13,7 +13,11 @@
 </template>
 
 <script>
-export default {};
+export default {
+    mounted() {
+        document.title = "Error 404 - Broggi";
+    },
+};
 </script>
 
 <style></style>

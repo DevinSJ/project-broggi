@@ -8,9 +8,9 @@ require("./bootstrap");
 
 import { BootstrapVue } from "bootstrap-vue";
 import VueRouter from "vue-router";
-import SvgVue from 'svg-vue';
-import ChartJs from 'vue-chartjs';
-import Moment from 'vue-moment';
+import SvgVue from "svg-vue";
+import ChartJs from "vue-chartjs";
+import Moment from "vue-moment";
 
 window.Vue = require("vue").default;
 window.Vue.use(BootstrapVue);
@@ -34,7 +34,7 @@ files
         Vue.component(key.split("/").pop().split(".")[0], files(key).default)
     );
 
-    Vue.component('pagination', require('laravel-vue-pagination'));
+Vue.component("pagination", require("laravel-vue-pagination"));
 
 // Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 
@@ -44,14 +44,20 @@ files
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-const Expedients = Vue.component("expedients", require("./pages/Expedients.vue").default);
+const Expedients = Vue.component(
+    "expedients",
+    require("./pages/Expedients.vue").default
+);
 const Calls = Vue.component("calls", require("./pages/Calls.vue").default);
 const Graphs = Vue.component("graphs", require("./pages/Graphs.vue").default);
 const Users = Vue.component("users", require("./pages/Users.vue").default);
-const NotFound = Vue.component("notfound", require("./pages/NotFound.vue").default);
+const NotFound = Vue.component(
+    "notfound",
+    require("./pages/NotFound.vue").default
+);
 
 const router = new VueRouter({
-    base: '/',
+    base: "/",
     mode: "history",
     routes: [
         { path: "/expedients", component: Expedients },
@@ -64,5 +70,5 @@ const router = new VueRouter({
 
 const app = new Vue({
     el: "#app",
-    router
+    router,
 });

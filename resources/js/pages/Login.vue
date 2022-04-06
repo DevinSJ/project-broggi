@@ -74,7 +74,7 @@
 <script>
 export default {
     mounted() {
-        document.title = "Login - ibroggi";
+        document.title = "Login - Broggi";
     },
     data() {
         return {
