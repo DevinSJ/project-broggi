@@ -340,18 +340,18 @@ export default {
 }
 
 .marker-police {
-  background-image: url('/assets/img/police.png');
+  background-image: url('/img/police.png');
 }
 
 .marker-firefighters {
-  background-image: url('/assets/img/firefighters.png');
+  background-image: url('/img/firefighters.png');
 }
 
 .marker-transit {
-  background-image: url('/assets/img/transit.png');
+  background-image: url('/img/transit.png');
 }
 
 .marker-person-info {
-  background-image: url('/assets/img/person-info.png');
+  background-image: url('/img/person-info.png');
 }
 </style>

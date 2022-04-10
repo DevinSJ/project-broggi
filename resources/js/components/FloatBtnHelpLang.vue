@@ -255,7 +255,7 @@ export default {
 
             let me = this;
 
-            this.imageSrcLang = `/assets/img/ca-${
+            this.imageSrcLang = `/img/ca-${
                 this.selectedLang.split("-")[0]
             }.png`;
 
@@ -365,19 +365,19 @@ button[id$="lang"] {
 }
 
 #en-lang {
-    background-image: url("/assets/img/uk.png");
+    background-image: url("/img/uk.png");
 }
 
 #de-lang {
-    background-image: url("/assets/img/de.png");
+    background-image: url("/img/de.png");
 }
 
 #es-lang {
-    background-image: url("/assets/img/es.png");
+    background-image: url("/img/es.png");
 }
 
 #fr-lang {
-    background-image: url("/assets/img/fr.png");
+    background-image: url("/img/fr.png");
 }
 
 #popoverLang {

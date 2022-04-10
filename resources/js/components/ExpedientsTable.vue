@@ -570,7 +570,7 @@ export default {
 
             axios
                 .get(
-                    "/api/cartestrucades/list/" +
+                    "/api/cartes_trucades/list/" +
                         this.expedient.id +
                         "?id_rol=" +
                         this.user.perfils_id +

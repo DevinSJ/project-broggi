@@ -436,7 +436,7 @@ export default {
         this.getProvincias();
         this.getRegions();
         this.getTowns();
-        this.getType();
+        this.getLocationsTypes();
         this.getTypeIncidents();
         this.getIncidents();
     },
@@ -615,10 +615,10 @@ export default {
                     console.log(error);
                 });
         },
-        getType() {
+        getLocationsTypes() {
             let me = this;
             axios
-                .get("/api/LocationsTypes")
+                .get("/api/locations_types")
                 .then((response) => {
                     me.types = response.data;
                 })
@@ -643,7 +643,6 @@ export default {
                 .get("/api/incidents")
                 .then((response) => {
                     me.incidents = response.data;
-                    console.log(incidents);
                 })
                 .catch((error) => {
                     console.log(error);

@@ -81,6 +81,7 @@
             title="Dades de la trucada"
             size="huge"
             ok-only
+            ok-title="Guardar"
         >
             <div>
                 <b-tabs content-class="mt-3" fill>
@@ -400,7 +401,7 @@ export default {
 
             let me = this;
             axios
-                .get("/api/cartestrucades/")
+                .get("/api/cartes_trucades/")
                 .then((response) => {
                     me.calls = response.data;
                 })

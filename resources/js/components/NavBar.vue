@@ -3,12 +3,12 @@
         toggleable="lg"
         type="light"
         variant="light"
-        class="fondoBackground"
+        class="py-0"
         sticky
     >
         <!--LOGO-->
         <b-navbar-brand href="/">
-            <img src="/assets/img/logo.svg" width="120" class="ml-2" />
+            <svg-vue icon="logo" width="120" class="ml-2"/>
         </b-navbar-brand>
 
         <!--COLAPSE-->
@@ -110,9 +110,6 @@ export default {
 <style scoped>
 .desactivar-click {
     pointer-events: none;
-}
-.fondoBackground {
-    padding: 0px;
 }
 .item-transition {
     transition: all 0.4s ease;
