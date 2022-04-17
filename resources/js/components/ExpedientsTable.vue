@@ -5,7 +5,9 @@
             <b-card class="show-card" body-class="card_body">
                 <b-row>
                     <b-col cols="lg-6">
-                        <label class="font-weight-bold mr-2">Selecciona el estat que vols veure: </label>
+                        <label class="font-weight-bold mr-2"
+                            >Selecciona el estat que vols veure:
+                        </label>
                         <b-form-checkbox
                             v-model="filtre.estat.in_progress"
                             name="check-button"
@@ -13,9 +15,7 @@
                             button-variant="btn-estat"
                             @change="filtrar"
                         >
-                            <i
-                                class="fa-solid fa-circle in-progress mr-2"
-                            ></i
+                            <i class="fa-solid fa-circle in-progress mr-2"></i
                             >En progrés
                         </b-form-checkbox>
                         <b-form-checkbox
@@ -45,8 +45,7 @@
                             button-variant="btn-estat"
                             @change="filtrar"
                         >
-                            <i class="fa-solid fa-circle closed mr-2"></i
-                            >Tancat
+                            <i class="fa-solid fa-circle closed mr-2"></i>Tancat
                         </b-form-checkbox>
                         <b-form-checkbox
                             v-model="filtre.estat.immobilized"
@@ -55,14 +54,16 @@
                             button-variant="btn-estat"
                             @change="filtrar"
                         >
-                            <i
-                                class="fa-solid fa-circle immobilized mr-2"
-                            ></i
+                            <i class="fa-solid fa-circle immobilized mr-2"></i
                             >Immobilitzat
                         </b-form-checkbox>
                     </b-col>
                     <b-col cols="lg-6" class="col-filtrar">
-                        <b-form @submit.prevent="filtrar" inline class="justify-content-end">
+                        <b-form
+                            @submit.prevent="filtrar"
+                            inline
+                            class="justify-content-end"
+                        >
                             <label class="mr-sm-2" for="filtre-codi"
                                 >Codi</label
                             >
@@ -289,7 +290,7 @@
 </template>
 
 <script>
-import moment from 'moment';
+import moment from "moment";
 
 export default {
     mounted() {
@@ -301,10 +302,17 @@ export default {
 
         this.user = window.Vue.prototype.$user;
     },
+    beforeDestroy() {
+        if (this.request) this.request.cancel();
+        if (this.request2) this.request2.cancel();
+        if (this.request3) this.request3.cancel();
+    },
     data() {
         return {
             codeExpedients: "",
             request: null,
+            request2: null,
+            request3: null,
             isLoading: true,
             isLoading2: true,
             isLoading3: true,
@@ -339,8 +347,10 @@ export default {
                     tdClass: "centered-text-class",
                     thClass: "created-th-column",
                     formatter: (value) => {
-                        return moment(value).locale("es").format("DD/MM/yyyy HH:mm:ss");
-                    }
+                        return moment(value)
+                            .locale("es")
+                            .format("DD/MM/yyyy HH:mm:ss");
+                    },
                 },
                 {
                     key: "data_ultima_modificacio",
@@ -349,8 +359,10 @@ export default {
                     tdClass: "centered-text-class",
                     thClass: "modified-th-column",
                     formatter: (value) => {
-                        return moment(value).locale("es").format("DD/MM/yyyy HH:mm:ss");
-                    }
+                        return moment(value)
+                            .locale("es")
+                            .format("DD/MM/yyyy HH:mm:ss");
+                    },
                 },
                 {
                     key: "cartes_trucades",
@@ -360,7 +372,7 @@ export default {
                     thClass: "quantity-call-th-column",
                     formatter: (value) => {
                         return value.length;
-                    }
+                    },
                 },
                 {
                     key: "see_expedient",
@@ -550,7 +562,7 @@ export default {
                 estats_expedients_id: "",
             };
 
-            this.codeExpedients  = "";
+            this.codeExpedients = "";
 
             if (this.request) this.request.cancel();
         },
@@ -590,15 +602,11 @@ export default {
                 })
                 .catch(function (error) {
                     if (!axios.isCancel(error)) {
-                        me.errorMessagePopoverCall =
-                            "No s'ha pogut cargar les dades...";
-
                         console.error(error);
                     }
                 })
                 .finally(() => {
                     me.request = null;
-
                     me.isLoading2 = false;
                 });
 
@@ -611,30 +619,56 @@ export default {
         getEstatsExpedients() {
             let me = this;
 
+            if (this.request2) this.request2.cancel();
+
+            let axiosSource = axios.CancelToken.source();
+            this.request2 = { cancel: axiosSource.cancel };
+
             this.isLoading2 = true;
 
             axios
-                .get("/api/estats_expedients/")
+                .get("/api/estats_expedients/", {
+                    cancelToken: axiosSource.token,
+                })
                 .then((response) => {
                     me.expedient_conditions = response.data;
                 })
                 .catch((error) => {
-                    console.log(error);
+                    if (!axios.isCancel(error)) {
+                        console.error(error);
+                    }
                 })
-                .finally(() => (this.isLoading2 = false));
+                .finally(() => {
+                    me.request2 = null;
+                    me.isLoading2 = false;
+                });
         },
         getEstatsAgencies() {
             let me = this;
+
+            if (this.request3) this.request3.cancel();
+
+            let axiosSource = axios.CancelToken.source();
+            this.request3 = { cancel: axiosSource.cancel };
+
             this.isLoading3 = true;
+
             axios
-                .get("/api/estats_agencies/")
+                .get("/api/estats_agencies/", {
+                    cancelToken: axiosSource.token,
+                })
                 .then((response) => {
                     me.estats_agencies = response.data;
                 })
                 .catch((error) => {
-                    console.log(error);
+                    if (!axios.isCancel(error)) {
+                        console.error(error);
+                    }
                 })
-                .finally(() => (this.isLoading3 = false));
+                .finally(() => {
+                    me.request3 = null;
+                    me.isLoading3 = false;
+                });
         },
         loadInfo(name, nota_comuna_descripcio) {
             this.name_call = name;

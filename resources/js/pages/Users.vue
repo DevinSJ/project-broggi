@@ -503,6 +503,7 @@ export default {
             msgInfo: "",
             btnClassForm: "",
             isLoadingButton: false,
+            request: null,
         };
     },
     methods: {
@@ -701,6 +702,11 @@ export default {
             document.querySelector("#btn-submit-form-user").click();
         },
         fetchUsuaris(page = 1, cleanFilters = false) {
+            if (this.request) this.request.cancel();
+
+            let axiosSource = axios.CancelToken.source();
+            this.request = { cancel: axiosSource.cancel };
+
             if (cleanFilters) {
                 this.filtro.usuario = "";
                 this.filtro.perfil = null;
@@ -719,16 +725,21 @@ export default {
             let _this = this;
 
             axios
-                .get(`api/users?` + params)
-                .then((response) => {
-                    _this.usuaris = response.data;
-                })
-                .catch((error) => {
-                    console.error(error, error.response.data);
-                })
-                .finally(() => {
-                    _this.isLoading = false;
-                });
+            .get(`api/users?` + params, {
+                cancelToken: axiosSource.token,
+            })
+            .then((response) => {
+                _this.usuaris = response.data;
+            })
+            .catch((error) => {
+                if (!axios.isCancel(error)) {
+                    console.error(error);
+                }
+            })
+            .finally(() => {
+                _this.request = null;
+                _this.isLoading = false;
+            });
         },
     },
     created() {

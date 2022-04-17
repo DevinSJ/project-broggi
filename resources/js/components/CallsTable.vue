@@ -34,7 +34,7 @@
                             <b-button
                                 class="btn-sm"
                                 variant="secondary ml-2"
-                                @click="getCalls(false)"
+                                @click="getCalls()"
                             >
                                 <i class="fa-solid fa-magnifying-glass"></i>
                                 Mostrar tots</b-button
@@ -69,7 +69,6 @@
                     </div>
                 </template>
             </b-table>
-
             <div v-else class="loading-spinner">
                 <svg-vue icon="spinner" class="mx-auto my-auto" width="100" />
             </div>
@@ -331,8 +330,12 @@ import moment from 'moment';
 export default {
     mounted() {
         document.title = "Trucades - Broggi";
-        this.getCalls(true);
+        this.getCalls();
         this.user = window.Vue.prototype.$user;
+    },
+
+    beforeDestroy() {
+        if (this.request) this.request.cancel();
     },
     data() {
         return {
@@ -386,33 +389,45 @@ export default {
                 incident: {
                     tipo_incident: {},
                 },
+                data_hora: "",
             },
             filtre: {
                 call_code: "",
                 exp_code: "",
             },
+            request: null
         };
     },
     methods: {
-        getCalls(firstTime) {
-            firstTime == true
-                ? (this.isLoading = true)
-                : (this.isLoading = false);
+        getCalls() {
+            if (this.request) this.request.cancel();
+
+            let axiosSource = axios.CancelToken.source();
+            this.request = { cancel: axiosSource.cancel };
+
+            this.isLoading = true;
 
             let me = this;
             axios
-                .get("/api/cartes_trucades/")
+                .get("/api/cartes_trucades/", {
+                    cancelToken: axiosSource.token,
+                })
                 .then((response) => {
                     me.calls = response.data;
                 })
                 .catch((error) => {
-                    console.log(error);
+                    if (!axios.isCancel(error)) {
+                        console.error(error);
+                    }
                 })
-                .finally(() => (this.isLoading = false));
+                .finally(() => {
+                    me.isLoading = false;
+                    me.request = null;
+                });
         },
         loadCallInfo(call_id) {
             let currentCall = this.calls.filter((call) => call.id == call_id);
-            this.call = currentCall[0];
+            this.call = { ... currentCall[0] };
             this.call.data_hora = moment(this.call.data_hora).locale('es').format('DD/MM/yyyy HH:mm:ss');
         },
     },
