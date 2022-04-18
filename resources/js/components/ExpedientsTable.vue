@@ -147,13 +147,12 @@
             id="modal-expedients"
             class="modal-calls"
             :title="`Trucades de l'expedient (${codeExpedients})`"
-            ref="modalExpedients"
             size="huge"
             ok-title="Guardar"
             cancel-title="Cancelar"
             @ok="updateExpedient"
             @hide="hideModalExpedients"
-            :hide-footer="isLoading2 || toggleManualModal"
+            :hide-footer="isLoading2"
         >
             <b-table
                 v-if="trucades.length > 0"
@@ -206,7 +205,7 @@
 
             <div
                 v-show="!isLoading2"
-                v-if="user.perfils_id != 1 && !toggleManualModal"
+                v-if="user.perfils_id != 1"
                 class="div-expedient-estate"
             >
                 <p>Estat de l'expedient:</p>
@@ -268,7 +267,6 @@
                             v-model="data.item.estats_agencies_id"
                             id="estats_agencies_id"
                             name="estats_agencies_id"
-                            :disabled="toggleManualModal"
                             @change="
                                 updateEstatAgencies(
                                     data.item.agencia.id,
@@ -451,7 +449,6 @@ export default {
             agencies_contactades: [],
             modal_agencia: true,
             showTrucades: true,
-            toggleManualModal: false,
             expedient: {
                 id: "",
                 data_creacio: "",
@@ -566,7 +563,7 @@ export default {
 
             if (this.request) this.request.cancel();
         },
-        loadModal(expedient, toggleManualModal = false) {
+        loadModal(expedient) {
             if (this.request) this.request.cancel();
 
             let axiosSource = axios.CancelToken.source();
@@ -609,12 +606,6 @@ export default {
                     me.request = null;
                     me.isLoading2 = false;
                 });
-
-            if (toggleManualModal) {
-                this.$refs.modalExpedients.show();
-            }
-
-            this.toggleManualModal = toggleManualModal;
         },
         getEstatsExpedients() {
             let me = this;
@@ -847,6 +838,7 @@ export default {
     text-align: center;
     justify-content: center;
 }
+
 ::v-deep .centered-text-class {
     text-align: center;
     vertical-align: middle;

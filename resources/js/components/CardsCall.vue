@@ -67,7 +67,7 @@
                             </h6>
                         </div>
                     </template>
-                    <expedients-call @loadModalExpedient="loadModalExpedient"></expedients-call>
+                    <expedients-call />
                 </b-card>
             </div>
         </div>
@@ -106,9 +106,6 @@ export default {
         };
     },
     methods: {
-        loadModalExpedient(expedient) {
-            this.$emit('loadModalExpedient', expedient);
-        },
         generateCodeCall() {
             let today = moment().locale("es");
 
