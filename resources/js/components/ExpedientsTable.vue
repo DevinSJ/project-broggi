@@ -218,7 +218,7 @@
                 </b-form-select>
             </div>
 
-            <div v-if="this.isLoading2" class="loading-spinner">
+            <div v-show="this.isLoading2" class="loading-spinner">
                 <svg-vue icon="spinner" class="mx-auto my-auto" width="100" />
             </div>
         </b-modal>
@@ -280,7 +280,7 @@
                 </b-table>
             </div>
 
-            <div v-if="this.isLoading3" class="loading-spinner">
+            <div v-show="this.isLoading3" class="loading-spinner">
                 <svg-vue icon="spinner" class="mx-auto my-auto" width="100" />
             </div>
         </b-modal>

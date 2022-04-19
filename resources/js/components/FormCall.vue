@@ -433,12 +433,20 @@
 <script>
 export default {
     mounted() {
-        this.getProvincias();
+        this.getProvinces();
         this.getRegions();
         this.getTowns();
         this.getLocationsTypes();
-        this.getTypeIncidents();
+        this.getTypesIncidents();
         this.getIncidents();
+    },
+    beforeDestroy() {
+        if (this.requestProvinces) this.requestProvinces.cancel();
+        if (this.requestRegions) this.requestRegions.cancel();
+        if (this.requestTowns) this.requestTowns.cancel();
+        if (this.requestLocationsTypes) this.requestLocationsTypes.cancel();
+        if (this.requestTypesIncidents) this.requestTypesIncidents.cancel();
+        if (this.requestIncidents) this.requestIncidents.cancel();
     },
     data() {
         return {
@@ -451,6 +459,13 @@ export default {
                 description: "",
                 province: "",
             },
+            requestProvinces: null,
+            requestRegions: null,
+            requestTowns: null,
+            requestLocationsTypes: null,
+            requestTypesIncidents: null,
+            requestIncidents: null,
+
             inputPhoneFeedback: "",
             provinceSelected: null,
             regionSelected: null,
@@ -582,70 +597,142 @@ export default {
         },
     },
     methods: {
-        getProvincias() {
+        getProvinces() {
+            if (this.requestProvinces) this.requestProvinces.cancel();
+
+            let axiosSource = axios.CancelToken.source();
+            this.requestProvinces = { cancel: axiosSource.cancel };
+
             let me = this;
             axios
-                .get("/api/provinces")
+                .get("/api/provinces", {
+                    cancelToken: axiosSource.token,
+                })
                 .then((response) => {
                     me.provincias = response.data;
                 })
-                .catch((error) => {
-                    console.log(error);
+                .catch(function (error) {
+                    if (!axios.isCancel(error)) {
+                        console.error(error);
+                    }
+                })
+                .finally(() => {
+                    me.requestProvinces = null;
                 });
         },
         getRegions() {
+            if (this.requestRegions) this.requestRegions.cancel();
+
+            let axiosSource = axios.CancelToken.source();
+            this.requestRegions = { cancel: axiosSource.cancel };
+
             let me = this;
             axios
-                .get("/api/regions")
+                .get("/api/regions", {
+                    cancelToken: axiosSource.token,
+                })
                 .then((response) => {
                     me.regions = response.data;
                 })
-                .catch((error) => {
-                    console.log(error);
+                .catch(function (error) {
+                    if (!axios.isCancel(error)) {
+                        console.error(error);
+                    }
+                })
+                .finally(() => {
+                    me.requestRegions = null;
                 });
         },
         getTowns() {
+            if (this.requestTowns) this.requestTowns.cancel();
+
+            let axiosSource = axios.CancelToken.source();
+            this.requestTowns = { cancel: axiosSource.cancel };
+
             let me = this;
             axios
-                .get("/api/towns")
+                .get("/api/towns", {
+                    cancelToken: axiosSource.token,
+                })
                 .then((response) => {
                     me.towns = response.data;
                 })
-                .catch((error) => {
-                    console.log(error);
+                .catch(function (error) {
+                    if (!axios.isCancel(error)) {
+                        console.error(error);
+                    }
+                })
+                .finally(() => {
+                    me.requestTowns = null;
                 });
         },
         getLocationsTypes() {
+            if (this.requestLocationsTypes) this.requestLocationsTypes.cancel();
+
+            let axiosSource = axios.CancelToken.source();
+            this.requestLocationsTypes = { cancel: axiosSource.cancel };
+
             let me = this;
             axios
-                .get("/api/locations_types")
+                .get("/api/locations_types", {
+                    cancelToken: axiosSource.token,
+                })
                 .then((response) => {
                     me.types = response.data;
                 })
-                .catch((error) => {
-                    console.log(error);
+                .catch(function (error) {
+                    if (!axios.isCancel(error)) {
+                        console.error(error);
+                    }
+                })
+                .finally(() => {
+                    me.requestLocationsTypes = null;
                 });
         },
-        getTypeIncidents() {
+        getTypesIncidents() {
+            if (this.requestTypesIncidents) this.requestTypesIncidents.cancel();
+
+            let axiosSource = axios.CancelToken.source();
+            this.requestTypesIncidents = { cancel: axiosSource.cancel };
+
             let me = this;
             axios
-                .get("/api/types_incidents")
+                .get("/api/types_incidents", {
+                    cancelToken: axiosSource.token,
+                })
                 .then((response) => {
                     me.typesIncidents = response.data;
                 })
-                .catch((error) => {
-                    console.log(error);
+                .catch(function (error) {
+                    if (!axios.isCancel(error)) {
+                        console.error(error);
+                    }
+                })
+                .finally(() => {
+                    me.requestTypesIncidents = null;
                 });
         },
         getIncidents() {
+            if (this.requestIncidents) this.requestIncidents.cancel();
+
+            let axiosSource = axios.CancelToken.source();
+            this.requestIncidents = { cancel: axiosSource.cancel };
+
             let me = this;
             axios
-                .get("/api/incidents")
+                .get("/api/incidents", {
+                    cancelToken: axiosSource.token,
+                })
                 .then((response) => {
                     me.incidents = response.data;
                 })
-                .catch((error) => {
-                    console.log(error);
+                .catch(function (error) {
+                    if (!axios.isCancel(error)) {
+                        console.error(error);
+                    }
+                })
+                .finally(() => {
+                    me.requestIncidents = null;
                 });
         },
         handleInputPhone() {
