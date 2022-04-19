@@ -320,7 +320,11 @@ export default {
         },
         toggleSelectExpedient(expedient) {
             if (this.expedientSelected.id === -1) this.expedientSelected = expedient;
-            else this.expedientSelected = {id: -1};
+            else
+            {
+                //this.expedientSelected = {id: -1};
+                this.expedientSelected = expedient;
+            }
         },
         formatDate(value) {
             return moment(value).locale("es").format("DD/MM/yyyy HH:mm:ss")
@@ -340,6 +344,12 @@ export default {
     width: 100%;
     text-align: center;
     justify-content: center;
+}
+
+.active {
+    background-color: #eaf4f6;
+    border-color: #eaf4f6;
+    color: black;
 }
 
 @media (min-width: 992px) {
