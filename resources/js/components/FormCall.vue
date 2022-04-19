@@ -17,10 +17,19 @@
                                     placeholder="Nº telèfon"
                                     required
                                 />
-                                <label class="user-select-none" for="input-phone">Nº telèfon</label>
+                                <label
+                                    class="user-select-none"
+                                    for="input-phone"
+                                    >Nº telèfon</label
+                                >
                                 <b-form-invalid-feedback
                                     id="input-phone-feedback"
-                                >{{ isEmpty(call.phone) ? "Aquest camp és obligatori" : inputPhoneFeedback }}.</b-form-invalid-feedback>
+                                    >{{
+                                        isEmpty(call.phone)
+                                            ? "Aquest camp és obligatori"
+                                            : inputPhoneFeedback
+                                    }}.</b-form-invalid-feedback
+                                >
                             </div>
                         </div>
                     </div>
@@ -31,10 +40,14 @@
                             <b-form-input
                                 type="text"
                                 id="input-firstname-caller"
-                                v-model="call.firstnameCaller"
+                                v-model="call.firstNameCaller"
                                 placeholder="Nom del trucant"
                             />
-                            <label class="user-select-none" for="input-firstname-caller">Nom del trucant</label>
+                            <label
+                                class="user-select-none"
+                                for="input-firstname-caller"
+                                >Nom del trucant</label
+                            >
                         </div>
                     </div>
                     <div class="col-lg-6 my-2">
@@ -42,10 +55,14 @@
                             <b-form-input
                                 type="text"
                                 id="input-lastname-caller"
-                                v-model="call.lastnameCaller"
+                                v-model="call.lastNameCaller"
                                 placeholder="Cognom del trucant"
                             />
-                            <label class="user-select-none" for="input-lastname-caller">Cognom del trucant</label>
+                            <label
+                                class="user-select-none"
+                                for="input-lastname-caller"
+                                >Cognom del trucant</label
+                            >
                         </div>
                     </div>
                 </div>
@@ -58,7 +75,11 @@
                                 v-model="call.provenance"
                                 placeholder="Procedència"
                             />
-                            <label class="user-select-none" for="input-provenance">Procedència</label>
+                            <label
+                                class="user-select-none"
+                                for="input-provenance"
+                                >Procedència</label
+                            >
                         </div>
                     </div>
                     <div class="col-lg-6 my-2">
@@ -69,7 +90,11 @@
                                 v-model="call.relationIncident"
                                 placeholder="Relació amb l'incident"
                             />
-                            <label class="user-select-none" for="input-relation-incident">Relació amb l'incident</label>
+                            <label
+                                class="user-select-none"
+                                for="input-relation-incident"
+                                >Relació amb l'incident</label
+                            >
                         </div>
                     </div>
                 </div>
@@ -90,7 +115,10 @@
                                 rows="5"
                                 required
                             />
-                            <label class="user-select-none" for="input-description">
+                            <label
+                                class="user-select-none"
+                                for="input-description"
+                            >
                                 Descripció incident
                             </label>
                             <b-form-invalid-feedback
@@ -108,14 +136,14 @@
                     <div class="col-lg-12 my-2">
                         <b-form-checkbox
                             id="checkbox-1"
-                            v-model="outCataluyna"
+                            v-model="outCatalunya"
                             name="checkbox-1"
                         >
                             Fora de Cataluña
                         </b-form-checkbox>
                     </div>
                 </div>
-                <div class="row" v-if="outCataluyna">
+                <div class="row" v-if="outCatalunya">
                     <div class="col-lg-12 my-2">
                         <div class="form-floating user-select-none">
                             <b-form-input
@@ -124,7 +152,9 @@
                                 v-model="call.province"
                                 placeholder="Provincia"
                             />
-                            <label class="user-select-none" for="input-province">Provincia</label>
+                            <label class="user-select-none" for="input-province"
+                                >Provincia</label
+                            >
                         </div>
                     </div>
                 </div>
@@ -138,13 +168,18 @@
                                 v-model="provinceSelected"
                                 placeholder="Provincia"
                             >
-                            <template #first>
-                                <b-form-select-option :value="null"
-                                    >Seleccionar provincia</b-form-select-option
-                                >
-                            </template>
+                                <template #first>
+                                    <b-form-select-option :value="null"
+                                        >Seleccionar
+                                        provincia</b-form-select-option
+                                    >
+                                </template>
                             </b-form-select>
-                            <label class="user-select-none" for="select-provinces">Provincia</label>
+                            <label
+                                class="user-select-none"
+                                for="select-provinces"
+                                >Provincia</label
+                            >
                         </div>
                     </div>
                     <div class="col-lg-4 my-2">
@@ -156,13 +191,16 @@
                                 v-model="regionSelected"
                                 placeholder="Comarca"
                             >
-                            <template #first>
-                                <b-form-select-option :value="null"
-                                    >Seleccionar comarca</b-form-select-option
-                                >
-                            </template>
+                                <template #first>
+                                    <b-form-select-option :value="null"
+                                        >Seleccionar
+                                        comarca</b-form-select-option
+                                    >
+                                </template>
                             </b-form-select>
-                            <label class="user-select-none" for="select-regions">Comarca</label>
+                            <label class="user-select-none" for="select-regions"
+                                >Comarca</label
+                            >
                         </div>
                     </div>
                     <div class="col-lg-4 my-2">
@@ -174,210 +212,227 @@
                                 v-model="townSelected"
                                 placeholder="Municipi"
                             >
-                            <template #first>
-                                <b-form-select-option :value="null"
-                                    >Seleccionar municipi</b-form-select-option
-                                >
-                            </template>
+                                <template #first>
+                                    <b-form-select-option :value="null"
+                                        >Seleccionar
+                                        municipi</b-form-select-option
+                                    >
+                                </template>
                             </b-form-select>
-                            <label class="user-select-none" for="select-towns">Municipi</label>
+                            <label class="user-select-none" for="select-towns"
+                                >Municipi</label
+                            >
                         </div>
                     </div>
-                </div>
-                <div class="row" v-if="!outCataluyna">
                     <div class="col-lg-12 my-2">
                         <div class="form-floating user-select-none">
                             <b-form-select
                                 type="text"
                                 id="select-towns"
-                                :options="allTypes"
-                                v-model="typeSelected"
+                                :options="allTypesLocations"
+                                v-model="typeLocationSelected"
                                 placeholder="Tipus localització"
                             >
-                            <template #first>
+                                <!--<template #first>
                                 <b-form-select-option :value="null">Seleccionar tipus localització</b-form-select-option>
-                            </template>
+                            </template>-->
                             </b-form-select>
-                            <label class="user-select-none" for="select-towns">Tipus localització</label>
+                            <label class="user-select-none" for="select-towns"
+                                >Tipus localització</label
+                            >
                         </div>
                     </div>
                     <!-- OPTION 1 CARRERS -->
-                    <div class="col-12" v-show="locationType == 1">
-                        <div class="row justify-content-around">
-                            <div>
-                                <b-form-group
-                                    id="input-group-2"
-                                    label="Tipus de via:"
-                                    label-for="input-2"
-                                >
+                    <div class="col-lg-12 my-2" id="wrapLocationType1" v-if="call.locationType == 1">
+                        <div class="row">
+                            <div class="col-lg-4 my-2">
+                                <div class="form-floating user-select-none">
                                     <b-form-input
-                                        id="input-2"
-                                        v-model="street"
-                                        placeholder="tipus"
-                                        required
-                                    ></b-form-input>
-                                </b-form-group>
+                                        type="text"
+                                        id="input-type-street"
+                                        v-model="call.typeStreet"
+                                        placeholder="Tipus de via"
+                                    />
+                                    <label
+                                        class="user-select-none"
+                                        for="input-type-street"
+                                        >Tipus de via</label
+                                    >
+                                </div>
                             </div>
-                            <div>
-                                <b-form-group
-                                    id="input-group-2"
-                                    label="Nom:"
-                                    label-for="input-2"
-                                >
+                            <div class="col-lg-4 my-2">
+                                <div class="form-floating user-select-none">
                                     <b-form-input
-                                        id="input-2"
-                                        v-model="nameStreet"
-                                        placeholder="nom"
-                                        required
-                                    ></b-form-input>
-                                </b-form-group>
+                                        type="text"
+                                        id="input-name-street"
+                                        v-model="call.nameStreet"
+                                        placeholder="Nom del carrer"
+                                    />
+                                    <label
+                                        class="user-select-none"
+                                        for="input-name-street"
+                                        >Nom del carrer</label
+                                    >
+                                </div>
                             </div>
-                            <div>
-                                <b-form-group
-                                    id="input-group-2"
-                                    label="Número:"
-                                    label-for="input-2"
-                                >
+                            <div class="col-lg-4 my-2">
+                                <div class="form-floating user-select-none">
                                     <b-form-input
-                                        id="input-2"
-                                        v-model="numberStreet"
-                                        placeholder="número"
-                                        required
-                                    ></b-form-input>
-                                </b-form-group>
+                                        type="text"
+                                        id="input-number-street"
+                                        v-model="call.numberStreet"
+                                        placeholder="Número"
+                                    />
+                                    <label
+                                        class="user-select-none"
+                                        for="input-number-street"
+                                        >Número</label
+                                    >
+                                </div>
                             </div>
                         </div>
-
-                        <div class="row justify-content-around">
-                            <div>
-                                <b-form-group
-                                    id="input-group-2"
-                                    label="Tipus:"
-                                    label-for="input-2"
-                                >
+                        <div class="row">
+                            <div class="col-lg-4 my-2">
+                                <div class="form-floating user-select-none">
                                     <b-form-input
-                                        id="input-2"
-                                        v-model="street"
-                                        placeholder="tipus"
-                                        required
-                                    ></b-form-input>
-                                </b-form-group>
+                                        type="text"
+                                        id="input-number-stair"
+                                        v-model="call.numberStair"
+                                        placeholder="Escala"
+                                    />
+                                    <label
+                                        class="user-select-none"
+                                        for="input-number-stair"
+                                        >Escala</label
+                                    >
+                                </div>
                             </div>
-                            <div>
-                                <b-form-group
-                                    id="input-group-2"
-                                    label="Pis:"
-                                    label-for="input-2"
-                                >
+                            <div class="col-lg-4 my-2">
+                                <div class="form-floating user-select-none">
                                     <b-form-input
-                                        id="input-2"
-                                        v-model="flour"
-                                        placeholder="pis"
-                                        required
-                                    ></b-form-input>
-                                </b-form-group>
+                                        type="text"
+                                        id="input-number-floor"
+                                        v-model="call.numberFloor"
+                                        placeholder="Pis"
+                                    />
+                                    <label
+                                        class="user-select-none"
+                                        for="input-number-floor"
+                                        >Pis</label
+                                    >
+                                </div>
                             </div>
-                            <div>
-                                <b-form-group
-                                    id="input-group-2"
-                                    label="Porta:"
-                                    label-for="input-2"
-                                >
+                            <div class="col-lg-4 my-2">
+                                <div class="form-floating user-select-none">
                                     <b-form-input
-                                        id="input-2"
-                                        v-model="door"
-                                        placeholder="porta"
-                                        required
-                                    ></b-form-input>
-                                </b-form-group>
+                                        type="text"
+                                        id="input-number-door"
+                                        v-model="call.numberDoor"
+                                        placeholder="Porta"
+                                    />
+                                    <label
+                                        class="user-select-none"
+                                        for="input-number-door"
+                                        >Porta</label
+                                    >
+                                </div>
                             </div>
                         </div>
                     </div>
                     <!-- OPTION 2 PUNT SINGULAR -->
-                    <div class="col-12" v-show="locationType == 2">
-                        <div class="row justify-content-around">
-                            <div>
-                                <b-form-group
-                                    id="input-group-2"
-                                    label="Nom:"
-                                    label-for="input-2"
-                                >
-                                    <b-form-input
-                                        id="input-2"
-                                        v-model="pointSingular"
-                                        placeholder="nom"
-                                        required
-                                    ></b-form-input>
-                                </b-form-group>
-                            </div>
+                    <div class="col-lg-12 my-2" id="wrapLocationType2" v-else-if="call.locationType == 2">
+                        <div class="form-floating user-select-none">
+                            <b-form-input
+                                type="text"
+                                id="input-singular-point"
+                                v-model="call.singularPoint"
+                                aria-describedby="input-singular-point-feedback"
+                                :state="!isEmpty(call.singularPoint)"
+                                placeholder="Nom del punt singular"
+                                required
+                            />
+                            <label
+                                class="user-select-none"
+                                for="input-singular-point">
+                                Nom del punt singular
+                            </label>
+                            <b-form-invalid-feedback
+                                id="input-singular-point-feedback"
+                            >
+                                Aquest camp és obligatori.
+                            </b-form-invalid-feedback>
                         </div>
                     </div>
-                    <!-- OPTION 3 Entitat POBLACIO -->
-                    <div
+                    <!-- OPTION 3 Entitat POBLACIÓ -->
+                    <!--<div
                         v-show="locationType == 3"
                         class="form-floating user-select-none"
-                    ></div>
-                    <!-- OPTION 4 CERRETERA -->
-                    <div class="col-12" v-show="locationType == 4">
-                        <div class="row justify-content-around">
-                            <div>
-                                <b-form-group
-                                    id="input-group-2"
-                                    label="Nom:"
-                                    label-for="input-2"
-                                >
+                    ></div>-->
+                    <!-- OPTION 4 CARRETERA -->
+                    <div class="col-lg-12 my-2" id="wrapLocationType3" v-else-if="call.locationType == 4">
+                        <div class="row">
+                            <div class="col-lg-4 my-2">
+                                <div class="form-floating user-select-none">
                                     <b-form-input
-                                        id="input-2"
-                                        v-model="nameHighway"
-                                        placeholder="nom"
-                                        required
-                                    ></b-form-input>
-                                </b-form-group>
+                                        type="text"
+                                        id="input-name-highway"
+                                        v-model="call.nameHighway"
+                                        placeholder="Nom de la carretera"
+                                    />
+                                    <label
+                                        class="user-select-none"
+                                        for="input-name-highway"
+                                        >Nom de la carretera</label
+                                    >
+                                </div>
                             </div>
-                            <div>
-                                <b-form-group
-                                    id="input-group-2"
-                                    label="Sentit:"
-                                    label-for="input-2"
-                                >
+                            <div class="col-lg-4 my-2">
+                                <div class="form-floating user-select-none">
                                     <b-form-input
-                                        id="input-2"
-                                        v-model="directionHighway"
-                                        placeholder="sentit"
-                                        required
-                                    ></b-form-input>
-                                </b-form-group>
+                                        type="text"
+                                        id="input-direction-highway"
+                                        v-model="call.directionHighway"
+                                        placeholder="Sentit de la carretera"
+                                    />
+                                    <label
+                                        class="user-select-none"
+                                        for="input-direction-highway"
+                                        >Sentit de la carretera</label
+                                    >
+                                </div>
                             </div>
-                            <div>
-                                <b-form-group
-                                    id="input-group-2"
-                                    label="Km:"
-                                    label-for="input-2"
-                                >
+                            <div class="col-lg-4 my-2">
+                                <div class="form-floating user-select-none">
                                     <b-form-input
-                                        id="input-2"
-                                        v-model="numberHighway"
-                                        placeholder="km"
-                                        required
-                                    ></b-form-input>
-                                </b-form-group>
+                                        type="text"
+                                        id="input-km-highway"
+                                        v-model="call.kmHighway"
+                                        placeholder="KM de la carretera"
+                                    />
+                                    <label
+                                        class="user-select-none"
+                                        for="input-km-highway"
+                                        >KM de la carretera</label
+                                    >
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-12 p-0 mt-3">
-                    <div class="form-floating user-select-none">
-                        <b-form-textarea
-                            id="information"
-                            class="h-150"
-                            type="text"
-                            placeholder="Informació rellevant de la localització"
-                            required
-                            rows="5"
-                        />
-                        <label class="user-select-none" for="input-information">
-                            Informació rellevant de la localització
-                        </label>
+                <div class="row">
+                    <div class="col-lg-12 my-2">
+                        <div class="form-floating user-select-none">
+                            <b-form-textarea
+                                id="input-extra-information-street"
+                                type="text"
+                                class="h-150"
+                                placeholder="Informació rellevant de la localització"
+                                rows="5"
+                            />
+                            <label class="user-select-none" for="input-extra-information-street">
+                                Informació rellevant de la localització
+                            </label>
+                        </div>
                     </div>
                 </div>
             </b-tab>
@@ -393,13 +448,18 @@
                                 v-model="typeIncidentSelected"
                                 placeholder="Tipus incident"
                             >
-                             <template #first>
-                                <b-form-select-option :value="null"
-                                    >Seleccionar tipus incident</b-form-select-option
-                                >
-                            </template>
+                                <template #first>
+                                    <b-form-select-option :value="null"
+                                        >Seleccionar tipus
+                                        incident</b-form-select-option
+                                    >
+                                </template>
                             </b-form-select>
-                            <label class="user-select-none" for="select-type-incident">Tipus incident</label>
+                            <label
+                                class="user-select-none"
+                                for="select-type-incident"
+                                >Tipus incident</label
+                            >
                         </div>
                     </div>
                     <div class="col-lg-6 my-2">
@@ -411,13 +471,18 @@
                                 v-model="incidentSelected"
                                 placeholder="Incident"
                             >
-                             <template #first>
-                                <b-form-select-option :value="null"
-                                    >Seleccionar incident</b-form-select-option
-                                >
-                            </template>
+                                <template #first>
+                                    <b-form-select-option :value="null"
+                                        >Seleccionar
+                                        incident</b-form-select-option
+                                    >
+                                </template>
                             </b-form-select>
-                            <label class="user-select-none" for="select-incident">Incident</label>
+                            <label
+                                class="user-select-none"
+                                for="select-incident"
+                                >Incident</label
+                            >
                         </div>
                     </div>
                 </div>
@@ -452,12 +517,27 @@ export default {
         return {
             call: {
                 phone: "",
-                firstnameCaller: "",
-                lastnameCaller: "",
+                firstNameCaller: "",
+                lastNameCaller: "",
                 provenance: "",
                 relationIncident: "",
                 description: "",
                 province: "",
+
+                typeStreet: "",
+                nameStreet: "",
+                numberStreet: "",
+                numberStair: "",
+                numberFloor: "",
+                numberDoor: "",
+
+                singularPoint: "",
+
+                nameHighway: "",
+                directionHighway: "",
+                kmHighway: "",
+
+                locationType: "",
             },
             requestProvinces: null,
             requestRegions: null,
@@ -470,29 +550,18 @@ export default {
             provinceSelected: null,
             regionSelected: null,
             townSelected: null,
-            typeSelected: null,
+            typeLocationSelected: null,
             typeIncidentSelected: null,
             incidentSelected: null,
-            outCataluyna: false,
+            outCatalunya: false,
             provincias: [],
             regions: [],
             towns: [],
-            types: [],
+            typesLocations: [],
             typesIncidents: [],
             incidents: [],
 
-            street: "",
             relation: "",
-            nameStreet: "",
-            numberStreet: "",
-            locationType: "",
-            street: "",
-            flour: "",
-            door: "",
-            pointSingular: "",
-            nameHighway: "",
-            directionHighway: "",
-            numberHighway: "",
         };
     },
     computed: {
@@ -511,7 +580,6 @@ export default {
                     text: province.nom,
                 };
             });
-
 
             return provinces;
         },
@@ -551,13 +619,15 @@ export default {
 
             return towns;
         },
-        allTypes() {
-            this.locationType = this.typeSelected;
+        allTypesLocations() {
+            if (!this.typeLocationSelected) this.typeLocationSelected = 3;
 
-            return this.types.map((tipo) => {
+            this.call.locationType = this.typeLocationSelected;
+
+            return this.typesLocations.map((type) => {
                 return {
-                    value: tipo.id,
-                    text: tipo.tipus,
+                    value: type.id,
+                    text: type.tipus,
                 };
             });
         },
@@ -678,7 +748,7 @@ export default {
                     cancelToken: axiosSource.token,
                 })
                 .then((response) => {
-                    me.types = response.data;
+                    me.typesLocations = response.data;
                 })
                 .catch(function (error) {
                     if (!axios.isCancel(error)) {
@@ -737,7 +807,6 @@ export default {
         },
         handleInputPhone() {
             if (this.call.phone) {
-
             }
         },
         isEmpty(value) {
@@ -757,34 +826,34 @@ export default {
     justify-content: space-between;
 }
 .autocomplete {
-  /*the container must be positioned relative:*/
-  position: relative;
-  display: inline-block;
+    /*the container must be positioned relative:*/
+    position: relative;
+    display: inline-block;
 }
 .autocomplete-items {
-  position: absolute;
-  border: 1px solid #d4d4d4;
-  border-bottom: none;
-  border-top: none;
-  z-index: 99;
-  /*position the autocomplete items to be the same width as the container:*/
-  top: 100%;
-  left: 0;
-  right: 0;
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    /*position the autocomplete items to be the same width as the container:*/
+    top: 100%;
+    left: 0;
+    right: 0;
 }
 .autocomplete-items div {
-  padding: 10px;
-  cursor: pointer;
-  background-color: #fff;
-  border-bottom: 1px solid #d4d4d4;
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-bottom: 1px solid #d4d4d4;
 }
 .autocomplete-items div:hover {
-  /*when hovering an item:*/
-  background-color: #e9e9e9;
+    /*when hovering an item:*/
+    background-color: #e9e9e9;
 }
 .autocomplete-active {
-  /*when navigating through the items using the arrow keys:*/
-  background-color: DodgerBlue !important;
-  color: #ffffff;
+    /*when navigating through the items using the arrow keys:*/
+    background-color: DodgerBlue !important;
+    color: #ffffff;
 }
 </style>
