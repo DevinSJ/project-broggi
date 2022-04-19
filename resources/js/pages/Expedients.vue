@@ -1,8 +1,8 @@
 <template>
     <main>
         <button-call @toggleButton="showCardsCall = !showCardsCall"/>
-        <cards-call @loadModalExpedient="loadModalExpedient" v-if="showCardsCall"/>
-        <expedients-table ref="expedientsTable" v-show="!showCardsCall"/>
+        <cards-call v-if="showCardsCall"/>
+        <expedients-table v-else />
     </main>
 </template>
 
@@ -16,11 +16,6 @@ export default {
             showCardsCall: false,
         };
     },
-    methods: {
-        loadModalExpedient(expedient) {
-            this.$refs.expedientsTable.loadModal(expedient, true);
-        }
-    }
 };
 </script>
 

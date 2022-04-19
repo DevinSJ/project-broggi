@@ -24,13 +24,8 @@ class UsuarisController extends Controller
         $filtroPerfil = $request->input('filtroPerfil');
         $filtroActivo = $request->input('filtroActivo');
 
-        if ($filtroPerfil == 4) {
-            $filtroPerfil = "";
-        }
-
-        if ($filtroActivo == 2) {
-            $filtroActivo = "";
-        }
+        if ($filtroPerfil == "null") $filtroPerfil = "";
+        if ($filtroActivo == "null") $filtroActivo = "";
 
         $_usuaris = Usuaris::with('perfil')->where('usuari', "like", "%" . $filtroUsuario . "%")
             ->where('perfils_id', "like", "%" . $filtroPerfil . "%")

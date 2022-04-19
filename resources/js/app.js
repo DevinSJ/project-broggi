@@ -13,41 +13,26 @@ import ChartJs from "vue-chartjs";
 import Moment from "vue-moment";
 
 window.Vue = require("vue").default;
-window.Vue.use(BootstrapVue);
-window.Vue.use(VueRouter);
-window.Vue.use(SvgVue);
-window.Vue.use(ChartJs);
-window.Vue.use(Moment);
+window.Vue.use(BootstrapVue); //Styling with bootstrap components.
+window.Vue.use(VueRouter); //SPA vue router.
+window.Vue.use(SvgVue); //Load svg before to start app.
+window.Vue.use(ChartJs); //Graphs in js.
+window.Vue.use(Moment); //Format date.
 
-/**
- * The following block of code may be used to automatically register your
- * Vue components. It will recursively scan this directory for the Vue
- * components and automatically register them with their "basename".
- *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
- */
-
+//Components
 const files = require.context("./", true, /\.vue$/i);
 files
     .keys()
-    .map((key) =>
-        Vue.component(key.split("/").pop().split(".")[0], files(key).default)
-    );
+    .map((key) => {
+        if (!key.startsWith("./pages/")) Vue.component(key.split("/").pop().split(".")[0], files(key).default);
+    }
+);
 
 Vue.component("pagination", require("laravel-vue-pagination"));
 
-// Vue.component('example-component', require('./components/ExampleComponent.vue').default);
-
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
-
-const Expedients = Vue.component(
-    "expedients",
-    require("./pages/Expedients.vue").default
-);
+//Pages
+Vue.component("login", require("./pages/Login.vue").default);
+const Expedients = Vue.component("expedients", require("./pages/Expedients.vue").default);
 const Calls = Vue.component("calls", require("./pages/Calls.vue").default);
 const Graphs = Vue.component("graphs", require("./pages/Graphs.vue").default);
 const Users = Vue.component("users", require("./pages/Users.vue").default);

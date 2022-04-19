@@ -29,26 +29,21 @@ use Illuminate\Support\Facades\Response;
 */
 
 Route::apiResource('users', UsuarisController::class);
-
-
-
 Route::apiResource('help-phrases', AjudesFrasesController::class);
 Route::apiResource('expedients', ExpedientsController::class);
 Route::apiResource('provinces', ProvinciesController::class);
 Route::apiResource('regions', ComarquesController::class);
 Route::apiResource('towns', MunicipisController::class);
-Route::apiResource('LocationsTypes', TipusLocalitzacionsController::class);
-Route::apiResource('cartestrucades', CartesTrucadesController::class);
+Route::apiResource('locations_types', TipusLocalitzacionsController::class);
+Route::apiResource('cartes_trucades', CartesTrucadesController::class);
 Route::apiResource('estats_expedients', Estats_expedientsController::class);
 Route::apiResource('estats_agencies', EstatsAgenciesController::class);
-
-
 Route::apiResource('types_incidents', TipusIncidentsController::class);
 Route::apiResource('incidents', IncidentsController::class);
 Route::apiResource('agencies', AgenciesController::class);
 
 Route::get('/video-interactive', function () {
-    $path = public_path() . '\\assets\\video\\video-interactive.mp4';
+    $path = public_path() . '\\video\\video-interactive.mp4';
 
     $size = filesize($path);
     $fileContents = file_get_contents($path);
@@ -64,7 +59,7 @@ Route::get('/video-interactive', function () {
 });
 
 // Customized routes
-Route::get('/cartestrucades/list/{id_expedient}', [CartesTrucadesController::class, 'calls_from_expedients']);
+Route::get('/cartes_trucades/list/{id_expedient}', [CartesTrucadesController::class, 'calls_from_expedients']);
 Route::post('/expedients/put/{expedient}', [ExpedientsController::class, 'update']);
 Route::post('cartes_trucades_has_agencies/put/{id_call}/{id_agency}', [CartesTrucadesHasAgenciesController::class, 'update']);
 Route::post('users/put/update/{user}',[UsuarisController::class,"update"]);

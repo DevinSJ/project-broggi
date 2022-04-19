@@ -4,7 +4,7 @@
             class="col-lg-4 col-md-8 col-sm-8 p-4 shadow-lg user-select-none"
             no-body
         >
-            <img src="/assets/img/logo.svg" class="card-img mb-4" />
+            <svg-vue icon="logo" class="card-img mb-4"/>
             <b-card-body class="p-0">
                 <b-form @submit.prevent="login">
                     <div class="form-floating user-select-none">

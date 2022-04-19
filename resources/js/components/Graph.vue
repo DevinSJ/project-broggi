@@ -3,6 +3,9 @@ import { Bar } from "vue-chartjs";
 export default {
     extends: Bar,
     props: ["opcionGraph"],
+    beforeDestroy() {
+        if (this.request) this.request.cancel();
+    },
     data() {
         return {
             graph: "",
@@ -18,6 +21,7 @@ export default {
                         data: [],
                     },
                 ],
+                request: null
             },
             options: {
                 scales: {
@@ -51,9 +55,16 @@ export default {
         obtenerDatosExpedientes() {
             this.$emit("startRequest");
 
+            if (this.request) this.request.cancel();
+
+            let axiosSource = axios.CancelToken.source();
+            this.request = { cancel: axiosSource.cancel };
+
             let me = this;
             axios
-                .get("/api/graph-expedients-status/")
+                .get("/api/graph-expedients-status/", {
+                    cancelToken: axiosSource.token,
+                })
                 .then((response) => {
                     me.chartData.datasets[0].label = "Estat dels expedients";
                     me.chartData.labels = [];
@@ -96,9 +107,16 @@ export default {
         obtenerDatosUsuarios() {
             this.$emit("startRequest");
 
+            if (this.request) this.request.cancel();
+
+            let axiosSource = axios.CancelToken.source();
+            this.request = { cancel: axiosSource.cancel };
+            
             let me = this;
             axios
-                .get("/api/graph-users-perfil/")
+                .get("/api/graph-users-perfil/", {
+                    cancelToken: axiosSource.token,
+                })
                 .then((response) => {
                     me.chartData.datasets[0].label = "Perfils d'usuaris";
                     me.chartData.labels = [];

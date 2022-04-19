@@ -44,12 +44,14 @@ class CartesTrucadesController extends Controller
         if($id_rol == '1'){
             $trucades = Cartes_trucades::with('incident.tipo_incident')
                 ->with('cartes_trucades_has_agencies.agencia')
+                ->with('cartes_trucades_has_agencies.estat_agencia')
                 ->where('expedients_id', '=', $idExpedient)
                 ->where('usuaris_id', '=', $id_user)
                 ->get();
         }else{
             $trucades = Cartes_trucades::with('incident.tipo_incident')
                 ->with('cartes_trucades_has_agencies.agencia')
+                ->with('cartes_trucades_has_agencies.estat_agencia')
                 ->where('expedients_id', '=', $idExpedient)
                 ->get();
         }
