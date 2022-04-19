@@ -212,6 +212,8 @@ export default {
             if (this.showItemsLang) {
                 this.toggleItemsLang();
             }
+
+            if (this.request) this.request.cancel();
         },
         changeLang(e) {
             if (this.selectedLang != e.currentTarget.id) {
@@ -225,6 +227,8 @@ export default {
 
                 this.fetchLang();
             } else {
+                if (this.request) this.request.cancel();
+
                 this.isLoadingPopoverLang = true;
                 this.isShowPopover = false;
                 this.selectedLang = "";
