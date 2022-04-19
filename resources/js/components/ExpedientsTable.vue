@@ -5,7 +5,7 @@
             <b-card class="show-card" body-class="card_body">
                 <b-row>
                     <b-col cols="lg-6">
-                        <label class="font-weight-bold mr-2">Selecciona el estat que vols veure: </label>
+                        <label class="font-weight-bold mr-2">Selecciona l'estat que vols veure: </label>
                         <b-form-checkbox
                             v-model="filtre.estat.in_progress"
                             name="check-button"

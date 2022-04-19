@@ -836,17 +836,6 @@ export default {
 ::v-deep .header-class-editar-contrasenya {
     background: rgb(218, 218, 218);
 }
-<<<<<<< HEAD
-
-.column-boton-afegir{
-text-align: flex-start;
-}
-.column-botons-filtrar{
-text-align: flex-end;
-justify-content: flex-end;
-align-items: flex-end;
-display: flex;
-=======
 .column-boton-afegir {
     text-align: flex-start;
 }
@@ -855,6 +844,5 @@ display: flex;
     justify-content: flex-end;
     align-items: flex-end;
     display: flex;
->>>>>>> feffc9e7a76c1eed78253e8ec8b8bb23c1f3ea4c
 }
 </style>

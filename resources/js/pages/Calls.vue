@@ -1,54 +1,21 @@
 <template>
     <main>
-<<<<<<< HEAD
-        <input
-            type="checkbox"
-            v-model="showCardsCall"
-            class="input-button-call"
-            @click="toggleCardsCall"
-            id="input-button-call"
-        />
-        <label
-            class="label-button-call user-select-none"
-            for="input-button-call"
-        >
-            <i :class="'fas ' + (!showCardsCall ? 'fa-phone mr-1' : 'fa-phone-slash mr-1')"></i>
-            {{
-                !showCardsCall ? "Iniciar trucada" : "Finalitzar trucada"
-            }}
-        </label>
-        <cards-call v-if="showCardsCall"/>
-        <calls-table />
-=======
         <button-call @toggleButton="showCardsCall = !showCardsCall"/>
         <cards-call v-if="showCardsCall"/>
         <calls-table v-else/>
->>>>>>> feffc9e7a76c1eed78253e8ec8b8bb23c1f3ea4c
     </main>
 </template>
 
 <script>
 export default {
-<<<<<<< HEAD
-    components: { CallsTable },
-=======
     mounted() {
         document.title = "Trucades - Broggi";
     },
->>>>>>> feffc9e7a76c1eed78253e8ec8b8bb23c1f3ea4c
     data() {
         return {
             showCardsCall: false,
         };
     },
-<<<<<<< HEAD
-    methods: {
-        toggleCardsCall() {
-            this.showCardsCall = !this.showCardsCall;
-        }
-    }
-=======
->>>>>>> feffc9e7a76c1eed78253e8ec8b8bb23c1f3ea4c
 }
 </script>
 
