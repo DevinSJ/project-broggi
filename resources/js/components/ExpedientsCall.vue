@@ -322,8 +322,8 @@ export default {
             if (this.expedientSelected.id === -1) this.expedientSelected = expedient;
             else
             {
-                //this.expedientSelected = {id: -1};
-                this.expedientSelected = expedient;
+                if (this.expedientSelected != expedient) this.expedientSelected = expedient;
+                else this.expedientSelected = {id: -1};
             }
         },
         formatDate(value) {
