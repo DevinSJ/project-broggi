@@ -7,7 +7,7 @@
                 title="Video interactiu"
                 @click="openModalVideoInteractive"
             >
-                <i class="fa fa-play"></i>
+                <i class="fa fa-play fa-xl"></i>
             </b-button>
             <div
                 class="d-flex flex-column order-2"
@@ -52,7 +52,7 @@
                     title="Ajuda idiomes"
                     @click="toggleItemsLang"
                 >
-                    <i class="fa-solid fa-circle-info"></i>
+                    <i class="fa-solid fa-globe fa-xl"></i>
                 </b-button>
             </div>
         </div>
@@ -336,7 +336,7 @@ export default {
 }
 
 .btn-circle {
-    padding: 1rem;
+    padding-top: 8px;
     font-size: 1rem;
     line-height: 0.125rem;
     width: 50px;

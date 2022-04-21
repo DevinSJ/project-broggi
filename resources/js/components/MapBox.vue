@@ -12,6 +12,7 @@ const PopupMapBoxClass = Vue.extend(PopupMapBox);
 const sizeDot = 200;
 
 export default {
+    props: ["query"],
     mounted() {
         let me = this;
 
@@ -207,7 +208,7 @@ export default {
 
             this.mapboxClient.geocoding
                 .forwardGeocode({
-                    query: 'Barcelona',
+                    query: this.query,
                     autocomplete: false,
                     limit: 1,
                 })
