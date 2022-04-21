@@ -84,18 +84,33 @@
     <b-modal id="modal-calls" title="Dades de la trucada" size="huge" ok-only>
       <div>
         <b-tabs content-class="mt-3" fill>
-          <b-tab title="Nota comuna" active>
+          <b-tab title="Identificació de la trucada" active>
             <div class="col-12 row mt-3 justify-content-between">
-              <div>
+                <div>
                 <b-form-group
                   id="input-group-2"
-                  label="Codi trucada:"
+                  label="Codi de la trucada:"
                   label-for="input-2"
                   label-class="font-weight-bold"
                 >
                   <b-form-input
                     id="input-2"
                     v-model="call.codi_trucada"
+                    disabled
+                    plaintext
+                  ></b-form-input>
+                </b-form-group>
+              </div>
+              <div>
+                <b-form-group
+                  id="input-group-2"
+                  label="Nº telèfon:"
+                  label-for="input-2"
+                  label-class="font-weight-bold"
+                >
+                  <b-form-input
+                    id="input-2"
+                    v-model="call.telefon"
                     disabled
                     required
                     plaintext
@@ -111,7 +126,7 @@
                 >
                   <b-form-input
                     id="input-2"
-                    v-model="call.temps_trucada"
+                    v-model="call_duration"
                     disabled
                     plaintext
                   ></b-form-input>
@@ -132,22 +147,71 @@
                   ></b-form-input>
                 </b-form-group>
               </div>
-              <div>
-                <b-form-group
-                  id="input-group-2"
-                  label="Nom:"
-                  label-for="input-2"
-                  label-class="font-weight-bold"
-                >
-                  <b-form-input
-                    id="input-2"
-                    v-model="call.nom_trucada"
-                    disabled
-                    plaintext
-                  ></b-form-input>
-                </b-form-group>
-              </div>
             </div>
+            <div class="col-12 row mt-3 justify-content-between">
+                <div>
+                    <b-form-group
+                    id="input-group-2"
+                    label="Municipi:"
+                    label-for="input-2"
+                    label-class="font-weight-bold"
+                    >
+                    <b-form-input
+                        id="input-2"
+                        v-model="call.municipi.nom"
+                        disabled
+                        plaintext
+                    ></b-form-input>
+                    </b-form-group>
+                </div>
+                <div>
+                    <b-form-group
+                    id="input-group-2"
+                    label="Adreça:"
+                    label-for="input-2"
+                    label-class="font-weight-bold"
+                    >
+                    <b-form-input
+                        id="input-2"
+                        v-model="call.dada_personal.adreca"
+                        disabled
+                        plaintext
+                    ></b-form-input>
+                    </b-form-group>
+                </div>
+                <div>
+                    <b-form-group
+                    id="input-group-2"
+                    label="Procedència:"
+                    label-for="input-2"
+                    label-class="font-weight-bold"
+                    >
+                    <b-form-input
+                        id="input-2"
+                        v-model="call.procedencia_trucada"
+                        disabled
+                        plaintext
+                    ></b-form-input>
+                    </b-form-group>
+                </div>
+                <div>
+                    <b-form-group
+                    id="input-group-2"
+                    label="Antecedents del telèfon:"
+                    label-for="input-2"
+                    label-class="font-weight-bold"
+                    >
+                    <b-form-input
+                        id="input-2"
+                        v-model="call.dada_personal.antecedents"
+                        disabled
+                        plaintext
+                    ></b-form-input>
+                    </b-form-group>
+                </div>
+            </div>
+          </b-tab>
+          <b-tab title="Nota comuna">
             <div class="col-12 p-0">
               <div class="form-floating user-select-none">
                 <b-form-textarea
@@ -170,7 +234,24 @@
             </div>
           </b-tab>
 
-          <b-tab title="Localització de la trucada">
+          <b-tab title="Localització de l'emergència">
+            <div class="col-12 row mt-3 justify-content-start">
+              <div>
+                <b-form-group
+                  id="input-group-2"
+                  label="Fora de Catalunya:"
+                  label-for="input-2"
+                  label-class="font-weight-bold"
+                >
+                  <b-form-input
+                    id="input-2"
+                    v-model="fora_cat"
+                    disabled
+                    plaintext
+                  ></b-form-input>
+                </b-form-group>
+              </div>
+            </div>
             <div class="col-12 row mt-3 justify-content-between">
               <div>
                 <b-form-group
@@ -217,7 +298,9 @@
                   ></b-form-input>
                 </b-form-group>
               </div>
-              <div>
+            </div>
+            <div class="col-12 p-0 mt-3">
+                <div>
                 <b-form-group
                   id="input-group-2"
                   label="Tipus de localització:"
@@ -233,22 +316,7 @@
                 </b-form-group>
               </div>
             </div>
-            <div class="col-12 p-0">
-              <b-form-group
-                id="input-group-2"
-                label="Adreça de la trucada:"
-                label-for="input-2"
-                label-class="font-weight-bold"
-              >
-                <b-form-input
-                  id="input-2"
-                  v-model="call.adreca_trucada"
-                  disabled
-                  plaintext
-                ></b-form-input>
-              </b-form-group>
-            </div>
-            <div class="col-12 p-0">
+            <div class="col-12 p-0 mt-3">
               <b-form-group
                 id="input-group-2"
                 label="Informació rellevant de la localització:"
@@ -296,7 +364,10 @@
                   ></b-form-input>
                 </b-form-group>
               </div>
-              <div class="col-5">
+            </div>
+          </b-tab>
+          <b-tab title="Agencies">
+              <div class="col-12 p-0">
                 <b-form-group
                   id="input-group-2"
                   label="Agència/es associades:"
@@ -313,7 +384,6 @@
                   ></b-form-input>
                 </b-form-group>
               </div>
-            </div>
           </b-tab>
         </b-tabs>
       </div>
@@ -382,11 +452,16 @@ export default {
         incident: {
           tipo_incident: {},
         },
+        dada_personal:{
+
+        }
       },
       filtre: {
         call_code: "",
         exp_code: "",
       },
+      call_duration: "",
+      fora_cat: ""
     };
   },
   methods: {
@@ -424,10 +499,12 @@ export default {
     },
     loadCallInfo(call_id) {
       let currentCall = this.calls.data.filter((call) => call.id == call_id);
-      this.call = currentCall[0];
+      this.call = {... currentCall[0]}
       this.call.data_hora = moment(this.call.data_hora)
         .locale("es")
         .format("DD/MM/yyyy HH:mm:ss");
+      this.call_duration = moment.utc(this.call.temps_trucada).format('HH:mm:ss');
+      this.fora_cat = this.call.fora_catalunya == 1 ? "Si" : "No";
     },
     filtrar() {
       this.isLoading = true;
