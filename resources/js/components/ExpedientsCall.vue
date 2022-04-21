@@ -14,11 +14,11 @@
                     <button
                         type="button"
                         class="btn btn-sm btn-secondary"
-                        title="Veure dades"
+                        title="Veure trucades del expedient"
                         v-b-modal.modal-expedients
                         @click="loadModalExpedient(expedient)"
                     >
-                        <i class="fa-solid fa-eye"></i>
+                        <i class="fa-solid fa-phone"></i>
                     </button>
                     <button
                         type="button"
@@ -94,7 +94,7 @@
                 aquest usuari.
             </div>
 
-            <div v-if="this.isLoading2" class="loading-spinner">
+            <div v-show="this.isLoading2" class="loading-spinner">
                 <svg-vue icon="spinner" class="mx-auto my-auto" width="100" />
             </div>
         </b-modal>
@@ -135,7 +135,7 @@
                 </b-table>
             </div>
 
-            <div v-if="this.isLoading3" class="loading-spinner">
+            <div v-show="this.isLoading3" class="loading-spinner">
                 <svg-vue icon="spinner" class="mx-auto my-auto" width="100" />
             </div>
         </b-modal>
@@ -307,6 +307,8 @@ export default {
                 })
                 .then((data) => {
                     me.expedients = data.data.data;
+
+                    me.$emit("finishFetchExpedientsCall");
                 })
                 .catch((error) => {
                     if (!axios.isCancel(error)) {
@@ -336,7 +338,7 @@ export default {
 <style scoped>
 .list-expedients {
     width: 100%;
-    max-height: 600px;
+    max-height: 650px;
     overflow-y: scroll;
 }
 
