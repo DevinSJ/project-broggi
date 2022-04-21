@@ -17,7 +17,8 @@ class IncidentsController extends Controller
     public function index()
     {
         $incidents = Incidents::all();
-         return IncidentsResources::collection($incidents);
+
+        return IncidentsResources::collection($incidents);
     }
 
     /**

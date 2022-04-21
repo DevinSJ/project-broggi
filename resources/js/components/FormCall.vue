@@ -5,13 +5,13 @@
             <b-tab title="Identificació de la trucada" active>
                 <div class="row">
                     <div class="col-lg-12 my-2">
-                        <div class="autocomplete w-100">
+                        <div class="input-autocomplete w-100">
                             <div class="form-floating user-select-none">
                                 <b-form-input
                                     type="tel"
                                     id="input-phone"
                                     v-model="call.phone"
-                                    :state="!isEmpty(call.phone)"
+                                    :state="!isEmptyOrNull(call.phone)"
                                     @input="handleInputPhone"
                                     aria-describedby="input-phone-feedback"
                                     placeholder="Nº telèfon"
@@ -25,28 +25,35 @@
                                 <b-form-invalid-feedback
                                     id="input-phone-feedback"
                                     >{{
-                                        isEmpty(call.phone)
+                                        isEmptyOrNull(call.phone)
                                             ? "Aquest camp és obligatori"
                                             : inputPhoneFeedback
                                     }}.</b-form-invalid-feedback
                                 >
                             </div>
+                            <b-list-group class="input-autocomplete-items" v-if="!isEmptyOrNull(call.phone)">
+                                <b-list-group-item>No hi ha resultats</b-list-group-item>
+                            </b-list-group>
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row my-2">
                     <div class="col-lg-6 my-2">
                         <div class="form-floating user-select-none">
-                            <b-form-input
-                                type="text"
-                                id="input-firstname-caller"
-                                v-model="call.firstNameCaller"
-                                placeholder="Nom del trucant"
-                            />
-                            <label
-                                class="user-select-none"
-                                for="input-firstname-caller"
-                                >Nom del trucant</label
+                            <b-form-select
+                                v-model="call.townCallSelected"
+                                :options="allTowns"
+                                placeholder="Municipi"
+                            >
+                                <template #first>
+                                    <b-form-select-option :value="null"
+                                        >Seleccionar
+                                        municipi</b-form-select-option
+                                    >
+                                </template>
+                            </b-form-select>
+                            <label class="user-select-none" for="select-towns-call"
+                                >Municipi</label
                             >
                         </div>
                     </div>
@@ -54,14 +61,14 @@
                         <div class="form-floating user-select-none">
                             <b-form-input
                                 type="text"
-                                id="input-lastname-caller"
-                                v-model="call.lastNameCaller"
-                                placeholder="Cognom del trucant"
+                                id="input-address"
+                                v-model="call.address"
+                                placeholder="Adreça"
                             />
                             <label
                                 class="user-select-none"
-                                for="input-lastname-caller"
-                                >Cognom del trucant</label
+                                for="input-address"
+                                >Adreça</label
                             >
                         </div>
                     </div>
@@ -86,43 +93,43 @@
                         <div class="form-floating user-select-none">
                             <b-form-input
                                 type="text"
-                                id="input-relation-incident"
-                                v-model="call.relationIncident"
-                                placeholder="Relació amb l'incident"
+                                id="input-antecedents"
+                                v-model="call.antecedents"
+                                placeholder="Antecedents del telèfon"
                             />
                             <label
                                 class="user-select-none"
-                                for="input-relation-incident"
-                                >Relació amb l'incident</label
+                                for="input-antecedents"
+                                >Antecedents del telèfon</label
                             >
                         </div>
                     </div>
                 </div>
             </b-tab>
-            <!-- TAB Descripció de l'incident-->
-            <b-tab title="Descripció de l'incident">
+            <!-- TAB Nota comuna-->
+            <b-tab title="Nota comuna">
                 <div class="row">
                     <div class="col-lg-12 my-2">
                         <div class="form-floating user-select-none">
                             <b-form-textarea
                                 type="text"
                                 class="h-150"
-                                id="input-description"
-                                v-model="call.description"
-                                placeholder="Relació incident"
-                                aria-describedby="input-description-feedback"
-                                :state="!isEmpty(call.description)"
+                                id="input-common-note"
+                                v-model="call.commonNote"
+                                placeholder="Nota comuna"
+                                aria-describedby="input-common-note-feedback"
+                                :state="!isEmptyOrNull(call.commonNote)"
                                 rows="5"
                                 required
                             />
                             <label
                                 class="user-select-none"
-                                for="input-description"
+                                for="input-common-note"
                             >
-                                Descripció incident
+                                Nota comuna
                             </label>
                             <b-form-invalid-feedback
-                                id="input-description-feedback"
+                                id="input-common-note-feedback"
                             >
                                 Aquest camp és obligatori.
                             </b-form-invalid-feedback>
@@ -130,8 +137,8 @@
                     </div>
                 </div>
             </b-tab>
-            <!-- TAB Localització de la trucada -->
-            <b-tab title="Localització de la trucada">
+            <!-- TAB Localització de l’emergència -->
+            <b-tab title="Localització de l’emergència">
                 <div class="row">
                     <div class="col-lg-12 my-2">
                         <b-form-checkbox
@@ -144,16 +151,37 @@
                     </div>
                 </div>
                 <div class="row" v-if="outCatalunya">
-                    <div class="col-lg-12 my-2">
+                    <div class="col-lg-6 my-2">
                         <div class="form-floating user-select-none">
                             <b-form-input
                                 type="text"
-                                id="input-province"
-                                v-model="call.province"
+                                id="input-province-out-catalunya"
+                                v-model="call.provinceOutOfCatalunya"
                                 placeholder="Provincia"
+                                :state="!isEmptyOrNull(call.provinceOutOfCatalunya)"
+                                aria-describedby="input-province-out-catalunya-feedback"
+                                required
                             />
-                            <label class="user-select-none" for="input-province"
+                            <label class="user-select-none" for="input-province-out-catalunya"
                                 >Provincia</label
+                            >
+                            <b-form-invalid-feedback
+                                id="input-province-out-catalunya-feedback"
+                            >
+                                Aquest camp és obligatori.
+                            </b-form-invalid-feedback>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 my-2">
+                        <div class="form-floating user-select-none">
+                            <b-form-input
+                                type="text"
+                                id="input-town-out-catalunya"
+                                v-model="call.townOutOfCatalunya"
+                                placeholder="Municipi"
+                            />
+                            <label class="user-select-none" for="input-town-out-catalunya"
+                                >Municipi</label
                             >
                         </div>
                     </div>
@@ -162,10 +190,9 @@
                     <div class="col-lg-4 my-2">
                         <div class="form-floating user-select-none">
                             <b-form-select
-                                type="text"
                                 id="select-provinces"
                                 :options="allProvinces"
-                                v-model="provinceSelected"
+                                v-model="call.provinceSelected"
                                 placeholder="Provincia"
                             >
                                 <template #first>
@@ -185,10 +212,9 @@
                     <div class="col-lg-4 my-2">
                         <div class="form-floating user-select-none">
                             <b-form-select
-                                type="text"
                                 id="select-regions"
-                                :options="allRegions"
-                                v-model="regionSelected"
+                                :options="allRegionsFiltered"
+                                v-model="call.regionSelected"
                                 placeholder="Comarca"
                             >
                                 <template #first>
@@ -206,10 +232,9 @@
                     <div class="col-lg-4 my-2">
                         <div class="form-floating user-select-none">
                             <b-form-select
-                                type="text"
                                 id="select-towns"
-                                :options="allTowns"
-                                v-model="townSelected"
+                                :options="allTownsFiltered"
+                                v-model="call.townSelected"
                                 placeholder="Municipi"
                             >
                                 <template #first>
@@ -227,10 +252,9 @@
                     <div class="col-lg-12 my-2">
                         <div class="form-floating user-select-none">
                             <b-form-select
-                                type="text"
                                 id="select-towns"
                                 :options="allTypesLocations"
-                                v-model="typeLocationSelected"
+                                v-model="call.typeLocationSelected"
                                 placeholder="Tipus localització"
                             >
                                 <!--<template #first>
@@ -243,7 +267,7 @@
                         </div>
                     </div>
                     <!-- OPTION 1 CARRERS -->
-                    <div class="col-lg-12 my-2" id="wrapLocationType1" v-if="call.locationType == 1">
+                    <div class="col-lg-12 my-2" v-if="call.typeLocationSelected == 1">
                         <div class="row">
                             <div class="col-lg-4 my-2">
                                 <div class="form-floating user-select-none">
@@ -340,14 +364,14 @@
                         </div>
                     </div>
                     <!-- OPTION 2 PUNT SINGULAR -->
-                    <div class="col-lg-12 my-2" id="wrapLocationType2" v-else-if="call.locationType == 2">
+                    <div class="col-lg-12 my-2" v-else-if="call.typeLocationSelected == 2">
                         <div class="form-floating user-select-none">
                             <b-form-input
                                 type="text"
                                 id="input-singular-point"
                                 v-model="call.singularPoint"
                                 aria-describedby="input-singular-point-feedback"
-                                :state="!isEmpty(call.singularPoint)"
+                                :state="!isEmptyOrNull(call.singularPoint)"
                                 placeholder="Nom del punt singular"
                                 required
                             />
@@ -365,11 +389,11 @@
                     </div>
                     <!-- OPTION 3 Entitat POBLACIÓ -->
                     <!--<div
-                        v-show="locationType == 3"
+                        v-show="typeLocationSelected == 3"
                         class="form-floating user-select-none"
                     ></div>-->
                     <!-- OPTION 4 CARRETERA -->
-                    <div class="col-lg-12 my-2" id="wrapLocationType3" v-else-if="call.locationType == 4">
+                    <div class="col-lg-12 my-2" v-else-if="call.typeLocationSelected == 4">
                         <div class="row">
                             <div class="col-lg-4 my-2">
                                 <div class="form-floating user-select-none">
@@ -442,10 +466,9 @@
                     <div class="col-lg-6 my-2">
                         <div class="form-floating user-select-none">
                             <b-form-select
-                                type="text"
                                 id="select-type-incident"
                                 :options="allTypesIncidents"
-                                v-model="typeIncidentSelected"
+                                v-model="call.typeIncidentSelected"
                                 placeholder="Tipus incident"
                             >
                                 <template #first>
@@ -465,10 +488,9 @@
                     <div class="col-lg-6 my-2">
                         <div class="form-floating user-select-none">
                             <b-form-select
-                                type="text"
                                 id="select-incident"
-                                :options="allIncidents"
-                                v-model="incidentSelected"
+                                :options="allIncidentsFiltered"
+                                v-model="call.incidentSelected"
                                 placeholder="Incident"
                             >
                                 <template #first>
@@ -488,9 +510,10 @@
                 </div>
             </b-tab>
             <!-- TAB Agencies -->
+            <!--
             <b-tab title="Agencies">
-                <map-box></map-box>
-            </b-tab>
+                <map-box :query="queryMapBox"></map-box>
+            </b-tab>-->
         </b-tabs>
     </div>
 </template>
@@ -517,12 +540,18 @@ export default {
         return {
             call: {
                 phone: "",
-                firstNameCaller: "",
-                lastNameCaller: "",
+                townCallSelected: null,
+                address: "",
                 provenance: "",
+                antecedents: "",
+
+                firstNameLastNameCall: "",
                 relationIncident: "",
-                description: "",
-                province: "",
+                phoneContact: "",
+                commonNote: "",
+
+                provinceOutOfCatalunya: "",
+                townOutOfCatalunya: "",
 
                 typeStreet: "",
                 nameStreet: "",
@@ -537,8 +566,17 @@ export default {
                 directionHighway: "",
                 kmHighway: "",
 
-                locationType: "",
+                typeLocationSelected: null,
+
+                typeIncidentSelected: null,
+                incidentSelected: null,
+
+                provinceSelected: null,
+                regionSelected: null,
+                townSelected: null,
             },
+            selectTownsCallChoices: null,
+
             requestProvinces: null,
             requestRegions: null,
             requestTowns: null,
@@ -547,34 +585,29 @@ export default {
             requestIncidents: null,
 
             inputPhoneFeedback: "",
-            provinceSelected: null,
-            regionSelected: null,
-            townSelected: null,
-            typeLocationSelected: null,
-            typeIncidentSelected: null,
-            incidentSelected: null,
+
             outCatalunya: false,
-            provincias: [],
+
+            provinces: [],
             regions: [],
             towns: [],
             typesLocations: [],
+
             typesIncidents: [],
             incidents: [],
-
-            relation: "",
         };
     },
     computed: {
         actualRegion() {
             return this.regions.find(
-                (region) => region.id == this.regionSelected
+                (region) => region.id == this.call.regionSelected
             );
         },
         actualTown() {
-            return this.towns.find((town) => town.id == this.townSelected);
+            return this.towns.find((town) => town.id == this.call.townSelected);
         },
         allProvinces() {
-            let provinces = this.provincias.map((province) => {
+            let provinces = this.provinces.map((province) => {
                 return {
                     value: province.id,
                     text: province.nom,
@@ -583,12 +616,12 @@ export default {
 
             return provinces;
         },
-        allRegions() {
+        allRegionsFiltered() {
             let regions = this.regions;
 
-            if (this.provinceSelected) {
+            if (this.call.provinceSelected) {
                 regions = regions.filter(
-                    (region) => region.provincies_id == this.provinceSelected
+                    (region) => region.provincies_id == this.call.provinceSelected
                 );
             }
 
@@ -602,11 +635,19 @@ export default {
             return regions;
         },
         allTowns() {
+            return this.towns.map((town) => {
+                return {
+                    value: town.id,
+                    text: town.nom,
+                };
+            });
+        },
+        allTownsFiltered() {
             let towns = this.towns;
 
-            if (this.regionSelected) {
+            if (this.call.regionSelected) {
                 towns = towns.filter(
-                    (town) => town.comarques_id == this.regionSelected
+                    (town) => town.comarques_id == this.call.regionSelected
                 );
             }
 
@@ -620,9 +661,7 @@ export default {
             return towns;
         },
         allTypesLocations() {
-            if (!this.typeLocationSelected) this.typeLocationSelected = 3;
-
-            this.call.locationType = this.typeLocationSelected;
+            if (!this.call.typeLocationSelected) this.call.typeLocationSelected = 3;
 
             return this.typesLocations.map((type) => {
                 return {
@@ -639,32 +678,63 @@ export default {
                 };
             });
         },
-        allIncidents() {
-            return this.incidents.map((incident) => {
+        allIncidentsFiltered() {
+            let incidents = this.incidents;
+
+            if (this.call.typeIncidentSelected) {
+                let typeIncident = this.typesIncidents.find(typeIncident => typeIncident.id == this.call.typeIncidentSelected);
+
+                if (typeIncident) {
+                    incidents = incidents.filter(
+                        (incident) => incident.classes_incidents_id == typeIncident.id
+                    );
+                }
+            }
+
+            return incidents.map((incident) => {
                 return {
                     value: incident.id,
                     text: incident.descripcio,
                 };
             });
         },
+        queryMapBox() {
+            return "Plaça espanya Barcelona 08014";
+        }
     },
     watch: {
-        regionSelected() {
-            if (this.regionSelected) {
-                this.provinceSelected = this.actualRegion.provincies_id;
+        'call.regionSelected'() {
+            if (this.call.regionSelected) {
+                this.call.provinceSelected = this.actualRegion.provincies_id;
             } else {
-                this.provinceSelected = null;
+                this.call.provinceSelected = null;
             }
         },
-        townSelected() {
-            if (this.townSelected) {
-                this.regionSelected = this.actualTown.comarques_id;
-                this.provinceSelected = this.actualRegion.provincies_id;
+        'call.townSelected'() {
+            if (this.call.townSelected) {
+                this.call.regionSelected = this.actualTown.comarques_id;
+                this.call.provinceSelected = this.actualRegion.provincies_id;
             } else {
-                this.regionSelected = null;
-                this.provinceSelected = null;
+                this.call.regionSelected = null;
+                this.call.provinceSelected = null;
             }
         },
+        'call.typeIncidentSelected'() {
+            if (!this.call.typeIncidentSelected) {
+                this.call.incidentSelected = null;
+            }
+        },
+        'call.incidentSelected'() {
+            if (this.call.incidentSelected) {
+                let incident = this.incidents.find(incident => incident.id == this.call.incidentSelected);
+
+                if (incident) {
+                    this.call.typeIncidentSelected = this.typesIncidents.find(typeIncident => typeIncident.id == incident.classes_incidents_id).id;
+                }
+            } else {
+                this.call.typeIncidentSelected = null;
+            }
+        }
     },
     methods: {
         getProvinces() {
@@ -679,7 +749,7 @@ export default {
                     cancelToken: axiosSource.token,
                 })
                 .then((response) => {
-                    me.provincias = response.data;
+                    me.provinces = response.data;
                 })
                 .catch(function (error) {
                     if (!axios.isCancel(error)) {
@@ -720,6 +790,7 @@ export default {
             this.requestTowns = { cancel: axiosSource.cancel };
 
             let me = this;
+
             axios
                 .get("/api/towns", {
                     cancelToken: axiosSource.token,
@@ -809,8 +880,8 @@ export default {
             if (this.call.phone) {
             }
         },
-        isEmpty(value) {
-            return value.trim().length === 0;
+        isEmptyOrNull(value) {
+            return value.trim().length === 0 || value == null;
         },
     },
 };
@@ -825,35 +896,15 @@ export default {
     display: flex;
     justify-content: space-between;
 }
-.autocomplete {
-    /*the container must be positioned relative:*/
+.input-autocomplete {
     position: relative;
-    display: inline-block;
 }
-.autocomplete-items {
+.input-autocomplete-items {
     position: absolute;
-    border: 1px solid #d4d4d4;
-    border-bottom: none;
-    border-top: none;
-    z-index: 99;
-    /*position the autocomplete items to be the same width as the container:*/
-    top: 100%;
-    left: 0;
-    right: 0;
+    margin-top: 5px;
+    z-index: 9999;
 }
-.autocomplete-items div {
-    padding: 10px;
-    cursor: pointer;
-    background-color: #fff;
-    border-bottom: 1px solid #d4d4d4;
-}
-.autocomplete-items div:hover {
-    /*when hovering an item:*/
-    background-color: #e9e9e9;
-}
-.autocomplete-active {
-    /*when navigating through the items using the arrow keys:*/
-    background-color: DodgerBlue !important;
-    color: #ffffff;
+.input-autocomplete-items > .list-group-item {
+    padding: 5px 10px;
 }
 </style>

@@ -2,7 +2,11 @@
     <main>
         <div class="row">
             <div class="col-xl-8 p-2">
-                <b-card class="hide" header-bg-variant="primary" header-text-variant="white">
+                <b-card
+                    class="hide"
+                    header-bg-variant="primary"
+                    header-text-variant="white"
+                >
                     <template #header>
                         <div class="d-flex">
                             <h6 class="font-weight-bold my-auto">
@@ -59,15 +63,31 @@
                 </b-card>
             </div>
             <div class="col-xl-4 p-2">
-                <b-card class="hide" body-class="p-0" header-bg-variant="primary" header-text-variant="white">
+                <b-card
+                    class="hide"
+                    body-class="p-0"
+                    header-bg-variant="primary"
+                    header-text-variant="white"
+                >
                     <template #header>
-                        <div class="d-flex">
+                        <div class="d-flex justify-content-between">
                             <h6 class="font-weight-bold my-auto">
                                 Llistat d'expedients relacionat
                             </h6>
+                            <h6 class="font-weight-bold my-auto">
+                                Última actualització:
+                                {{ lastUpdateTimeExpedientsCall }}
+                            </h6>
+                            <button
+                                class="btn btn-sm btn-secondary my-auto"
+                                title="Refrescar llista d'expedients"
+                                @click="refreshListExpedientsCall"
+                            >
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                            </button>
                         </div>
                     </template>
-                    <expedients-call />
+                    <expedients-call ref="expedientsCall" @finishFetchExpedientsCall="finishFetchExpedientsCall"/>
                 </b-card>
             </div>
         </div>
@@ -103,9 +123,16 @@ export default {
             stoppedDuration: 0,
             callDateTimeIni: "",
             codeCall: "",
+            lastUpdateTimeExpedientsCall: null,
         };
     },
     methods: {
+        refreshListExpedientsCall() {
+            this.$refs.expedientsCall.getExpedients();
+        },
+        finishFetchExpedientsCall() {
+            this.lastUpdateTimeExpedientsCall = moment().locale("es").format("DD/MM/YYYY HH:mm:ss");
+        },
         generateCodeCall() {
             let today = moment().locale("es");
 
@@ -174,7 +201,6 @@ export default {
             return value.trim().length === 0;
         },
     },
-    computed: {},
 };
 </script>
 
