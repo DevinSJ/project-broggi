@@ -1,18 +1,23 @@
 <template>
-  <main>
-    <button-call />
-    <expedients-table />
-  </main>
+    <main>
+        <button-call @toggleButton="showCardsCall = !showCardsCall"/>
+        <cards-call v-if="showCardsCall"/>
+        <expedients-table v-else />
+    </main>
 </template>
 
 <script>
-import ButtonCall from "../components/ButtonCall.vue";
-import ExpedientsTable from '../components/ExpedientsTable.vue';
 export default {
-  components: { ButtonCall, ExpedientsTable },
+    mounted() {
+        document.title = "Expedients - Broggi";
+    },
+    data() {
+        return {
+            showCardsCall: false,
+        };
+    },
 };
 </script>
 
-<style>
-
+<style scoped>
 </style>

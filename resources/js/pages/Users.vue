@@ -1,193 +1,186 @@
 <template>
     <main>
-        <div class="principal">
-            <div class="botones">
-                <!--PAnel filtrado-->
-                <b-card class="show-card">
-                    <b-row class="text-center">
-                        <b-col cols="3" class="column-boton-afegir">
-                            <b-button
-                                class="btn-sm btn-success"
-                                area-hidden="true"
-                                v-b-modal.modal-usuari
-                                @click="
-                                    nouUsuari();
-                                    setTitleModalUsuari('Nou usuari'),
-                                        colorCabezalCrearUsuari();
-                                "
-                            >
-                                <i class="fas fa-user-circle"></i>
-                                Afegir usuari
-                            </b-button></b-col
-                        >
-
-                        <b-col cols="9" class="column-botons-filtrar">
-                            <b-form inline>
-                                <label class="mr-sm-2" for="filtre-usuari"
-                                    >Usuari</label
-                                >
-                                <b-form-input
-                                    name="filtre-usuari"
-                                    v-model="filtro.usuario"
-                                    id="filtre-usuari"
-                                    class="mb-2 mr-sm-2 mb-sm-0 form-control-sm"
-                                    placeholder="Exemple: Francisco ..."
-                                ></b-form-input>
-
-                                <label class="mr-sm-2" for="filtre-perfil"
-                                    >Perfil</label
-                                >
-                                <b-form-select
-                                    id="filtre-perfil"
-                                    size="sm"
-                                    v-model="filtro.perfil"
-                                    :options="optionsPerfil"
-                                    class="mb-2 mr-sm-2 mb-sm-0"
-                                >
-                                    <template #first>
-                                        <b-form-select-option
-                                            :value="null"
-                                            disabled
-                                            >-- Seleccioni un perfil
-                                            --</b-form-select-option
-                                        >
-                                    </template>
-                                </b-form-select>
-
-                                <label class="mr-sm-2" for="filtre-estat"
-                                    >Estat</label
-                                >
-                                <b-form-select
-                                    size="sm"
-                                    id="filtre-estat"
-                                    class="mb-2 mr-sm-2 mb-sm-0"
-                                    :options="optionsEstat"
-                                    v-model="filtro.actiu"
-                                    :value="null"
-                                >
-                                    <template #first>
-                                        <b-form-select-option
-                                            :value="null"
-                                            disabled
-                                            >-- Seleccioni l'estat
-                                            --</b-form-select-option
-                                        >
-                                    </template>
-                                </b-form-select>
-
-                                <b-button
-                                    variant="info"
-                                    class="btn-sm"
-                                    @click="filtrar"
-                                    ><i class="fa-solid fa-filter"></i>
-                                    Filtrar</b-button
-                                >
-                                <b-button
-                                    class="btn-sm"
-                                    variant="secondary ml-2"
-                                    @click="selectUsuaris"
-                                >
-                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                    Mostrar tots</b-button
-                                >
-                                <template>
-                                    <div></div>
-                                </template>
-                            </b-form>
-                        </b-col>
-                    </b-row>
-                </b-card>
-            </div>
-
-            <!-- ALERTS-->
-            <!-- MSG info-->
-            <b-alert v-if="msgInfo" show dismissible variant="success"
-                ><i class="fas fa-check"></i> {{ msgInfo }}
-            </b-alert>
-
-            <!--TABLA-->
+        <div class="botones">
+            <!--Panel filtrado-->
             <b-card class="show-card">
-                <div class="contenedor-tabla">
-                    <b-table
-                        v-show="!isLoading"
-                        striped
-                        hover
-                        class="table-sm"
-                        thead-class="thead-dark"
-                        sort-icon-left
-                        :fields="fields"
-                        :items="usuaris.data"
-                        primary-key="id"
+                <b-row class="text-center">
+                    <b-col cols="3" class="column-boton-afegir">
+                        <b-button
+                            class="btn-sm btn-success"
+                            area-hidden="true"
+                            v-b-modal.modal-usuari
+                            @click="
+                                nouUsuari();
+                                setTitleModalUsuari('Nou usuari'),
+                                    colorCabezalCrearUsuari();
+                            "
+                        >
+                            <i class="fas fa-user-circle"></i>
+                            Afegir usuari
+                        </b-button></b-col
                     >
-                        <template #cell(edit)="data">
-                            <div>
-                                <b-button
-                                    title="Editar usuari"
-                                    variant="warning"
-                                    v-b-modal.modal-usuari
-                                    class="btn-sm"
-                                    @click="
-                                        setUsuari(data.item);
-                                        setTitleModalUsuari('Editar usuari');
-                                        colorCabezalEditarUsuari();
-                                    "
-                                    ><i class="fas fa-edit"></i>
-                                </b-button>
-                                <b-button
-                                    title="Editar contrasenya"
-                                    variant="dark"
-                                    class="btn-sm"
-                                    v-b-modal.modal-usuari
-                                    @click="
-                                        setUsuari(data.item);
-                                        setTitleModalUsuari(
-                                            'Editar contrasenya'
-                                        );
-                                        colorCabezalEditarContrasenya();
-                                    "
-                                    ><i class="fa-solid fa-key"></i>
-                                </b-button>
-                            </div>
-                        </template>
-                        <template #cell(actiu)="data">
-                            <div class="centrar-icono">
-                                <i
-                                    v-if="data.item.actiu"
-                                    class="fa-solid fa-circle-check color-actiu"
-                                ></i>
-                                <i
-                                    v-else
-                                    class="fa-solid fa-circle-xmark color-inactiu"
-                                ></i>
-                            </div>
-                        </template>
 
-                        <template #cell(perfils_id)="data">
-                            <div>{{ data.item.perfil.nom }}</div>
-                        </template>
-                    </b-table>
-                </div>
+                    <b-col cols="9" class="column-botons-filtrar">
+                        <b-form @submit.prevent="fetchUsuaris" inline>
+                            <label class="mr-sm-2" for="filtre-usuari"
+                                >Usuari</label
+                            >
+                            <b-form-input
+                                name="filtre-usuari"
+                                v-model="filtro.usuario"
+                                id="filtre-usuari"
+                                class="mb-2 mr-sm-2 mb-sm-0 form-control-sm"
+                                placeholder="Exemple: Francisco ..."
+                            ></b-form-input>
 
-                <pagination
-                    v-show="!isLoading"
-                    class="justify-center-center pagination-sm"
-                    :data="usuaris"
-                    @pagination-change-page="fetchUsuaris"
-                >
-                </pagination>
-                <!--CARGA-->
-                <div class="centrar-carga">
-                    <svg-vue
-                        v-show="isLoading"
-                        icon="spinner"
-                        width="100"
-                    />
-                </div>
+                            <label class="mr-sm-2" for="filtre-perfil"
+                                >Perfil</label
+                            >
+                            <b-form-select
+                                id="filtre-perfil"
+                                size="sm"
+                                v-model="filtro.perfil"
+                                :options="optionsPerfil"
+                                class="mb-2 mr-sm-2 mb-sm-0"
+                            >
+                                <template #first>
+                                    <b-form-select-option
+                                        :value="null"
+                                        disabled
+                                        >-- Selecciona un perfil
+                                        --</b-form-select-option
+                                    >
+                                </template>
+                            </b-form-select>
+
+                            <label class="mr-sm-2" for="filtre-estat"
+                                >Estat</label
+                            >
+                            <b-form-select
+                                size="sm"
+                                id="filtre-estat"
+                                class="mb-2 mr-sm-2 mb-sm-0"
+                                :options="optionsEstat"
+                                v-model="filtro.actiu"
+                                :value="null"
+                            >
+                                <template #first>
+                                    <b-form-select-option
+                                        :value="null"
+                                        disabled
+                                        >-- Selecciona l'estat
+                                        --</b-form-select-option
+                                    >
+                                </template>
+                            </b-form-select>
+
+                            <b-button
+                                variant="info"
+                                class="btn-sm"
+                                @click="fetchUsuaris"
+                                ><i class="fa-solid fa-filter"></i>
+                                Filtrar</b-button
+                            >
+                            <b-button
+                                class="btn-sm"
+                                variant="secondary ml-2"
+                                @click="fetchUsuaris(1, true)"
+                            >
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                Mostrar tots</b-button
+                            >
+                            <template>
+                                <div></div>
+                            </template>
+                        </b-form>
+                    </b-col>
+                </b-row>
             </b-card>
         </div>
 
-        <!-- MODAL USUARIO-->
+        <!-- ALERTS-->
+        <!-- MSG info-->
+        <b-alert v-if="msgInfo" show dismissible variant="success"
+            ><i class="fas fa-check"></i> {{ msgInfo }}
+        </b-alert>
 
+        <!--TABLA-->
+        <b-card class="show-card">
+            <div class="contenedor-tabla">
+                <b-table
+                    v-show="!isLoading"
+                    striped
+                    hover
+                    class="table-sm"
+                    thead-class="thead-dark"
+                    sort-icon-left
+                    :fields="fields"
+                    :items="usuaris.data"
+                    primary-key="id"
+                >
+                    <template #cell(edit)="data">
+                        <div>
+                            <b-button
+                                title="Editar usuari"
+                                variant="warning"
+                                v-b-modal.modal-usuari
+                                class="btn-sm"
+                                @click="
+                                    setUsuari(data.item);
+                                    setTitleModalUsuari('Editar usuari');
+                                    colorCabezalEditarUsuari();
+                                "
+                                ><i class="fas fa-edit"></i>
+                            </b-button>
+                            <b-button
+                                title="Editar contrasenya"
+                                variant="dark"
+                                class="btn-sm"
+                                v-b-modal.modal-usuari
+                                @click="
+                                    setUsuari(data.item);
+                                    setTitleModalUsuari(
+                                        'Editar contrasenya'
+                                    );
+                                    colorCabezalEditarContrasenya();
+                                "
+                                ><i class="fa-solid fa-key"></i>
+                            </b-button>
+                        </div>
+                    </template>
+                    <template #cell(actiu)="data">
+                        <div class="centrar-icono">
+                            <i
+                                v-if="data.item.actiu"
+                                class="fa-solid fa-circle-check color-actiu"
+                            ></i>
+                            <i
+                                v-else
+                                class="fa-solid fa-circle-xmark color-inactiu"
+                            ></i>
+                        </div>
+                    </template>
+
+                    <template #cell(perfils_id)="data">
+                        <div>{{ data.item.perfil.nom }}</div>
+                    </template>
+                </b-table>
+            </div>
+
+            <pagination
+                v-show="!isLoading"
+                class="justify-center-center pagination-sm"
+                :data="usuaris"
+                @pagination-change-page="fetchUsuaris"
+            >
+            </pagination>
+            <!--CARGA-->
+            <div class="centrar-carga">
+                <svg-vue v-if="isLoading" icon="spinner" width="100" />
+            </div>
+        </b-card>
+
+        <!-- MODAL USUARIO-->
         <b-modal
             id="modal-usuari"
             size="lg"
@@ -208,12 +201,10 @@
                         type="submit"
                         :disabled="disabled_ok_button_modal"
                     >
-                        <span v-show="isLoadingButton">
+                        <span v-if="isLoadingButton">
                             <svg-vue icon="spinner" width="20" /> Guardant
                         </span>
-                        <span v-show="!isLoadingButton">
-                            {{ save_button_title }}</span
-                        >
+                        <span v-else> {{ save_button_title }}</span>
                     </b-button>
                     <b-button
                         @click="cancel()"
@@ -227,7 +218,7 @@
 
             <template #default>
                 <b-form
-                    @submit="createUpdateUsuari"
+                    @submit.prevent="createUpdateUsuari"
                     id="form-user"
                     invalid-feedback="This field is required"
                     aria-autocomplete="false"
@@ -419,6 +410,9 @@
 
 <script>
 export default {
+    mounted() {
+        document.title = "Usuaris - Broggi";
+    },
     data() {
         return {
             usuaris: {},
@@ -433,8 +427,8 @@ export default {
             },
             filtro: {
                 usuario: "",
-                perfil: "",
-                actiu: "",
+                perfil: null,
+                actiu: null,
             },
             showPassword: false,
             repetirContrassenya: "",
@@ -509,6 +503,7 @@ export default {
             msgInfo: "",
             btnClassForm: "",
             isLoadingButton: false,
+            request: null,
         };
     },
     methods: {
@@ -521,26 +516,6 @@ export default {
                 (this.usuari.perfils_id = "1"),
                 (this.usuari.actiu = "1");
             this.repetirContrassenya = "";
-        },
-        selectUsuaris() {
-            this.filtro.usuario = "";
-            this.filtro.perfil = "";
-            this.filtro.actiu = "";
-            this.isLoading = true;
-
-            let me = this;
-            axios
-                .get("/api/users/")
-                .then((response) => {
-                    me.usuaris = response.data;
-                })
-                .catch((error) => {
-                    console.log(error);
-                })
-                .finally(() => (me.isLoading = false));
-        },
-        refresh() {
-            this.selectUsuaris();
         },
         setTitleModalUsuari(title) {
             this.titleModalUsuari = title;
@@ -569,7 +544,7 @@ export default {
                         axios
                             .post("/api/users/", me.usuari)
                             .then(function (response) {
-                                me.selectUsuaris();
+                                me.fetchUsuaris();
                                 me.msgError = "";
                                 me.msgInfo =
                                     "Usuari " +
@@ -726,48 +701,49 @@ export default {
             event.preventDefault();
             document.querySelector("#btn-submit-form-user").click();
         },
-        fetchUsuaris(page = 1) {
-            let _this = this;
+        fetchUsuaris(page = 1, cleanFilters = false) {
+            if (this.request) this.request.cancel();
 
-            axios
-                .get(`api/users?page=${page}`)
-                .then((response) => {
-                    _this.usuaris = response.data;
-                })
-                .catch((error) => {
-                    console.error(error, error.response.data);
-                })
-                .finally(() => {
-                    _this.isLoading = false;
-                });
-        },
-        filtrar() {
-            //JSON.stringify({filtroUsuario:this.filtro.usuario})
-            let consulta = new URLSearchParams({
+            let axiosSource = axios.CancelToken.source();
+            this.request = { cancel: axiosSource.cancel };
+
+            if (cleanFilters) {
+                this.filtro.usuario = "";
+                this.filtro.perfil = null;
+                this.filtro.actiu = null;
+            }
+
+            let params = new URLSearchParams({
+                page: page,
                 filtroUsuario: this.filtro.usuario,
                 filtroPerfil: this.filtro.perfil,
                 filtroActivo: this.filtro.actiu,
             });
-            let me = this;
+
+            this.isLoading = true;
+
+            let _this = this;
+
             axios
-                .get("/api/users?" + consulta)
-                .then((response) => {
-                    me.usuaris = response.data;
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+            .get(`api/users?` + params, {
+                cancelToken: axiosSource.token,
+            })
+            .then((response) => {
+                _this.usuaris = response.data;
+            })
+            .catch((error) => {
+                if (!axios.isCancel(error)) {
+                    console.error(error);
+                }
+            })
+            .finally(() => {
+                _this.request = null;
+                _this.isLoading = false;
+            });
         },
     },
     created() {
-        //this.selectUsuaris();
         this.fetchUsuaris();
-    },
-    refresh() {
-        this.selectUsuaris();
-    },
-    mounted() {
-        document.title = "Usuaris - ibroggi";
     },
     computed: {
         validationUsuari() {
@@ -786,6 +762,15 @@ export default {
             return this.repetirContrassenya !== "";
         },
     },
+    watch: {
+        msgInfo(newMsgInfo) {
+            if (newMsgInfo) {
+                let me = this;
+
+                setTimeout(() => me.msgInfo = "", 4000);
+            }
+        }
+    }
 };
 </script>
 
@@ -803,9 +788,7 @@ export default {
     text-align: center;
     justify-content: center;
 }
-.principal {
-    padding: 15px;
-}
+
 ::v-deep .column-usuari .column-nom .column-cognoms {
     width: 25%;
     vertical-align: middle;
@@ -840,14 +823,13 @@ export default {
 ::v-deep .header-class-editar-contrasenya {
     background: rgb(218, 218, 218);
 }
-
-.column-boton-afegir{
-text-align: start;
+.column-boton-afegir {
+    text-align: flex-start;
 }
-.column-botons-filtrar{
-text-align: end;
-justify-content: end;
-align-items: flex-end;
-display: flex;
+.column-botons-filtrar {
+    text-align: flex-end;
+    justify-content: flex-end;
+    align-items: flex-end;
+    display: flex;
 }
 </style>

@@ -30,7 +30,8 @@
         "chart.js": "^2.7.1",
         "laravel-mix-svg-vue": "^0.4.1",
         "laravel-vue-pagination": "^2.3",
+        "mapbox-gl": "^2.7.1",
         "vue-chartjs": "^3.4.0",
-        "mapbox-gl": "^2.7.1"
+        "vue-moment": "^4.1.0"
     }
 }
