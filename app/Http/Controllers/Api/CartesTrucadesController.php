@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Models\Cartes_trucades;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Cartes_trucadesResource;
 
@@ -44,7 +45,7 @@ class CartesTrucadesController extends Controller
                 ->get();
         }
 
-        
+
 
         return Cartes_trucadesResource::collection($trucades);
         // return response()->json(["id_rol" => $request->input("id_rol")]);
@@ -93,5 +94,17 @@ class CartesTrucadesController extends Controller
     public function destroy(Cartes_trucades $cartes_trucades)
     {
         //
+    }
+
+
+    public function graph_calls()
+    {
+
+        $data = DB::select("SELECT usperfil.id,usperfil.nom ,COUNT( us.perfils_id ) as quantity FROM usuaris us
+                            RIGHT JOIN perfils usperfil ON us.perfils_id = usperfil.id
+                            GROUP BY usperfil.id,usperfil.nom
+                            ORDER BY usperfil.id ASC");
+
+        return response($data);
     }
 }

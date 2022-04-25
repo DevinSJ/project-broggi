@@ -125,7 +125,43 @@ export default {
                 .catch((error) => {
                     console.log(error);
                 });
-        },
+        },obtenerDatosLlamada(){
+             let me = this;
+            axios
+                .get("/api/graph-calls/")
+                .then((response) => {
+                    me.chartData.datasets[0].label = "Tipus de trucades";
+                    me.chartData.labels = [];
+                    response.data.forEach((element) => {
+                        me.chartData.labels.push(element.nom);
+                    });
+
+                    me.chartData.datasets[0].data = [];
+                    response.data.forEach((element) => {
+                        me.chartData.datasets[0].data.push(element.quantity);
+                    });
+
+                    me.chartData.datasets[0].backgroundColor = [];
+                    me.chartData.datasets[0].backgroundColor = [
+                        "rgb(255, 120, 0 , 0.2)",
+                        "rgb(0, 255, 240, 0.2)",
+                        "rgb(219, 21, 55,0.2)",
+                    ];
+
+                    me.chartData.datasets[0].borderColor = [];
+                    me.chartData.datasets[0].borderColor = [
+                        "rgb(255, 120, 0 , 1)",
+                        "rgb(0, 255, 240, 1)",
+                        "rgb(219, 21, 55,1)"
+                    ];
+
+                    this.renderChart(this.chartData, this.options);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
+        }
     },
     mounted() {
         switch (this.opcionGraph) {
@@ -134,6 +170,7 @@ export default {
                 console.log(this.opcionGraph);
                 break;
             case 2:
+                 this.obtenerDatosLlamada();
                 console.log(this.opcionGraph);
                 break;
             case 3:
