@@ -57,7 +57,7 @@
                     <hr class="my-4" />
                     <div class="row">
                         <div class="col">
-                            <form-call></form-call>
+                            <form-call ref="formCall" @filterExpedientsCall="filterExpedientsCall"></form-call>
                         </div>
                     </div>
                 </b-card>
@@ -68,12 +68,28 @@
                     body-class="p-0"
                     header-bg-variant="primary"
                     header-text-variant="white"
+                    footer-bg-variant="primary"
+                    footer-text-variant="white"
                 >
                     <template #header>
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-bold my-auto">
                                 Llistat d'expedients relacionat
                             </h6>
+                            <i id="expedients-call-help" class="fa-solid fa-circle-question"></i>
+                            <b-tooltip target="expedients-call-help" triggers="hover">
+                                Els criteris que es fan fer servir per trobar un expedient relacionat són:
+                                <ul class="text-justify">
+                                    <li>Trucades del mateix telèfon.</li>
+                                    <li>Trucades de la mateixa localització.</li>
+                                    <li>Expedients amb la mateixa tipificació.</li>
+                                </ul>
+                                <span class="font-weight-bold">ELS EXPEDIENTS AMB EL ESTAT 'TANCAT' NO ES MOSTRARÁ EN LA LLISTA.</span>
+                            </b-tooltip>
+                        </div>
+                    </template>
+                    <template #footer>
+                        <div class="d-flex justify-content-between">
                             <h6 class="font-weight-bold my-auto">
                                 Última actualització:
                                 {{ lastUpdateTimeExpedientsCall }}
@@ -127,8 +143,11 @@ export default {
         };
     },
     methods: {
+        filterExpedientsCall(filter) {
+            this.$refs.expedientsCall.getExpedients(filter);
+        },
         refreshListExpedientsCall() {
-            this.$refs.expedientsCall.getExpedients();
+            this.$refs.formCall.filterExpedientsCall();
         },
         finishFetchExpedientsCall() {
             this.lastUpdateTimeExpedientsCall = moment().locale("es").format("DD/MM/YYYY HH:mm:ss");
@@ -205,6 +224,9 @@ export default {
 </script>
 
 <style scoped>
+#expedients-call-help {
+    font-size: 20px;
+}
 .card {
     transition: all 0.8s ease;
 }
