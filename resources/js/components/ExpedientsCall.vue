@@ -2,34 +2,43 @@
     <div>
         <div class="d-flex h-100">
             <b-list-group v-if="!isLoading" class="list-expedients">
-                <b-list-group-item v-for="expedient in expedients" :key="expedient.id" :active="expedient.id === expedientSelected.id" class="flex-column align-items-start">
-                    <div class="d-flex w-100 my-1 justify-content-between">
-                        <h5 class="mb-1">{{ expedient.codi }}</h5>
-                    </div>
-                    <p class="mb-1">
-                        <small class="d-block"><span class="font-weight-bold">Data i hora creació: </span>{{ formatDate(expedient.data_ultima_modificacio) }}</small>
-                        <small class="d-block"><span class="font-weight-bold">Localització: </span>{{ getLocationIncident(expedient.cartes_trucades) }}</small>
-                        <small class="d-block"><span class="font-weight-bold">Tipificació: </span>{{ getTypesIncidentsUnique(expedient.cartes_trucades) }}</small>
-                    </p>
-                    <button
-                        type="button"
-                        class="btn btn-sm btn-secondary"
-                        title="Veure trucades del expedient"
-                        v-b-modal.modal-expedients
-                        @click="loadModalExpedient(expedient)"
-                    >
-                        <i class="fa-solid fa-phone"></i>
-                        <b-badge class="ml-2" variant="light">{{ expedient.cartes_trucades.length }}<span class="sr-only">trucades</span></b-badge>
-                    </button>
-                    <button
-                        type="button"
-                        class="btn btn-sm btn-primary"
-                        :title="(expedient.id === expedientSelected.id ? 'Desseleccionar' : 'Seleccionar')"
-                        @click="toggleSelectExpedient(expedient)"
-                    >
-                        {{ expedient.id === expedientSelected.id ? "Desseleccionar" : "Seleccionar" }}
-                    </button>
-                </b-list-group-item>
+                <div v-if="expedients.length">
+                    <b-list-group-item v-for="expedient in expedients" :key="expedient.id" :active="expedient.id === expedientSelected.id" class="flex-column align-items-start">
+                        <div class="d-flex w-100 my-1 justify-content-between">
+                            <h5 class="mb-1">{{ expedient.codi }}</h5>
+                        </div>
+                        <p class="mb-1">
+                            <small class="d-block"><span class="font-weight-bold">Data i hora creació: </span>{{ formatDate(expedient.data_creacio) }}</small>
+                            <small class="d-block"><span class="font-weight-bold">Estado: </span>{{ expedient.estat_expedient.estat }}</small>
+                            <small class="d-block"><span class="font-weight-bold">Fora catalunya: </span>{{ checkIsOutCatalunya(expedient.cartes_trucades) ? "Si" : "No" }}</small>
+                            <small class="d-block"><span class="font-weight-bold">Localització: </span>{{ getLocationIncident(expedient.cartes_trucades) }}</small>
+                            <small class="d-block"><span class="font-weight-bold">Tipificació: </span>{{ getTypesIncidentsUnique(expedient.cartes_trucades) }}</small>
+                        </p>
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-secondary"
+                            title="Veure trucades del expedient"
+                            v-b-modal.modal-expedients
+                            @click="loadModalExpedient(expedient)"
+                        >
+                            <i class="fa-solid fa-phone"></i>
+                            <b-badge class="ml-2" variant="light">{{ expedient.cartes_trucades.length }}<span class="sr-only">trucades</span></b-badge>
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-primary"
+                            :title="(expedient.id === expedientSelected.id ? 'Desseleccionar' : 'Seleccionar')"
+                            @click="toggleSelectExpedient(expedient)"
+                        >
+                            {{ expedient.id === expedientSelected.id ? "Desseleccionar" : "Seleccionar" }}
+                        </button>
+                    </b-list-group-item>
+                </div>
+                <div v-else>
+                    <b-list-group-item class="text-center font-weight-bold">
+                        No s'ha trobat cap coincidencia.
+                    </b-list-group-item>
+                </div>
             </b-list-group>
             <svg-vue
                 v-else
@@ -148,7 +157,7 @@ import moment from 'moment';
 
 export default {
     mounted() {
-        this.getExpedients();
+        this.getExpedients({});
         this.user = window.Vue.prototype.$user;
     },
     beforeDestroy() {
@@ -217,7 +226,7 @@ export default {
                 },
             ],
             trucades: [],
-            isLoading: true,
+            isLoading: false,
             isLoading2: true,
             isLoading3: true,
             showTrucades: true,
@@ -292,7 +301,7 @@ export default {
             this.modal_agencia = true;
             this.modalTitle2 = "Agències contactades";
         },
-        getExpedients(filter = {}) {
+        getExpedients(filter) {
             if (this.request) this.request.cancel();
 
             let axiosSource = axios.CancelToken.source();
@@ -333,6 +342,9 @@ export default {
         formatDate(value) {
             return moment(value).locale("es").format("DD/MM/yyyy HH:mm:ss")
         },
+        checkIsOutCatalunya(calls) {
+            return calls.find(c => c.fora_catalunya == "1");
+        },
         getTypesIncidentsUnique(calls) {
             return calls.map(c => c.incident.descripcio).filter((value, index, self) => self.indexOf(value) === index).join(', ');
         },
@@ -340,22 +352,59 @@ export default {
             if (calls.length > 0)
             {
                 let town = "MUNICIPI NO INDICAT";
-                let region = "PROVINCIA NO INDICAT";
+                let province = "PROVINCIA NO INDICAT";
                 let description_location = "DESCRIPCIÓ NO INDICAT";
 
-                let call = calls.find(c => c.municipi);
+                if (!this.checkIsOutCatalunya(calls)) {
+                    let call = calls.find(c => c.municipi);
 
-                if (call) town = call.municipi.nom;
+                    if (call) town = call.municipi.nom;
 
-                call = calls.find(c => c.provincia);
+                    call = calls.find(c => c.provincia);
 
-                if (call) region = call.provincia.nom;
+                    if (call) province = call.provincia.nom;
 
-                call = calls.find(c => c.descripcio_localitzacio);
+                    call = calls.find(c => c.descripcio_localitzacio);
 
-                if (call) description_location = call.descripcio_localitzacio;
+                    if (call) description_location = call.descripcio_localitzacio;
 
-                return `${description_location} (${region}, ${town})`;
+                    return `${description_location} (${province}, ${town})`;
+                } else {
+                    let call = calls.find(c => c.altres_ref_localitzacio);
+
+                    if (call) {
+                        if (call.altres_ref_localitzacio.split(";").length == 2) {
+                            province = call.altres_ref_localitzacio.split(";")[0];
+                            town =  call.altres_ref_localitzacio.split(";")[1];
+
+                            call = calls.find(c => c.descripcio_localitzacio);
+
+                            if (call) description_location = call.descripcio_localitzacio;
+
+                            return `${description_location} (${province}, ${town})`;
+                        } else if (call.altres_ref_localitzacio.split(";").length == 1) {
+                            province = call.altres_ref_localitzacio.split(";")[0];
+
+                            call = calls.find(c => c.descripcio_localitzacio);
+
+                            if (call) description_location = call.descripcio_localitzacio;
+
+                            return `${description_location} (${province})`;
+                        } else {
+                            call = calls.find(c => c.descripcio_localitzacio);
+
+                            if (call) description_location = call.descripcio_localitzacio;
+
+                            return `${description_location}`;
+                        }
+                    } else {
+                        call = calls.find(c => c.descripcio_localitzacio);
+
+                        if (call) description_location = call.descripcio_localitzacio;
+
+                        return `${description_location}`;
+                    }
+                }
             }
             else
             {

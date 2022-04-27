@@ -57,7 +57,7 @@
                     <hr class="my-4" />
                     <div class="row">
                         <div class="col">
-                            <form-call @filterExpedientsCall="filterExpedientsCall"></form-call>
+                            <form-call ref="formCall" @filterExpedientsCall="filterExpedientsCall"></form-call>
                         </div>
                     </div>
                 </b-card>
@@ -84,6 +84,7 @@
                                     <li>Trucades de la mateixa localització.</li>
                                     <li>Expedients amb la mateixa tipificació.</li>
                                 </ul>
+                                <span class="font-weight-bold">ELS EXPEDIENTS AMB EL ESTAT 'TANCAT' NO ES MOSTRARÁ EN LA LLISTA.</span>
                             </b-tooltip>
                         </div>
                     </template>
@@ -146,7 +147,7 @@ export default {
             this.$refs.expedientsCall.getExpedients(filter);
         },
         refreshListExpedientsCall() {
-            this.$refs.expedientsCall.getExpedients();
+            this.$refs.formCall.filterExpedientsCall();
         },
         finishFetchExpedientsCall() {
             this.lastUpdateTimeExpedientsCall = moment().locale("es").format("DD/MM/YYYY HH:mm:ss");

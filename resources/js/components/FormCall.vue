@@ -15,7 +15,7 @@
                                     :state="!isEmptyOrNull(call.phone)"
                                     @focus="isInputPhoneFocus = true"
                                     @blur="isInputPhoneFocus = false"
-                                    @input="getPhoneExact()"
+                                    @input="handlePhoneInput()"
                                     @keydown.enter="handKeyUpEnterInputPhone"
                                     @keydown.up="selectPhoneList('up')"
                                     @keydown.down="selectPhoneList('down')"
@@ -152,15 +152,14 @@
                 <div class="row">
                     <div class="col-lg-12 my-2">
                         <b-form-checkbox
-                            id="checkbox-1"
-                            v-model="outCatalunya"
-                            name="checkbox-1"
+                            id="check-out-catalunya"
+                            v-model="call.outCatalunya"
                         >
                             Fora de Cataluña
                         </b-form-checkbox>
                     </div>
                 </div>
-                <div class="row" v-if="outCatalunya">
+                <div class="row" v-if="call.outCatalunya">
                     <div class="col-lg-6 my-2">
                         <div class="form-floating user-select-none">
                             <b-form-input
@@ -591,10 +590,9 @@ export default {
                 provenance: "",
                 antecedents: "",
 
-                firstNameLastNameCall: "",
-                relationIncident: "",
-                phoneContact: "",
                 commonNote: "",
+
+                outCatalunya: false,
 
                 provinceOutOfCatalunya: "",
                 townOutOfCatalunya: "",
@@ -630,8 +628,6 @@ export default {
             requestTypesIncidents: null,
             requestIncidents: null,
             requestPhones: null,
-
-            outCatalunya: false,
 
             provinces: [],
             regions: [],
@@ -753,6 +749,9 @@ export default {
                 };
             });
         },
+        handleInputsFilterExpedientsCall() {
+            return `${this.call.phone}|${this.call.incidentSelected}|${this.call.outCatalunya}`;
+        },
         queryMapBox() {
             return "Plaça espanya Barcelona 08014";
         }
@@ -801,14 +800,8 @@ export default {
                 this.incidentSelected = null;
             }
         },
-        isInputPhoneFocus(newValue) {
-            if (!newValue) {
-                if (this.call.phone) {
-                    this.$emit('filterExpedientsCall', {
-                        phone: this.call.phone
-                    });
-                }
-            }
+        handleInputsFilterExpedientsCall() {
+            this.filterExpedientsCall();
         },
         phoneSelected(newValue) {
             if (newValue) {
@@ -819,6 +812,13 @@ export default {
         }
     },
     methods: {
+        filterExpedientsCall() {
+            this.$emit('filterExpedientsCall', {
+                phone: this.call.phone,
+                incident: this.call.incidentSelected == null ? "" : this.call.incidentSelected,
+                outCatalunya: this.call.outCatalunya
+            });
+        },
         getPhones() {
             if (this.requestPhones) this.requestPhones.cancel();
 
@@ -1023,7 +1023,7 @@ export default {
                 }
             }
         },
-        getPhoneExact() {
+        handlePhoneInput() {
             let phoneExact = this.phones.find(phone => phone.telefon.toLowerCase() == this.call.phone.toLowerCase());
 
             if (phoneExact) {

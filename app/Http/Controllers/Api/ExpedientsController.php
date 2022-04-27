@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Utilities\DBUtility;
 use App\Models\Expedients;
+use App\Utilities\DBUtility;
 use Illuminate\Http\Request;
+use App\Models\Cartes_trucades;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
 use App\Http\Resources\ExpedientsResource;
 
@@ -46,10 +47,39 @@ class ExpedientsController extends Controller
      */
     public function expedients_call(Request $request)
     {
-        $expedients = Expedients::query()->with('cartes_trucades.incident')
-                                        ->with('cartes_trucades.municipi')
-                                        ->with('cartes_trucades.provincia')
-                                        ->orderByDesc('data_ultima_modificacio', 'data_creacio')->get();
+        if($request->has('phone') && $request->has('incident') && $request->has('outCatalunya'))
+        {
+            $phone = $request->input('phone');
+            $incident = $request->input('incident');
+            $outCatalunya = $request->input('outCatalunya');
+
+            $queryCalls = Cartes_trucades::query();
+
+            $queryCalls->where('fora_catalunya', $outCatalunya == 'false' ? 0 : 1)
+                        ->where(function($query) use ($phone, $incident) {
+                            if ($phone) $query->where('telefon', 'LIKE', $phone . '%');
+                            if ($incident) $query->orWhere('incidents_id', $incident);
+                        });
+
+            $ids_expedients = $queryCalls->groupBy('expedients_id')->pluck('expedients_id');
+
+            $expedients = Expedients::with('cartes_trucades.incident')
+                                    ->with('cartes_trucades.municipi')
+                                    ->with('cartes_trucades.provincia')
+                                    ->with('estat_expedient')
+                                    ->whereIn('id', $ids_expedients)
+                                    ->where('estats_expedients_id', '!=', 4)
+                                    ->orderByDesc('data_ultima_modificacio', 'data_creacio')->get();
+        }
+        else
+        {
+            $expedients = Expedients::with('cartes_trucades.incident')
+                                    ->with('cartes_trucades.municipi')
+                                    ->with('cartes_trucades.provincia')
+                                    ->with('estat_expedient')
+                                    ->where('estats_expedients_id', '!=', 4)
+                                    ->orderByDesc('data_ultima_modificacio', 'data_creacio')->get();
+        }
 
         return ExpedientsResource::collection($expedients);
     }
