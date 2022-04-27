@@ -1,16 +1,33 @@
-/* General */
-html,
-body,
 #app {
     height: 100vh;
 }
 
+/* General */
 button:focus {
     box-shadow: none !important;
 }
 
 .input-password {
     padding-right: 40px !important;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 /* ================================================================= */
 
@@ -20,7 +37,8 @@ button:focus {
 }
 
 .form-floating > .form-control,
-.form-floating > .form-select {
+.form-floating > .form-select,
+.form-floating > .custom-select {
     height: calc(3.5rem + 2px);
     line-height: 1.25;
 }
@@ -70,7 +88,8 @@ button:focus {
     padding-bottom: 0.625rem;
 }
 
-.form-floating > .form-select {
+.form-floating > .form-select,
+.form-floating > .custom-select {
     padding-top: 1.625rem;
     padding-bottom: 0.625rem;
 }
@@ -82,7 +101,8 @@ button:focus {
 
 .form-floating > .form-control:focus ~ label,
 .form-floating > .form-control:not(:placeholder-shown) ~ label,
-.form-floating > .form-select ~ label {
+.form-floating > .form-select ~ label,
+.form-floating > .custom-select ~ label {
     opacity: 0.65;
     transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
 }
@@ -90,5 +110,26 @@ button:focus {
 .form-floating > .form-control:-webkit-autofill ~ label {
     opacity: 0.65;
     transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+/* ================================================================= */
+
+/* Modal animation zoom in and out */
+.zoominout {
+    transform: scale(0);
+    transition: all 0.4s ease-in-out;
+    display: block;
+}
+
+.zoominout.show {
+    transform: scale(1);
+    transition: all 0.4s ease-in-out;
+}
+/* ================================================================= */
+
+/* SVG animation logo */
+@keyframes dash {
+    to {
+        stroke-dashoffset: 100;
+    }
 }
 /* ================================================================= */

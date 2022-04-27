@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Class\Utilitat;
+use App\Utilities\DBUtility;
 use App\Models\Expedients;
 use Illuminate\Http\Request;
-use function PHPSTORM_META\map;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
@@ -23,34 +22,33 @@ class ExpedientsController extends Controller
     {
         $values = [];
 
-        if($request->input('filtreEstat1') == 'true'){
+        if ($request->input('filtreEstat1') == 'true') {
             array_push($values, 1);
         }
-        if($request->input('filtreEstat2') == 'true'){
+        if ($request->input('filtreEstat2') == 'true') {
             array_push($values, 2);
         }
-        if($request->input('filtreEstat3') == 'true'){
+        if ($request->input('filtreEstat3') == 'true') {
             array_push($values, 3);
         }
-        if($request->input('filtreEstat4') == 'true'){
+        if ($request->input('filtreEstat4') == 'true') {
             array_push($values, 4);
         }
-        if($request->input('filtreEstat5') == 'true'){
+        if ($request->input('filtreEstat5') == 'true') {
             array_push($values, 5);
         }
 
-        $query = Expedients::query();
+        $query = Expedients::query()->with('cartes_trucades');
 
-        if($request->input('filtreCodi')){
+        if ($request->input('filtreCodi')) {
             $query->where('codi', '=', $request->input('filtreCodi'));
         }
 
-        if(count($values) > 0){
+        if (count($values) > 0) {
             $query->whereIn('estats_expedients_id', $values);
         }
 
-
-        $expedients = $query->paginate(10);
+        $expedients = $query->orderByDesc('data_creacio', 'data_ultima_modificacio')->paginate(10);
 
         return ExpedientsResource::collection($expedients);
     }
@@ -100,7 +98,7 @@ class ExpedientsController extends Controller
                 ->response()
                 ->setStatusCode(201);
         } catch (QueryException $ex) {
-            $missatge = Utilitat::errorMessage($ex);
+            $missatge = DBUtility::getPDOErrorMessage($ex);
             $response = \response()
                 ->json(['error' => $missatge], 400);
         }

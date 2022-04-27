@@ -12,18 +12,18 @@ require('laravel-mix-svg-vue');
  |
  */
 
-mix.js('resources/js/app.js', 'public/assets/js')
+mix.js('resources/js/app.js', 'public/js')
+    .vue()
+    .sass('resources/sass/app.scss', 'public/css')
+    .postCss('resources/css/app.css', 'public/css/app.css')
+    .postCss('resources/css/normalize.css', 'public/css/app.css')
     .svgVue({
         svgPath: 'resources/img',
-        extract: false,
+        extract: true,
         svgoSettings: [
             { removeTitle: true },
             { removeViewBox: false },
             { removeDimensions: true }
         ]
     })
-    .vue()
-    .sass('resources/sass/app.scss', 'public/assets/css')
-    .postCss('resources/css/app.css', 'public/assets/css/app.css')
-    .postCss('resources/css/normalize.css', 'public/assets/css/app.css')
     .disableNotifications();

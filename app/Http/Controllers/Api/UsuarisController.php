@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Class\Utilitat;
+use App\Utilities\DBUtility;
 use App\Models\Usuaris;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,13 +24,8 @@ class UsuarisController extends Controller
         $filtroPerfil = $request->input('filtroPerfil');
         $filtroActivo = $request->input('filtroActivo');
 
-        if ($filtroPerfil == 4) {
-            $filtroPerfil = "";
-        }
-
-        if ($filtroActivo == 2) {
-            $filtroActivo = "";
-        }
+        if ($filtroPerfil == "null") $filtroPerfil = "";
+        if ($filtroActivo == "null") $filtroActivo = "";
 
         $_usuaris = Usuaris::with('perfil')->where('usuari', "like", "%" . $filtroUsuario . "%")
             ->where('perfils_id', "like", "%" . $filtroPerfil . "%")
@@ -67,7 +62,7 @@ class UsuarisController extends Controller
                 ->response()
                 ->setStatusCode(201);
         } catch (QueryException $ex) {
-            $mensaje = Utilitat::errorMessage($ex);
+            $mensaje = DBUtility::getPDOErrorMessage($ex);
             $response = \response()
                 ->json(["error" => $mensaje], 400);
         }
@@ -110,7 +105,7 @@ class UsuarisController extends Controller
                 ->response()
                 ->setStatusCode(201);
         } catch (QueryException $ex) {
-            $mensaje = Utilitat::errorMessage($ex);
+            $mensaje = DBUtility::getPDOErrorMessage($ex);
             $response = \response()
                 ->json(["error" => $mensaje], 400);
         }
@@ -128,17 +123,10 @@ class UsuarisController extends Controller
      */
     public function updatePassword(Request $request, Usuaris $user)
     {
-
-        $user->contrassenya = bcrypt($request->input('contrassenya'));
-
         try {
-            $user->save();
-
-            $response = (new UsuarisResource($user))
-                ->response()
-                ->setStatusCode(201);
+            $user->contrassenya = bcrypt($request->input('contrassenya'));
         } catch (QueryException $ex) {
-            $mensaje = Utilitat::errorMessage($ex);
+            $mensaje = DBUtility::getPDOErrorMessage($ex);
             $response = \response()
                 ->json(["error" => $mensaje], 400);
         }

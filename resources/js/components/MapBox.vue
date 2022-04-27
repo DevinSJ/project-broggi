@@ -1,18 +1,25 @@
 <template>
-    <div id="map"></div>
+    <div class="my-2">
+        <div id="map" :style="`filter: ${isLoading ? 'brightness(0.3)' : 'none'};`"></div>
+        <div v-if="isLoading" class="loading-text">Carregant agencies...</div>
+    </div>
 </template>
 
 <script>
+import PopupMapBox from './PopupMapBox';
+
+const PopupMapBoxClass = Vue.extend(PopupMapBox);
+const sizeDot = 200;
+
 export default {
+    props: ["query"],
     mounted() {
         let me = this;
 
-        const size = 200;
-
         this.pulsingDot = {
-            width: size,
-            height: size,
-            data: new Uint8Array(size * size * 4),
+            width: sizeDot,
+            height: sizeDot,
+            data: new Uint8Array(sizeDot * sizeDot * 4),
 
             // When the layer is added to the map,
             // get the rendering context for the map canvas.
@@ -28,8 +35,8 @@ export default {
                 const duration = 1000;
                 const t = (performance.now() % duration) / duration;
 
-                const radius = (size / 2) * 0.3;
-                const outerRadius = (size / 2) * 0.7 * t + radius;
+                const radius = (sizeDot / 2) * 0.3;
+                const outerRadius = (sizeDot / 2) * 0.7 * t + radius;
                 const context = this.context;
 
                 // Draw the outer circle.
@@ -86,15 +93,14 @@ export default {
             pulsingDot: null,
             mapboxClient: null,
             isLoading: true,
+            agenciesSelected: []
         };
     },
     methods: {
-        markAgencies(query, resolve) {
-            let me = this;
-
+        markAgencies(agency, resolve) {
             this.mapboxClient.geocoding
                 .forwardGeocode({
-                    query: query,
+                    query: `${agency.carrer}, ${agency.municipi.nom}`,
                     autocomplete: false,
                     limit: 1,
                 })
@@ -113,26 +119,96 @@ export default {
 
                     const marker = response.body.features[0];
 
+                    const customMarker = document.createElement('div');
+                    customMarker.className = this.getAgencyClassName(agency.nom);
+                    customMarker.id = `agency-marker-${agency.id}`;
+
+                    let me = this;
+
+                    let instancePopupMapBox = new PopupMapBoxClass({
+                        propsData: { agency: agency },
+                        data() {
+                            return {
+                                isSelected: false
+                            };
+                        },
+                        methods: {
+                            Unselect() {
+                                me.removeAgency(this.agency);
+
+                                document.querySelector(`#agency-marker-${agency.id}`).classList.remove('agency-marked');
+
+                                this.isSelected = false;
+                            },
+                            Select() {
+                                me.addAgency(this.agency);
+
+                                document.querySelector(`#agency-marker-${agency.id}`).classList.add('agency-marked');
+
+                                this.isSelected = true;
+                            }
+                        },
+                    });
+
+                    instancePopupMapBox.$mount();
+
                     // Create a marker and add it to the map.
-                    new mapboxgl.Marker()
-                        .setLngLat(marker.center)
-                        .addTo(me.map);
+                    if (customMarker === 'marker') {
+                        new mapboxgl.Marker()
+                            .setLngLat(marker.center)
+                            .setPopup(
+                                new mapboxgl.Popup({ offset: 50 }) // add popups
+                                .setDOMContent()
+                            )
+                            .addTo(me.map);
+                    } else {
+                        new mapboxgl.Marker(customMarker)
+                            .setLngLat(marker.center)
+                            .setPopup(
+                                new mapboxgl.Popup({ offset: 50 }) // add popups
+                                .setDOMContent(instancePopupMapBox.$el)
+                            )
+                            .addTo(me.map);
+                    }
 
                     resolve();
                 });
+        },
+        getAgencyClassName(agencyName) {
+            let className = 'marker ';
+
+            //Convert to lowercase and remove accents and diacritics.
+            agencyName = agencyName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+            const policeSearch = ['policia', 'comissaria', 'guardia urbana'];
+            const firefightersSearch = ['bombers'];
+            const transitSearch = ['transit'];
+            const personInfoSearch = ['atencio ciutadana'];
+
+            if (policeSearch.some(wordSearch => agencyName.includes(wordSearch))) {
+                className += 'marker-police';
+            } else if (firefightersSearch.some(wordSearch => agencyName.includes(wordSearch))) {
+                className += 'marker-firefighters';
+            } else if (transitSearch.some(wordSearch => agencyName.includes(wordSearch))) {
+                className += 'marker-transit';
+            } else if (personInfoSearch.some(wordSearch => agencyName.includes(wordSearch))) {
+                className += 'marker-person-info';
+            }
+
+            return className.trim();
         },
         markIncident() {
             let me = this;
 
             mapboxgl.accessToken =
-                "pk.eyJ1Ijoic21hcmVzY2F0ODYiLCJhIjoiY2wxZXVzNnJ6MDlxNTNxdWdsbTI4ZXNyNyJ9.yole3xZeEEoqwWT6ZgP4FA";
+                'pk.eyJ1Ijoic21hcmVzY2F0ODYiLCJhIjoiY2wxZXVzNnJ6MDlxNTNxdWdsbTI4ZXNyNyJ9.yole3xZeEEoqwWT6ZgP4FA';
             this.mapboxClient = mapboxSdk({
                 accessToken: mapboxgl.accessToken,
             });
 
             this.mapboxClient.geocoding
                 .forwardGeocode({
-                    query: "Barcelona",
+                    query: this.query,
                     autocomplete: false,
                     limit: 1,
                 })
@@ -188,16 +264,12 @@ export default {
                             },
                         });
 
-                        me.map.setLayoutProperty('country-label', 'text-field', [
-                            'get',
-                            `name_es`
-                        ]);
+                        me.map.setLayoutProperty(
+                            "country-label",
+                            "text-field",
+                            ["get", `name_es`]
+                        );
                     });
-
-                    // Create a marker and add it to the map.
-                    /*new mapboxgl.Marker({ color: "red" })
-                        .setLngLat(marker.center)
-                        .addTo(me.map);*/
 
                     this.getAgencies();
                 });
@@ -213,7 +285,7 @@ export default {
                         (agency) =>
                             new Promise((resolve) =>
                                 me.markAgencies(
-                                    `${agency.carrer}, ${agency.municipi.nom}`,
+                                    agency,
                                     resolve
                                 )
                             )
@@ -228,12 +300,59 @@ export default {
                     console.log(error);
                 });
         },
+        addAgency(_agency) {
+            let isExist = this.agenciesSelected.some(agency => agency === _agency);
+
+            if (!isExist) this.agenciesSelected.push(_agency);
+        },
+        removeAgency(_agency) {
+            this.agenciesSelected = this.agenciesSelected.filter(agency => {
+                return agency != _agency;
+            });
+        }
     },
 };
 </script>
 
-<style scoped>
+<style>
 #map {
     height: 55vh;
+}
+.loading-text {
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    font-size: 36px;
+    transform: translate(50%, -50%);
+    color: white;
+    font-weight: bold;
+}
+
+.marker {
+    background-size: cover;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.agency-marked {
+    border-radius: 50%;
+    box-shadow: 0 0 5px 5px red;
+}
+
+.marker-police {
+  background-image: url('/img/police.png');
+}
+
+.marker-firefighters {
+  background-image: url('/img/firefighters.png');
+}
+
+.marker-transit {
+  background-image: url('/img/transit.png');
+}
+
+.marker-person-info {
+  background-image: url('/img/person-info.png');
 }
 </style>
