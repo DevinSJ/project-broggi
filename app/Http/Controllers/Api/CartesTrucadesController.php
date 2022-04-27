@@ -135,10 +135,11 @@ class CartesTrucadesController extends Controller
     public function graph_calls()
     {
 
-        $data = DB::select("SELECT usperfil.id,usperfil.nom ,COUNT( us.perfils_id ) as quantity FROM usuaris us
-                            RIGHT JOIN perfils usperfil ON us.perfils_id = usperfil.id
-                            GROUP BY usperfil.id,usperfil.nom
-                            ORDER BY usperfil.id ASC");
+        $data = DB::select("SELECT descripcio, COUNT( incidents_id )as quantity FROM incidents
+        INNER JOIN cartes_trucades
+        on cartes_trucades.incidents_id =incidents.id
+        GROUP BY incidents_id, descripcio
+        ");
 
         return response($data);
     }
