@@ -8,8 +8,8 @@
                     </div>
                     <p class="mb-1">
                         <small class="d-block"><span class="font-weight-bold">Data i hora creació: </span>{{ formatDate(expedient.data_ultima_modificacio) }}</small>
-                        <small class="d-block"><span class="font-weight-bold">Data i hora última modifació: </span>{{ formatDate(expedient.data_creacio) }}</small>
-                        <small class="d-block"><span class="font-weight-bold">Quantitat trucades: </span>{{ expedient.cartes_trucades.length }}</small>
+                        <small class="d-block"><span class="font-weight-bold">Localització: </span>{{ getLocationIncident(expedient.cartes_trucades) }}</small>
+                        <small class="d-block"><span class="font-weight-bold">Tipificació: </span>{{ getTypesIncidentsUnique(expedient.cartes_trucades) }}</small>
                     </p>
                     <button
                         type="button"
@@ -19,6 +19,7 @@
                         @click="loadModalExpedient(expedient)"
                     >
                         <i class="fa-solid fa-phone"></i>
+                        <b-badge class="ml-2" variant="light">{{ expedient.cartes_trucades.length }}<span class="sr-only">trucades</span></b-badge>
                     </button>
                     <button
                         type="button"
@@ -291,7 +292,7 @@ export default {
             this.modal_agencia = true;
             this.modalTitle2 = "Agències contactades";
         },
-        getExpedients() {
+        getExpedients(filter = {}) {
             if (this.request) this.request.cancel();
 
             let axiosSource = axios.CancelToken.source();
@@ -302,13 +303,15 @@ export default {
             let me = this;
 
             axios
-                .get("/api/expedients", {
+                .get("/api/expedients_call?" + new URLSearchParams(filter), {
                     cancelToken: axiosSource.token,
                 })
                 .then((data) => {
-                    me.expedients = data.data.data;
+                    me.expedients = data.data;
 
                     me.$emit("finishFetchExpedientsCall");
+
+                    me.isLoading = false;
                 })
                 .catch((error) => {
                     if (!axios.isCancel(error)) {
@@ -317,7 +320,6 @@ export default {
                 })
                 .finally(() => {
                     me.request = null;
-                    me.isLoading = false;
                 });
         },
         toggleSelectExpedient(expedient) {
@@ -331,14 +333,46 @@ export default {
         formatDate(value) {
             return moment(value).locale("es").format("DD/MM/yyyy HH:mm:ss")
         },
+        getTypesIncidentsUnique(calls) {
+            return calls.map(c => c.incident.descripcio).filter((value, index, self) => self.indexOf(value) === index).join(', ');
+        },
+        getLocationIncident(calls) {
+            if (calls.length > 0)
+            {
+                let town = "MUNICIPI NO INDICAT";
+                let region = "PROVINCIA NO INDICAT";
+                let description_location = "DESCRIPCIÓ NO INDICAT";
+
+                let call = calls.find(c => c.municipi);
+
+                if (call) town = call.municipi.nom;
+
+                call = calls.find(c => c.provincia);
+
+                if (call) region = call.provincia.nom;
+
+                call = calls.find(c => c.descripcio_localitzacio);
+
+                if (call) description_location = call.descripcio_localitzacio;
+
+                return `${description_location} (${region}, ${town})`;
+            }
+            else
+            {
+                return "No hi ha trucades en aquest expedient...";
+            }
+        }
     },
 };
 </script>
 
 <style scoped>
+small {
+    font-size: 90%;
+}
 .list-expedients {
     width: 100%;
-    max-height: 650px;
+    max-height: 620px;
     overflow-y: scroll;
 }
 
