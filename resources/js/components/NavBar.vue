@@ -54,9 +54,8 @@
                     <template #button-content>
                         <em class="mr-2">{{ user.cognoms }}, {{ user.nom }}</em>
                     </template>
-                    <b-dropdown-item href="#"
-                        ><i class="fa-solid fa-address-card mr-2"></i
-                        >Perfil</b-dropdown-item
+                    <b-dropdown-item @click="openProfileModal"
+                        ><i class="fa-solid fa-key mr-2"></i>Canviar contrasenya</b-dropdown-item
                     >
                     <b-dropdown-item href="/logout"
                         ><i class="fa-solid fa-right-from-bracket mr-2"></i
@@ -65,11 +64,15 @@
                 </b-nav-item-dropdown>
             </b-navbar-nav>
         </b-collapse>
+
+        <profile ref="openProfile" :user="user"/>
     </b-navbar>
 </template>
 
 <script>
+import Profile from './Profile.vue';
 export default {
+  components: { Profile },
     props: ["user"],
     mounted() {
         window.Vue.prototype.$user = this.user;
@@ -104,6 +107,17 @@ export default {
         if (activeLink) setActiveSlide(activeLink);
         else slide.style.display = "none";
     },
+    data() {
+        return {
+
+        }
+    },
+
+    methods: {
+        openProfileModal() {
+            this.$refs.openProfile.openModal();
+        }
+    }
 };
 </script>
 
