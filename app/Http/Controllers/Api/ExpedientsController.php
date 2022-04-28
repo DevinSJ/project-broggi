@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Utilities\DBUtility;
 use App\Models\Expedients;
+use App\Utilities\DBUtility;
 use Illuminate\Http\Request;
+use App\Models\Cartes_trucades;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
 use App\Http\Resources\ExpedientsResource;
 
@@ -22,33 +23,80 @@ class ExpedientsController extends Controller
     {
         $values = [];
 
-        if ($request->input('filtreEstat1') == 'true') {
-            array_push($values, 1);
-        }
-        if ($request->input('filtreEstat2') == 'true') {
-            array_push($values, 2);
-        }
-        if ($request->input('filtreEstat3') == 'true') {
-            array_push($values, 3);
-        }
-        if ($request->input('filtreEstat4') == 'true') {
-            array_push($values, 4);
-        }
-        if ($request->input('filtreEstat5') == 'true') {
-            array_push($values, 5);
-        }
-
         $query = Expedients::query()->with('cartes_trucades');
 
-        if ($request->input('filtreCodi')) {
-            $query->where('codi', '=', $request->input('filtreCodi'));
-        }
+        if ($request->input('filtreEstat1') == 'true') array_push($values, 1);
+        if ($request->input('filtreEstat2') == 'true') array_push($values, 2);
+        if ($request->input('filtreEstat3') == 'true') array_push($values, 3);
+        if ($request->input('filtreEstat4') == 'true') array_push($values, 4);
+        if ($request->input('filtreEstat5') == 'true') array_push($values, 5);
 
-        if (count($values) > 0) {
-            $query->whereIn('estats_expedients_id', $values);
-        }
+        if ($request->input('filtreCodi')) $query->where('codi', 'LIKE', '%' . $request->input('filtreCodi') . '%');
+        if (count($values) > 0) $query->whereIn('estats_expedients_id', $values);
 
-        $expedients = $query->orderByDesc('data_creacio', 'data_ultima_modificacio')->paginate(10);
+        $expedients = $query->orderByDesc('data_ultima_modificacio', 'data_creacio')->paginate(10);
+
+        return ExpedientsResource::collection($expedients);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function expedients_call(Request $request)
+    {
+        if (
+            $request->has('phone') &&
+            $request->has('incident') &&
+            $request->has('outCatalunya') &&
+            $request->has('provinceOutOfCatalunya') &&
+            $request->has('townOutOfCatalunya') &&
+            $request->has('provinceSelected') &&
+            $request->has('townSelected')
+        ) {
+            $phone = $request->input('phone');
+            $incident = $request->input('incident');
+            $outCatalunya = $request->input('outCatalunya');
+            $provinceOutOfCatalunya = $request->input('provinceOutOfCatalunya');
+            $townOutOfCatalunya = $request->input('townOutOfCatalunya');
+            $provinceSelected = $request->input('provinceSelected');
+            $townSelected = $request->input('townSelected');
+
+            $queryCalls = Cartes_trucades::query();
+
+            $queryCalls->where('fora_catalunya', $outCatalunya == 'false' ? 0 : 1)
+                ->where(function ($query) use ($phone, $incident, $outCatalunya, $provinceOutOfCatalunya, $townOutOfCatalunya, $provinceSelected, $townSelected) {
+                    if (isset($phone)) $query->orWhere('telefon', 'LIKE', $phone . '%');
+                    if (isset($incident)) $query->orWhere('incidents_id', $incident);
+
+                    if ($outCatalunya == 'false') {
+                        if (isset($provinceSelected)) $query->orWhere('provincies_id', $provinceSelected);
+                        if (isset($townSelected)) $query->orWhere('municipis_id', $townSelected);
+                    } else {
+                        if (isset($provinceOutOfCatalunya)) $query->orWhere('descripcio_localitzacio', 'LIKE', '%' . strtoupper($provinceOutOfCatalunya) . '%');
+                        if (isset($townOutOfCatalunya)) $query->orWhere('descripcio_localitzacio', 'LIKE', '%' . strtoupper($townOutOfCatalunya) . '%');
+                    }
+                });
+
+            $ids_expedients = $queryCalls->groupBy('expedients_id')->pluck('expedients_id');
+
+            $expedients = Expedients::with('cartes_trucades.incident')
+                ->with('cartes_trucades.municipi')
+                ->with('cartes_trucades.provincia')
+                ->with('estat_expedient')
+                ->whereIn('id', $ids_expedients)
+                ->where('estats_expedients_id', '!=', 4)
+                ->orderByDesc('data_ultima_modificacio', 'data_creacio')->get();
+        } else {
+            $expedients = Expedients::with('cartes_trucades.incident')
+                ->with('cartes_trucades.municipi')
+                ->with('cartes_trucades.provincia')
+                ->with('estat_expedient')
+                ->where('estats_expedients_id', '!=', 4)
+                ->orderByDesc('data_ultima_modificacio', 'data_creacio')->get();
+        }
 
         return ExpedientsResource::collection($expedients);
     }

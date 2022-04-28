@@ -1,21 +1,22 @@
 <?php
 
-use App\Http\Controllers\Api\AgenciesController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\UsuarisController;
-use App\Http\Controllers\Api\AjudesFrasesController;
-use App\Http\Controllers\Api\ComarquesController;
-use App\Http\Controllers\Api\ExpedientsController;
-use App\Http\Controllers\Api\MunicipisController;
-use App\Http\Controllers\Api\ProvinciesController;
-use App\Http\Controllers\TipusLocalitzacionsController;
-use App\Http\Controllers\Api\CartesTrucadesController;
-use App\Http\Controllers\Api\CartesTrucadesHasAgenciesController;
-use App\Http\Controllers\Api\Estats_expedientsController;
-use App\Http\Controllers\Api\EstatsAgenciesController;
-use App\Http\Controllers\Api\IncidentsController;
-use App\Http\Controllers\Api\TipusIncidentsController;
 use Illuminate\Support\Facades\Response;
+use App\Http\Controllers\Api\UsuarisController;
+use App\Http\Controllers\Api\AgenciesController;
+use App\Http\Controllers\Api\ComarquesController;
+use App\Http\Controllers\Api\IncidentsController;
+use App\Http\Controllers\Api\MunicipisController;
+use App\Http\Controllers\Api\ExpedientsController;
+use App\Http\Controllers\Api\ProvinciesController;
+use App\Http\Controllers\Api\AjudesFrasesController;
+use App\Http\Controllers\Api\CartesTrucadesController;
+use App\Http\Controllers\Api\DadesPersonalsController;
+use App\Http\Controllers\Api\EstatsAgenciesController;
+use App\Http\Controllers\Api\TipusIncidentsController;
+use App\Http\Controllers\TipusLocalitzacionsController;
+use App\Http\Controllers\Api\Estats_expedientsController;
+use App\Http\Controllers\Api\CartesTrucadesHasAgenciesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +42,18 @@ Route::apiResource('estats_agencies', EstatsAgenciesController::class);
 Route::apiResource('types_incidents', TipusIncidentsController::class);
 Route::apiResource('incidents', IncidentsController::class);
 Route::apiResource('agencies', AgenciesController::class);
+Route::apiResource('phones', DadesPersonalsController::class);
+
+// Customized routes
+Route::get('/expedients_call', [ExpedientsController::class, 'expedients_call']);
+Route::get('/cartes_trucades/list/{id_expedient}', [CartesTrucadesController::class, 'calls_from_expedients']);
+Route::post('/expedients/put/{expedient}', [ExpedientsController::class, 'update']);
+Route::post('cartes_trucades_has_agencies/put/{id_call}/{id_agency}', [CartesTrucadesHasAgenciesController::class, 'update']);
+Route::post('users/put/update/{user}',[UsuarisController::class,"update"]);
+Route::post('users/put/updatePassword/{user}',[UsuarisController::class,"updatePassword"]);
+Route::get('graph-expedients-status', [ExpedientsController::class,"graph_expedients_status"]);
+Route::get('graph-users-perfil', [UsuarisController::class,"graph_users_perfil"]);
+Route::get('graph-calls', [CartesTrucadesController::class,"graph_calls"]);
 
 Route::get('/video-interactive', function () {
     $path = public_path() . '\\video\\video-interactive.mp4';
@@ -58,14 +71,6 @@ Route::get('/video-interactive', function () {
     return $response;
 });
 
-// Customized routes
-Route::get('/cartes_trucades/list/{id_expedient}', [CartesTrucadesController::class, 'calls_from_expedients']);
-Route::post('/expedients/put/{expedient}', [ExpedientsController::class, 'update']);
-Route::post('cartes_trucades_has_agencies/put/{id_call}/{id_agency}', [CartesTrucadesHasAgenciesController::class, 'update']);
-Route::post('users/put/update/{user}',[UsuarisController::class,"update"]);
-Route::post('users/put/updatePassword/{user}',[UsuarisController::class,"updatePassword"]);
-Route::get('graph-expedients-status', [ExpedientsController::class,"graph_expedients_status"]);
-Route::get('graph-users-perfil', [UsuarisController::class,"graph_users_perfil"]);
-Route::get('graph-calls', [CartesTrucadesController::class,"graph_calls"]);
+
 
 
