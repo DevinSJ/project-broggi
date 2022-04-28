@@ -5,6 +5,7 @@
       size="m"
       :header-bg-variant="bgHeader"
       :hide-footer="isLoading"
+      @hide="closeModal"
     >
       <template #modal-header>
         <h3>Canviar contrasenya</h3>
@@ -40,7 +41,7 @@
             @click="showPassword = !showPassword"
             role="button"
             class="position-absolute"
-            style="top: 53%; right: 30px; transform: translateY(-50%)"
+            :style="eyeStyle"
           >
             <i
               :class="'fa-solid ' + (!showPassword ? 'fa-eye' : 'fa-eye-slash')"
@@ -62,7 +63,7 @@
             @click="showRepeat = !showRepeat"
             role="button"
             class="position-absolute"
-            style="top: 83%; right: 30px; transform: translateY(-50%)"
+            :style="eyeStyle2"
           >
             <i
               :class="'fa-solid ' + (!showRepeat ? 'fa-eye' : 'fa-eye-slash')"
@@ -114,6 +115,23 @@
 export default {
   props: ["user"],
   mounted() {},
+  watch: {
+      'passState'(newValue){
+        if(newValue != null){
+          this.eyeStyle = 'top: 50%; right: 50px; transform: translateY(-50%)';
+        }else{
+          this.eyeStyle = 'top: 53%; right: 30px; transform: translateY(-50%)';
+        }
+      },
+      'repeatState'(newValue){
+          if(newValue != null){
+          this.eyeStyle2 = 'top: 80%; right: 50px; transform: translateY(-50%)';
+        }else{
+          this.eyeStyle2 = 'top: 83%; right: 30px; transform: translateY(-50%)';
+        }
+      }
+
+  },
   data() {
     return {
       usuario: this.user,
@@ -131,6 +149,8 @@ export default {
       isLoading: false,
       showPassword: false,
       showRepeat: false,
+      eyeStyle: 'top: 53%; right: 30px; transform: translateY(-50%)',
+      eyeStyle2: 'top: 83%; right: 30px; transform: translateY(-50%)'
     };
   },
   methods: {
