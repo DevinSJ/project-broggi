@@ -9,7 +9,7 @@
                         </div>
                         <p class="mb-1">
                             <small class="d-block"><span class="font-weight-bold">Data i hora creació: </span>{{ formatDate(expedient.data_creacio) }}</small>
-                            <small class="d-block"><span class="font-weight-bold">Estado: </span>{{ expedient.estat_expedient.estat }}</small>
+                            <small class="d-block"><span class="font-weight-bold">Estat: </span>{{ expedient.estat_expedient.estat }} <i :class="getStateColor(expedient.estats_expedients_id)"></i></small>
                             <small class="d-block"><span class="font-weight-bold">Fora catalunya: </span>{{ checkIsOutCatalunya(expedient.cartes_trucades) ? "Si" : "No" }}</small>
                             <small class="d-block"><span class="font-weight-bold">Localització: </span>{{ getLocationIncident(expedient.cartes_trucades) }}</small>
                             <small class="d-block"><span class="font-weight-bold">Tipificació: </span>{{ getTypesIncidentsUnique(expedient.cartes_trucades) }}</small>
@@ -243,6 +243,29 @@ export default {
         };
     },
     methods: {
+        getStateColor(state) {
+            let classname = "";
+
+            switch (state) {
+                case 1:
+                    classname = "fa-solid fa-circle in-progress";
+                    break;
+                case 2:
+                    classname = "fa-solid fa-circle requested";
+                    break;
+                case 3:
+                    classname = "fa-solid fa-circle accepted";
+                    break;
+                case 4:
+                    classname = "fa-solid fa-circle closed";
+                    break;
+                case 5:
+                    classname = "fa-solid fa-circle immobilized";
+                    break;
+            }
+
+            return classname;
+        },
         loadModalExpedient(expedient) {
             if (this.request) this.request.cancel();
 
@@ -370,38 +393,22 @@ export default {
 
                     return `${description_location} (${province}, ${town})`;
                 } else {
-                    let call = calls.find(c => c.altres_ref_localitzacio);
+                    let call = calls.find(c => c.descripcio_localitzacio);
 
                     if (call) {
-                        if (call.altres_ref_localitzacio.split(";").length == 2) {
-                            province = call.altres_ref_localitzacio.split(";")[0];
-                            town =  call.altres_ref_localitzacio.split(";")[1];
+                        if (call.descripcio_localitzacio.split(";").length == 2) {
+                            province = call.descripcio_localitzacio.split(";")[0];
+                            town =  call.descripcio_localitzacio.split(";")[1];
 
-                            call = calls.find(c => c.descripcio_localitzacio);
+                            return `${province}, ${town}`;
+                        } else if (call.descripcio_localitzacio.split(";").length == 1) {
+                            province = call.descripcio_localitzacio.split(";")[0];
 
-                            if (call) description_location = call.descripcio_localitzacio;
-
-                            return `${description_location} (${province}, ${town})`;
-                        } else if (call.altres_ref_localitzacio.split(";").length == 1) {
-                            province = call.altres_ref_localitzacio.split(";")[0];
-
-                            call = calls.find(c => c.descripcio_localitzacio);
-
-                            if (call) description_location = call.descripcio_localitzacio;
-
-                            return `${description_location} (${province})`;
+                            return `${province}`;
                         } else {
-                            call = calls.find(c => c.descripcio_localitzacio);
-
-                            if (call) description_location = call.descripcio_localitzacio;
-
                             return `${description_location}`;
                         }
                     } else {
-                        call = calls.find(c => c.descripcio_localitzacio);
-
-                        if (call) description_location = call.descripcio_localitzacio;
-
                         return `${description_location}`;
                     }
                 }
@@ -416,6 +423,31 @@ export default {
 </script>
 
 <style scoped>
+.in-progress {
+    color: rgb(5, 100, 8);
+    border-radius: 50%;
+    height: 15px;
+}
+.requested {
+    color: #f9d71c;
+    border-radius: 50%;
+    height: 15px;
+}
+.accepted {
+    color: rgb(3, 250, 3);
+    border-radius: 50%;
+    height: 15px;
+}
+.closed {
+    color: blue;
+    border-radius: 50%;
+    height: 15px;
+}
+.immobilized {
+    color: rgb(150, 22, 150);
+    border-radius: 50%;
+    height: 15px;
+}
 small {
     font-size: 90%;
 }

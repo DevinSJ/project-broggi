@@ -200,6 +200,7 @@
                         <div class="form-floating user-select-none">
                             <b-form-select
                                 id="select-provinces"
+                                ref="select-provinces"
                                 :options="allProvinces"
                                 v-model="call.provinceSelected"
                                 placeholder="Provincia"
@@ -222,6 +223,7 @@
                         <div class="form-floating user-select-none">
                             <b-form-select
                                 id="select-regions"
+                                ref="select-regions"
                                 :options="allRegionsFiltered"
                                 v-model="call.regionSelected"
                                 placeholder="Comarca"
@@ -242,6 +244,7 @@
                         <div class="form-floating user-select-none">
                             <b-form-select
                                 id="select-towns"
+                                ref="select-towns"
                                 :options="allTownsFiltered"
                                 v-model="call.townSelected"
                                 placeholder="Municipi"
@@ -619,8 +622,6 @@ export default {
                 regionSelected: null,
                 townSelected: null,
             },
-            selectTownsCallChoices: null,
-
             requestProvinces: null,
             requestRegions: null,
             requestTowns: null,
@@ -750,27 +751,48 @@ export default {
             });
         },
         handleInputsFilterExpedientsCall() {
-            return `${this.call.phone}|${this.call.incidentSelected}|${this.call.outCatalunya}`;
+            return `${this.call.phone}|
+                    ${this.call.incidentSelected}|
+                    ${this.call.outCatalunya}|
+                    ${this.call.provinceOutOfCatalunya}|
+                    ${this.call.townOutOfCatalunya}|
+                    ${this.call.provinceSelected}|
+                    ${this.call.townSelected}`;
         },
         queryMapBox() {
             return "Plaça espanya Barcelona 08014";
         }
     },
     watch: {
-        'call.regionSelected'() {
+        'call.outCatalunya'(newValue) {
+            if (newValue) {
+                this.call.provinceSelected = null;
+                this.call.regionSelected = null;
+                this.call.townSelected = null;
+            } else {
+                this.call.provinceOutOfCatalunya = "";
+                this.call.townOutOfCatalunya = "";
+            }
+        },
+        'call.provinceSelected'(newValue, oldValue) {
+            if (newValue != oldValue && this.$refs["select-provinces"].$el == document.activeElement) {
+                this.call.regionSelected = null;
+                this.call.townSelected = null;
+            }
+        },
+        'call.regionSelected'(newValue, oldValue) {
             if (this.call.regionSelected) {
                 this.call.provinceSelected = this.actualRegion.provincies_id;
             } else {
-                this.call.provinceSelected = null;
+                if (newValue != oldValue && this.$refs["select-regions"].$el == document.activeElement) {
+                    this.call.townSelected = null;
+                }
             }
         },
         'call.townSelected'() {
             if (this.call.townSelected) {
                 this.call.regionSelected = this.actualTown.comarques_id;
                 this.call.provinceSelected = this.actualRegion.provincies_id;
-            } else {
-                this.call.regionSelected = null;
-                this.call.provinceSelected = null;
             }
         },
         'call.typeIncidentSelected'(newValue, oldValue) {
@@ -816,7 +838,11 @@ export default {
             this.$emit('filterExpedientsCall', {
                 phone: this.call.phone,
                 incident: this.call.incidentSelected == null ? "" : this.call.incidentSelected,
-                outCatalunya: this.call.outCatalunya
+                outCatalunya: this.call.outCatalunya,
+                provinceOutOfCatalunya: this.call.provinceOutOfCatalunya,
+                townOutOfCatalunya: this.call.townOutOfCatalunya,
+                provinceSelected: this.call.provinceSelected == null ? "" : this.call.provinceSelected,
+                townSelected: this.call.townSelected == null ? "" : this.call.townSelected,
             });
         },
         getPhones() {

@@ -47,38 +47,55 @@ class ExpedientsController extends Controller
      */
     public function expedients_call(Request $request)
     {
-        if($request->has('phone') && $request->has('incident') && $request->has('outCatalunya'))
-        {
+        if (
+            $request->has('phone') &&
+            $request->has('incident') &&
+            $request->has('outCatalunya') &&
+            $request->has('provinceOutOfCatalunya') &&
+            $request->has('townOutOfCatalunya') &&
+            $request->has('provinceSelected') &&
+            $request->has('townSelected')
+        ) {
             $phone = $request->input('phone');
             $incident = $request->input('incident');
             $outCatalunya = $request->input('outCatalunya');
+            $provinceOutOfCatalunya = $request->input('provinceOutOfCatalunya');
+            $townOutOfCatalunya = $request->input('townOutOfCatalunya');
+            $provinceSelected = $request->input('provinceSelected');
+            $townSelected = $request->input('townSelected');
 
             $queryCalls = Cartes_trucades::query();
 
             $queryCalls->where('fora_catalunya', $outCatalunya == 'false' ? 0 : 1)
-                        ->where(function($query) use ($phone, $incident) {
-                            if ($phone) $query->where('telefon', 'LIKE', $phone . '%');
-                            if ($incident) $query->orWhere('incidents_id', $incident);
-                        });
+                ->where(function ($query) use ($phone, $incident, $outCatalunya, $provinceOutOfCatalunya, $townOutOfCatalunya, $provinceSelected, $townSelected) {
+                    if (isset($phone)) $query->orWhere('telefon', 'LIKE', $phone . '%');
+                    if (isset($incident)) $query->orWhere('incidents_id', $incident);
+
+                    if ($outCatalunya == 'false') {
+                        if (isset($provinceSelected)) $query->orWhere('provincies_id', $provinceSelected);
+                        if (isset($townSelected)) $query->orWhere('municipis_id', $townSelected);
+                    } else {
+                        if (isset($provinceOutOfCatalunya)) $query->orWhere('descripcio_localitzacio', 'LIKE', '%' . strtoupper($provinceOutOfCatalunya) . '%');
+                        if (isset($townOutOfCatalunya)) $query->orWhere('descripcio_localitzacio', 'LIKE', '%' . strtoupper($townOutOfCatalunya) . '%');
+                    }
+                });
 
             $ids_expedients = $queryCalls->groupBy('expedients_id')->pluck('expedients_id');
 
             $expedients = Expedients::with('cartes_trucades.incident')
-                                    ->with('cartes_trucades.municipi')
-                                    ->with('cartes_trucades.provincia')
-                                    ->with('estat_expedient')
-                                    ->whereIn('id', $ids_expedients)
-                                    ->where('estats_expedients_id', '!=', 4)
-                                    ->orderByDesc('data_ultima_modificacio', 'data_creacio')->get();
-        }
-        else
-        {
+                ->with('cartes_trucades.municipi')
+                ->with('cartes_trucades.provincia')
+                ->with('estat_expedient')
+                ->whereIn('id', $ids_expedients)
+                ->where('estats_expedients_id', '!=', 4)
+                ->orderByDesc('data_ultima_modificacio', 'data_creacio')->get();
+        } else {
             $expedients = Expedients::with('cartes_trucades.incident')
-                                    ->with('cartes_trucades.municipi')
-                                    ->with('cartes_trucades.provincia')
-                                    ->with('estat_expedient')
-                                    ->where('estats_expedients_id', '!=', 4)
-                                    ->orderByDesc('data_ultima_modificacio', 'data_creacio')->get();
+                ->with('cartes_trucades.municipi')
+                ->with('cartes_trucades.provincia')
+                ->with('estat_expedient')
+                ->where('estats_expedients_id', '!=', 4)
+                ->orderByDesc('data_ultima_modificacio', 'data_creacio')->get();
         }
 
         return ExpedientsResource::collection($expedients);

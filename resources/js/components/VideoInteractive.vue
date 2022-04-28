@@ -210,7 +210,7 @@ export default {
                 },
                 {
                     id: 14,
-                    description: "AVISAR SUPERVISOR",
+                    description: "AVISAR SUPERVISOR O COORDINADOR",
                     timeInSecondsIni: 68,
                     timeInSecondsFin: 75,
                 },
