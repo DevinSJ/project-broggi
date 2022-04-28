@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Expedients;
 use Illuminate\Http\Request;
 use App\Models\Cartes_trucades;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Resources\ExpedientsResource;
@@ -128,5 +129,18 @@ class CartesTrucadesController extends Controller
     public function destroy(Cartes_trucades $cartes_trucades)
     {
         //
+    }
+
+
+    public function graph_calls()
+    {
+
+        $data = DB::select("SELECT descripcio, COUNT( incidents_id )as quantity FROM incidents
+        INNER JOIN cartes_trucades
+        on cartes_trucades.incidents_id =incidents.id
+        GROUP BY incidents_id, descripcio
+        ");
+
+        return response($data);
     }
 }
