@@ -125,6 +125,7 @@ class UsuarisController extends Controller
     {
         try {
             $user->contrassenya = bcrypt($request->input('contrassenya'));
+            $user->save();
         } catch (QueryException $ex) {
             $mensaje = DBUtility::getPDOErrorMessage($ex);
             $response = \response()
