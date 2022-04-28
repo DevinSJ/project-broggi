@@ -47,6 +47,8 @@ class ExpedientsController extends Controller
      */
     public function expedients_call(Request $request)
     {
+        $expedients = [];
+
         if (
             $request->has('phone') &&
             $request->has('incident') &&
@@ -87,13 +89,6 @@ class ExpedientsController extends Controller
                 ->with('cartes_trucades.provincia')
                 ->with('estat_expedient')
                 ->whereIn('id', $ids_expedients)
-                ->where('estats_expedients_id', '!=', 4)
-                ->orderByDesc('data_ultima_modificacio', 'data_creacio')->get();
-        } else {
-            $expedients = Expedients::with('cartes_trucades.incident')
-                ->with('cartes_trucades.municipi')
-                ->with('cartes_trucades.provincia')
-                ->with('estat_expedient')
                 ->where('estats_expedients_id', '!=', 4)
                 ->orderByDesc('data_ultima_modificacio', 'data_creacio')->get();
         }
