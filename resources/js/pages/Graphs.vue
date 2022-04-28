@@ -17,7 +17,7 @@
                         width="100"
                     />
                 </b-tab>
-                <b-tab title="Estadistiques de trucades" disabled lazy>
+                <b-tab title="Estadistiques de trucades" lazy>
                     <graph
                         opcionGraph="2"
                         @startRequest="isLoading = true"

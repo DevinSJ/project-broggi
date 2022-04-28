@@ -111,7 +111,7 @@ export default {
 
             let axiosSource = axios.CancelToken.source();
             this.request = { cancel: axiosSource.cancel };
-            
+
             let me = this;
             axios
                 .get("/api/graph-users-perfil/", {
@@ -149,7 +149,55 @@ export default {
                     console.log(error);
                 }).
                 finally(() => me.$emit("finishedRequest"));
-        },
+        },obtenerDatosLlamada(){
+             this.$emit("startRequest");
+
+            if (this.request) this.request.cancel();
+
+            let axiosSource = axios.CancelToken.source();
+            this.request = { cancel: axiosSource.cancel };
+
+            let me = this;
+            axios
+                .get("/api/graph-calls/", {
+                    cancelToken: axiosSource.token,
+                })
+                .then((response) => {
+                    me.chartData.datasets[0].label = "Estadistiques de trucades";
+                    me.chartData.labels = [];
+                    response.data.forEach((element) => {
+                        me.chartData.labels.push(element.descripcio);
+                    });
+
+                    me.chartData.datasets[0].data = [];
+                    response.data.forEach((element) => {
+                        me.chartData.datasets[0].data.push(element.quantity);
+                    });
+
+                    me.chartData.datasets[0].backgroundColor = [];
+                    me.chartData.datasets[0].backgroundColor = [
+                        "rgb(108, 120, 50 , 0.2)",
+                        "rgb(0, 255, 240, 0.2)",
+                        "rgb(219, 21, 55,0.2)",
+                        "rgb(128, 120, 200,0.2)"
+                    ];
+
+                    me.chartData.datasets[0].borderColor = [];
+                    me.chartData.datasets[0].borderColor = [
+                        "rgb(108, 120, 50 , 1)",
+                        "rgb(0, 255, 240, 1)",
+                        "rgb(219, 21, 55,1)",
+                        "rgb(128, 120, 200,1)"
+                    ];
+
+                    this.renderChart(this.chartData, this.options);
+                })
+                .catch((error) => {
+                    console.log(error);
+                }).
+                finally(() => me.$emit("finishedRequest"));
+
+        }
     },
     mounted() {
         switch (this.opcionGraph) {
@@ -158,6 +206,7 @@ export default {
                 console.log(this.opcionGraph);
                 break;
             case "2":
+                this.obtenerDatosLlamada();
                 console.log(this.opcionGraph);
                 break;
             case "3":

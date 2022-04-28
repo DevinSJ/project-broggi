@@ -800,7 +800,7 @@ export default {
     height: 15px;
 }
 .requested {
-    color: yellow;
+    color: #f9d71c;
     border-radius: 50%;
     height: 15px;
 }

@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Utilities\DBUtility;
 use App\Models\Usuaris;
+use App\Utilities\DBUtility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\UsuarisResource;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Database\QueryException;
 
 class UsuarisController extends Controller
@@ -126,12 +129,30 @@ class UsuarisController extends Controller
         try {
             $user->contrassenya = bcrypt($request->input('contrassenya'));
             $user->save();
+            $response = response()->json(['message' => 'Contrassenya actualizat correctament'], 200);
         } catch (QueryException $ex) {
             $mensaje = DBUtility::getPDOErrorMessage($ex);
             $response = \response()
                 ->json(["error" => $mensaje], 400);
         }
 
+        return $response;
+    }
+
+    public function changePassword(Request $request, Usuaris $user) {
+
+        $currentPassword = $request->input('current');
+        $newPassword = $request->input('contrassenya');
+        $repeatPassword = $request->input('repeat');
+
+        if ($user && Hash::check($currentPassword, $user->contrassenya) && ($newPassword == $repeatPassword)) {
+
+            $this->updatePassword($request, $user);
+
+            $response = response()->json(['message' => 'Contrassenya actualizat correctament', 'home' => RouteServiceProvider::HOME], 200);
+        } else {
+            $response = response()->json(['message' => 'Les contrasenyes no coincideixen'], 401);
+        }
 
         return $response;
     }
