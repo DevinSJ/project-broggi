@@ -3,74 +3,13 @@
     <b-modal
       ref="profileModal"
       size="m"
-      :header-bg-variant="bgHeader"
+      :header-class="bgHeader"
       :hide-footer="isLoading"
       @hide="closeModal"
     >
       <template #modal-header>
-        <h3>Canviar contrasenya</h3>
+        <h3><i class="fa-solid fa-key mr-2"></i> Canviar contrasenya</h3>
       </template>
-
-      <!-- <form v-if="!isLoading" ref="form" @submit.stop.prevent="handleSubmit">
-        <b-form-group
-          label="Contrasenya actual"
-          label-for="current-input"
-          :invalid-feedback="validatorCurrent"
-        >
-          <b-form-input
-            id="current-input"
-            v-model="pass.current"
-            type="password"
-            :state="currentState"
-            required
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group
-          label="Nova contrasenya"
-          label-for="password-input"
-          invalid-feedback="Camp obligatori"
-        >
-          <b-form-input
-            id="password-input"
-            v-model="pass.contrassenya"
-            :type="!showPassword ? 'password' : 'text'"
-            :state="passState"
-            required
-          />
-          <span
-            @click="showPassword = !showPassword"
-            role="button"
-            class="position-relative"
-            :style="eyeStyle"
-          >
-            <i
-              :class="'fa-solid ' + (!showPassword ? 'fa-eye' : 'fa-eye-slash')"
-            ></i>
-          </span>
-        </b-form-group>
-        <b-form-group
-          label="Repetir contrasenya"
-          label-for="repeat-input"
-          :invalid-feedback="validatorRepeat"
-        >
-          <b-form-input
-            id="repeat-input"
-            v-model="pass.repeat"
-            :type="!showRepeat ? 'password' : 'text'"
-            :state="repeatState"
-            required
-          /><span
-            @click="showRepeat = !showRepeat"
-            role="button"
-            class="position-absolute"
-            :style="eyeStyle2"
-          >
-            <i
-              :class="'fa-solid ' + (!showRepeat ? 'fa-eye' : 'fa-eye-slash')"
-            ></i>
-          </span>
-        </b-form-group>
-      </form> -->
 
       <b-form
         v-if="!isLoading"
@@ -218,7 +157,7 @@ export default {
       },
       validatorRepeat: "",
       validatorCurrent: "",
-      bgHeader: "light",
+      bgHeader: "",
       currentState: null,
       passState: null,
       repeatState: null,
@@ -233,6 +172,7 @@ export default {
   methods: {
     openModal() {
       this.$refs["profileModal"].show();
+      this.bgHeader ="bgHeaderClass";
     },
     closeModal() {
       this.$refs["profileModal"].hide();
@@ -341,5 +281,9 @@ export default {
 
 #modalCorrect span {
   margin-top: 20px;
+}
+
+::v-deep .bgHeaderClass{
+    background: rgb(218, 218, 218);
 }
 </style>
