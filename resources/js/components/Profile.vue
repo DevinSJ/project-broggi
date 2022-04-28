@@ -11,7 +11,7 @@
         <h3>Canviar contrasenya</h3>
       </template>
 
-      <form v-if="!isLoading" ref="form" @submit.stop.prevent="handleSubmit">
+      <!-- <form v-if="!isLoading" ref="form" @submit.stop.prevent="handleSubmit">
         <b-form-group
           label="Contrasenya actual"
           label-for="current-input"
@@ -40,7 +40,7 @@
           <span
             @click="showPassword = !showPassword"
             role="button"
-            class="position-absolute"
+            class="position-relative"
             :style="eyeStyle"
           >
             <i
@@ -70,8 +70,90 @@
             ></i>
           </span>
         </b-form-group>
-      </form>
+      </form> -->
 
+      <b-form
+        v-if="!isLoading"
+        ref="form"
+        @submit.prevent="handleSubmit"
+        aria-autocomplete="false"
+      >
+        <div class="form-floating user-select-none mb-4">
+          <span
+            @click="showCurrent = !showCurrent"
+            role="button"
+            class="position-absolute"
+            style="top: 50%; right: 10px; transform: translateY(-50%)"
+          >
+            <i
+              :class="
+                'fa-solid ' +
+                (!showCurrent ? 'fa-eye mr-4 ' : 'fa-eye-slash mr-4 ')
+              "
+            ></i>
+          </span>
+          <b-form-input
+            id="input-actual"
+            :type="!showCurrent ? 'password' : 'text'"
+            placeholder="Contrasenya"
+            v-model="pass.current"
+            required
+            :state="validationCurrent"
+          />
+          <label class="user-select-none" for="input-actual"> Contrasenya actual </label>
+        </div>
+
+        <div class="form-floating user-select-none mb-4">
+          <span
+            @click="showPassword = !showPassword"
+            role="button"
+            class="position-absolute"
+            style="top: 50%; right: 10px; transform: translateY(-50%)"
+          >
+            <i
+              :class="
+                'fa-solid ' +
+                (!showPassword ? 'fa-eye mr-4 ' : 'fa-eye-slash mr-4 ')
+              "
+            ></i>
+          </span>
+          <b-form-input
+            id="input-contrasenya"
+            :type="!showPassword ? 'password' : 'text'"
+            placeholder="Contrasenya"
+            v-model="pass.contrassenya"
+            required
+            :state="validationContrassenya"
+          />
+          <label class="user-select-none" for="input-contrasenya"> Nova contrasenya </label>
+        </div>
+
+        <div class="form-floating user-select-none mb-2">
+          <span
+            @click="showRepeat = !showRepeat"
+            role="button"
+            class="position-absolute"
+            style="top: 50%; right: 10px; transform: translateY(-50%)"
+          >
+            <i
+              :class="
+                'fa-solid ' +
+                (!showRepeat ? 'fa-eye mr-4 ' : 'fa-eye-slash mr-4 ')
+              "
+            ></i>
+          </span>
+          <b-form-input
+            id="input-repeat"
+            :type="!showRepeat ? 'password' : 'text'"
+            placeholder="Contrasenya"
+            v-model="pass.repeat"
+            required
+            :state="validationRepeat"
+          />
+          <label class="user-select-none" for="input-repeat"> Repetir contrasenya </label>
+        </div>
+
+      </b-form>
       <div v-else class="loading-spinner d-flex justify-content-center">
         <svg-vue icon="spinner" class="mx-auto my-auto" width="100" />
       </div>
@@ -115,22 +197,16 @@
 export default {
   props: ["user"],
   mounted() {},
-  watch: {
-      'passState'(newValue){
-        if(newValue != null){
-          this.eyeStyle = 'top: 50%; right: 50px; transform: translateY(-50%)';
-        }else{
-          this.eyeStyle = 'top: 53%; right: 30px; transform: translateY(-50%)';
-        }
-      },
-      'repeatState'(newValue){
-          if(newValue != null){
-          this.eyeStyle2 = 'top: 80%; right: 50px; transform: translateY(-50%)';
-        }else{
-          this.eyeStyle2 = 'top: 83%; right: 30px; transform: translateY(-50%)';
-        }
-      }
-
+  computed: {
+    validationContrassenya() {
+        return this.pass.contrassenya !== "";
+    },
+    validationCurrent(){
+        return this.pass.current !== "";
+    },
+    validationRepeat(){
+        return (this.pass.repeat !== "" && this.pass.repeat == this.pass.contrassenya);
+    }
   },
   data() {
     return {
@@ -147,10 +223,11 @@ export default {
       passState: null,
       repeatState: null,
       isLoading: false,
+      showCurrent: false,
       showPassword: false,
       showRepeat: false,
-      eyeStyle: 'top: 53%; right: 30px; transform: translateY(-50%)',
-      eyeStyle2: 'top: 83%; right: 30px; transform: translateY(-50%)'
+      eyeStyle: "top: 53%; right: 30px; transform: translateY(-50%)",
+      eyeStyle2: "top: 83%; right: 30px; transform: translateY(-50%)",
     };
   },
   methods: {
