@@ -286,39 +286,41 @@ export default {
             }
         },
         onTimeUpdateVideo() {
-            this.$refs.rangeVideo.$el.value = this.$refs.video.currentTime;
+            if (this.$refs.rangeVideo) {
+                this.$refs.rangeVideo.$el.value = this.$refs.video.currentTime;
 
-            this.setBubble(false);
+                this.setBubble(false);
 
-            this.currentPartVideo = this.partsVideo.find(
-                (partVideo) =>
-                    partVideo.timeInSecondsIni <=
-                        this.$refs.video.currentTime &&
-                    partVideo.timeInSecondsFin > this.$refs.video.currentTime
-            );
+                this.currentPartVideo = this.partsVideo.find(
+                    (partVideo) =>
+                        partVideo.timeInSecondsIni <=
+                            this.$refs.video.currentTime &&
+                        partVideo.timeInSecondsFin > this.$refs.video.currentTime
+                );
 
-            if (
-                this.currentPartVideo &&
-                this.currentPartVideo !== this.lastPartVideo
-            ) {
-                let position =
-                    this.$refs[`partVideo${this.currentPartVideo.id}`][0].$el
-                        .offsetTop;
+                if (
+                    this.currentPartVideo &&
+                    this.currentPartVideo !== this.lastPartVideo
+                ) {
+                    let position =
+                        this.$refs[`partVideo${this.currentPartVideo.id}`][0].$el
+                            .offsetTop;
 
-                this.$refs.listPartsVideo.scrollTo({
-                    top: position,
-                    behavior: "smooth",
-                });
+                    this.$refs.listPartsVideo.scrollTo({
+                        top: position,
+                        behavior: "smooth",
+                    });
 
-                this.lastPartVideo = this.currentPartVideo;
-            }
+                    this.lastPartVideo = this.currentPartVideo;
+                }
 
-            if (
-                this.totalDurationInSeconds ===
-                Math.round(this.$refs.video.currentTime)
-            ) {
-                this.$refs.video.pause();
-                this.isPlaying = false;
+                if (
+                    this.totalDurationInSeconds ===
+                    Math.round(this.$refs.video.currentTime)
+                ) {
+                    this.$refs.video.pause();
+                    this.isPlaying = false;
+                }
             }
         },
         goTo(partVideo) {
@@ -400,7 +402,7 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
     border-radius: 6px;
 }
 .listPartsVideo {
-    max-height: 600px;
+    max-height: 550px;
     overflow-y: scroll;
 }
 .range-value span:before {

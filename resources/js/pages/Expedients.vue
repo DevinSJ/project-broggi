@@ -1,7 +1,7 @@
 <template>
     <main>
-        <button-call @toggleButton="showCardsCall = !showCardsCall"/>
-        <cards-call v-if="showCardsCall"/>
+        <button-call ref="buttonCall" @toggleButton="toggleButtonCall"/>
+        <cards-call ref="cardsCall" v-if="showCardsCall"/>
         <expedients-table v-else />
     </main>
 </template>
@@ -16,7 +16,24 @@ export default {
             showCardsCall: false,
         };
     },
-};
+    methods: {
+        toggleButtonCall() {
+            if (this.showCardsCall) {
+                let me = this;
+
+                this.$refs.buttonCall.changeButton(true);
+
+                this.$refs.cardsCall.submitFormCall(() => {
+                    me.showCardsCall = false;
+                    me.$refs.buttonCall.changeButton(false);
+                });
+            } else {
+                this.showCardsCall = true;
+                this.$refs.buttonCall.changeButton(true);
+            }
+        }
+    }
+}
 </script>
 
 <style scoped>

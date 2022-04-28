@@ -1,8 +1,7 @@
 <template>
     <main class="mb-2">
-         <input
-            type="checkbox"
-            v-model="buttonChecked"
+         <button
+            ref="input-button-call"
             class="input-button-call"
             @click="toggleButton"
             id="input-button-call"
@@ -30,8 +29,16 @@ export default {
         };
     },
     methods: {
+        changeButton(checked) {
+            if (checked) {
+                this.$refs['input-button-call'].classList.add('active');
+            } else {
+                this.$refs['input-button-call'].classList.remove('active');
+            }
+
+            this.buttonChecked = checked;
+        },
         toggleButton() {
-            this.buttonChecked = !this.buttonChecked;
             this.$emit('toggleButton');
         }
     }
@@ -63,7 +70,7 @@ export default {
 .label-button-call:hover {
     transform: scale(1.1);
 }
-.input-button-call:checked + .label-button-call {
+.input-button-call.active + .label-button-call {
     transition-timing-function: linear;
     transition-duration: 200ms;
     background: #ed2c13;

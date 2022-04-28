@@ -81,7 +81,7 @@
                                 Els criteris que es fan fer servir per trobar un expedient relacionat són:
                                 <ul class="text-justify">
                                     <li>Trucades del mateix telèfon.</li>
-                                    <li>Trucades de la mateixa localització (Si es fora catalunya, mateixa provincia o municipi).</li>
+                                    <li>Trucades de la mateixa localització<br/>(Si es fora catalunya, mateixa provincia o municipi).</li>
                                     <li>Expedients amb la mateixa tipificació.</li>
                                 </ul>
                                 <span class="font-weight-bold">ELS EXPEDIENTS AMB EL ESTAT 'TANCAT' NO ES MOSTRARÁ EN LA LLISTA.</span>
@@ -143,6 +143,9 @@ export default {
         };
     },
     methods: {
+        submitFormCall(callback) {
+            this.$refs.formCall.submitFormCall(callback);
+        },
         filterExpedientsCall(filter) {
             this.$refs.expedientsCall.getExpedients(filter);
         },
