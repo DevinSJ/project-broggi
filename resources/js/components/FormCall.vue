@@ -682,6 +682,8 @@ export default {
         this.getLocationsTypes();
         this.getTypesIncidents();
         this.getIncidents();
+
+        window.Vue.prototype.$inCallForm = true;
     },
     created() {
         window.addEventListener("beforeunload", this.beforeWindowUnload);
@@ -694,6 +696,8 @@ export default {
         if (this.requestLocationsTypes) this.requestLocationsTypes.cancel();
         if (this.requestTypesIncidents) this.requestTypesIncidents.cancel();
         if (this.requestIncidents) this.requestIncidents.cancel();
+
+        window.Vue.prototype.$inCallForm = false;
 
         window.removeEventListener("beforeunload", this.beforeWindowUnload);
     },
@@ -740,6 +744,10 @@ export default {
                 provinceSelected: null,
                 regionSelected: null,
                 townSelected: null,
+
+                expedientSelected: {
+                    id: -1
+                },
             },
             townCallSelectedId: null,
             provinceSelectedId: null,
@@ -1037,6 +1045,9 @@ export default {
         hiddenModalSummary() {
             this.$emit("resumeCrono");
             this.showSummaryModal = false;
+        },
+        addExpedientSelected(expedientSelected) {
+            this.call.expedientSelected = expedientSelected;
         },
         submitFormCall(callback, codeCall, cronoSeconds, callDateTimeIni) {
             this.callback = callback;

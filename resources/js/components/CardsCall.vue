@@ -103,7 +103,7 @@
                             </button>
                         </div>
                     </template>
-                    <expedients-call ref="expedientsCall" @finishFetchExpedientsCall="finishFetchExpedientsCall"/>
+                    <expedients-call ref="expedientsCall" @expedientSelected="expedientSelected" @finishFetchExpedientsCall="finishFetchExpedientsCall"/>
                 </b-card>
             </div>
         </div>
@@ -141,6 +141,9 @@ export default {
         };
     },
     methods: {
+        expedientSelected(expedientSelected) {
+            this.$refs.formCall.addExpedientSelected(expedientSelected);
+        },
         submitFormCall(callback) {
             this.stopCrono();
             this.$refs.formCall.submitFormCall(callback, this.codeCall, this.cronoSeconds, this.callDateTimeIni);
