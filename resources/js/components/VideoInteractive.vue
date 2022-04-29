@@ -167,13 +167,13 @@ export default {
         },
         {
           id: 4,
-          description: "LA TRUCADA ES PROCEDENT",
+          description: "TRUCADA PROCEDENT?",
           timeInSecondsIni: 15,
           timeInSecondsFin: 20,
         },
         {
           id: 5,
-          description: "AVÍS ESPECIAL",
+          description: "AVÍS ESPECIAL?",
           timeInSecondsIni: 20,
           timeInSecondsFin: 24,
         },
@@ -185,13 +185,13 @@ export default {
         },
         {
           id: 7,
-          description: "PROCEDIMENT ESPECÍFIC",
+          description: "PROCEDIMENT ESPECÍFIC?",
           timeInSecondsIni: 29,
           timeInSecondsFin: 35,
         },
         {
             id: 8,
-            description: "TRUCADA ASSOCIADA",
+            description: "TRUCADA ASSOCIADA?",
             timeInSecondsIni: 35,
             timeInSecondsFin: 41,
         },
@@ -233,7 +233,7 @@ export default {
         },
         {
           id: 15,
-          description: "INCIDENT RELLEVANT",
+          description: "INCIDENT RELLEVANT?",
           timeInSecondsIni: 75,
           timeInSecondsFin: 81,
         },
