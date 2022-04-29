@@ -53,6 +53,14 @@ const router = new VueRouter({
     ],
 });
 
+router.beforeEach((to, from, next) => {
+    if (window.Vue.prototype.$inCallForm){
+        next(false);
+    } else {
+        return next(); // navigate to next "page" as usual
+    }
+});
+
 const app = new Vue({
     el: "#app",
     router,

@@ -982,7 +982,10 @@ export default {
 }
 
 ::v-deep .btn-group-toggle:hover {
-    box-shadow: 0 0 0 0.1rem black;
+    border-radius: 5%;
+    background: rgb(218, 218, 218);
+    transform: scale(0.9);
+    transition: 300ms;
 }
 
 ::v-deep .btn-group-toggle .focus {
@@ -990,6 +993,7 @@ export default {
 }
 
 ::v-deep .btn-group-toggle .active {
-    box-shadow: 0 0 0 0.1rem black;
+    border-radius: 5%;
+    background: rgb(218, 218, 218);
 }
 </style>

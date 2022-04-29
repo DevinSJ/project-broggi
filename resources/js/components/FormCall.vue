@@ -682,6 +682,8 @@ export default {
         this.getLocationsTypes();
         this.getTypesIncidents();
         this.getIncidents();
+
+        window.Vue.prototype.$inCallForm = true;
     },
     created() {
         window.addEventListener("beforeunload", this.beforeWindowUnload);
@@ -694,6 +696,8 @@ export default {
         if (this.requestLocationsTypes) this.requestLocationsTypes.cancel();
         if (this.requestTypesIncidents) this.requestTypesIncidents.cancel();
         if (this.requestIncidents) this.requestIncidents.cancel();
+
+        window.Vue.prototype.$inCallForm = false;
 
         window.removeEventListener("beforeunload", this.beforeWindowUnload);
     },

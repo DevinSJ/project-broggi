@@ -193,6 +193,7 @@
                 <b-button variant="danger" class="font-weight-bold flex-fill ml-2" @click="discardCall">CONFIRMAR</b-button>
             </template>
         </b-modal>
+        
     </div>
 </template>
 

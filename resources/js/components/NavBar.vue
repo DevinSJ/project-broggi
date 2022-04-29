@@ -85,7 +85,7 @@ export default {
         });
 
         function slideToLink(e) {
-            setActiveSlide(e.target);
+            if (!window.Vue.prototype.$inCallForm) setActiveSlide(e.target);
         }
 
         function setActiveSlide(target) {
