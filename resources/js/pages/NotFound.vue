@@ -1,7 +1,8 @@
 <template>
-    <div
+    <main
         class="text-center"
         style="
+            padding-bottom: 4rem !important;
             position: absolute;
             top: 50%;
             left: 50%;
@@ -9,7 +10,7 @@
         "
     >
         <h1>OPS! Aquesta pàgina not existeix...</h1>
-    </div>
+    </main>
 </template>
 
 <script>

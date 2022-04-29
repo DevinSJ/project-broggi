@@ -81,7 +81,7 @@
     </b-card>
 
     <!-- Modal -->
-    <b-modal id="modal-calls" title="Dades de la trucada" size="huge" ok-only>
+    <b-modal id="modal-calls" title="Dades de la trucada" size="huge" hide-footer>
       <div>
         <b-tabs content-class="mt-3" fill>
           <b-tab title="Identificació de la trucada" active>
@@ -256,7 +256,7 @@
               <div>
                 <b-form-group
                   id="input-group-2"
-                  label="Provincia:"
+                  label="Província:"
                   label-for="input-2"
                   label-class="font-weight-bold"
                 >
@@ -392,7 +392,7 @@
 </template>
 
 <script>
-import moment from "moment";
+import moment from 'moment';
 
 export default {
   mounted() {

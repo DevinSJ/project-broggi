@@ -1,7 +1,7 @@
 <template>
     <div class="container-fluid p-0">
         <form ref="formCall">
-            <b-tabs fill lazy>
+            <b-tabs active-nav-item-class="bg-primary text-white" fill lazy>
                 <!-- TAB Identificació de la trucada -->
                 <b-tab title="Identificació de la trucada" active>
                     <div class="row">
@@ -17,7 +17,9 @@
                                         @focus="isInputPhoneFocus = true"
                                         @blur="isInputPhoneFocus = false"
                                         @input="handlePhoneInput()"
-                                        @keydown.enter="handKeyUpEnterInputPhone"
+                                        @keydown.enter="
+                                            handKeyUpEnterInputPhone
+                                        "
                                         @keydown.up="selectPhoneList('up')"
                                         @keydown.down="selectPhoneList('down')"
                                         aria-describedby="input-phone-feedback"
@@ -29,19 +31,58 @@
                                         for="input-phone"
                                         >Nº telèfon</label
                                     >
-                                    <small :class="`font-weight-bold  ${phoneSelected ? 'text-success' : 'text-danger'}`" v-if="!isEmptyOrNull(call.phone)">{{ phoneSelected ? 'Aquest telèfon està guardat.' : 'Aquest telèfon no està guardat.' }}</small>
-                                    <b-form-invalid-feedback id="input-phone-feedback">
+                                    <small
+                                        :class="`font-weight-bold  ${
+                                            phoneSelected
+                                                ? 'text-success'
+                                                : 'text-danger'
+                                        }`"
+                                        v-if="!isEmptyOrNull(call.phone)"
+                                        >{{
+                                            phoneSelected
+                                                ? "Aquest telèfon està guardat."
+                                                : "Aquest telèfon no està guardat."
+                                        }}</small
+                                    >
+                                    <b-form-invalid-feedback
+                                        id="input-phone-feedback"
+                                    >
                                         Aquest camp és obligatori
                                     </b-form-invalid-feedback>
                                 </div>
-                                <b-list-group   ref="input-phone-autocomplete-items"
-                                                class="input-autocomplete-items"
-                                                @mouseover="isSelectingPhone = true"
-                                                @mouseleave="isSelectingPhone = false"
-                                                v-if="!phoneSelected && !isEmptyOrNull(call.phone) && isInputPhoneFocus || isSelectingPhone">
-                                    <b-list-group-item disabled v-if="isLoadingPhones"><svg-vue icon="spinner" width="25"/></b-list-group-item>
-                                    <b-list-group-item disabled v-else-if="!filterPhones.length">No hi ha cap coincidencia</b-list-group-item>
-                                    <b-list-group-item v-else v-for="(phone, index) in filterPhones" role="button" @click="phoneSelected = phone" :active="index == 0" :key="phone.id" :data-id-phone="phone.id">{{ phone.telefon }}</b-list-group-item>
+                                <b-list-group
+                                    ref="input-phone-autocomplete-items"
+                                    class="input-autocomplete-items"
+                                    @mouseover="isSelectingPhone = true"
+                                    @mouseleave="isSelectingPhone = false"
+                                    v-if="
+                                        (!phoneSelected &&
+                                            !isEmptyOrNull(call.phone) &&
+                                            isInputPhoneFocus) ||
+                                        isSelectingPhone
+                                    "
+                                >
+                                    <b-list-group-item
+                                        disabled
+                                        v-if="isLoadingPhones"
+                                        ><svg-vue icon="spinner" width="25"
+                                    /></b-list-group-item>
+                                    <b-list-group-item
+                                        disabled
+                                        v-else-if="!filterPhones.length"
+                                        >No hi ha cap
+                                        coincidencia</b-list-group-item
+                                    >
+                                    <b-list-group-item
+                                        v-else
+                                        v-for="(phone, index) in filterPhones"
+                                        role="button"
+                                        @click="phoneSelected = phone"
+                                        :active="index == 0"
+                                        :key="phone.id"
+                                        :data-id-phone="phone.id"
+                                        >{{ phone.telefon }}</b-list-group-item
+                                    >
                                 </b-list-group>
                             </div>
                         </div>
@@ -52,7 +93,7 @@
                                 <b-form-select
                                     ref="select-towns-call"
                                     id="select-towns-call"
-                                    v-model="call.townCallSelected"
+                                    v-model="townCallSelectedId"
                                     :options="allTowns"
                                     placeholder="Municipi"
                                 >
@@ -63,7 +104,9 @@
                                         >
                                     </template>
                                 </b-form-select>
-                                <label class="user-select-none" for="select-towns-call"
+                                <label
+                                    class="user-select-none"
+                                    for="select-towns-call"
                                     >Municipi</label
                                 >
                             </div>
@@ -124,7 +167,6 @@
                             <div class="form-floating user-select-none">
                                 <b-form-textarea
                                     type="text"
-                                    class="h-150"
                                     id="input-common-note"
                                     v-model="call.commonNote"
                                     placeholder="Nom i cognoms del trucant, relació e l’alertant amb l’incident, telèfon de contacte i descripció del fet"
@@ -137,7 +179,9 @@
                                     class="user-select-none"
                                     for="input-common-note"
                                 >
-                                    Nom i cognoms del trucant, relació e l’alertant amb l’incident, telèfon de contacte i descripció del fet
+                                    Nom i cognoms del trucant, relació e
+                                    l’alertant amb l’incident, telèfon de
+                                    contacte i descripció del fet
                                 </label>
                                 <b-form-invalid-feedback
                                     id="input-common-note-feedback"
@@ -167,13 +211,19 @@
                                     type="text"
                                     id="input-province-out-catalunya"
                                     v-model="call.provinceOutOfCatalunya"
-                                    placeholder="Provincia"
-                                    :state="!isEmptyOrNull(call.provinceOutOfCatalunya)"
+                                    placeholder="Província"
+                                    :state="
+                                        !isEmptyOrNull(
+                                            call.provinceOutOfCatalunya
+                                        )
+                                    "
                                     aria-describedby="input-province-out-catalunya-feedback"
                                     required
                                 />
-                                <label class="user-select-none" for="input-province-out-catalunya"
-                                    >Provincia</label
+                                <label
+                                    class="user-select-none"
+                                    for="input-province-out-catalunya"
+                                    >Província</label
                                 >
                                 <b-form-invalid-feedback
                                     id="input-province-out-catalunya-feedback"
@@ -190,7 +240,9 @@
                                     v-model="call.townOutOfCatalunya"
                                     placeholder="Municipi"
                                 />
-                                <label class="user-select-none" for="input-town-out-catalunya"
+                                <label
+                                    class="user-select-none"
+                                    for="input-town-out-catalunya"
                                     >Municipi</label
                                 >
                             </div>
@@ -203,8 +255,8 @@
                                     id="select-provinces"
                                     ref="select-provinces"
                                     :options="allProvinces"
-                                    v-model="call.provinceSelected"
-                                    placeholder="Provincia"
+                                    v-model="provinceSelectedId"
+                                    placeholder="Província"
                                 >
                                     <template #first>
                                         <b-form-select-option :value="null"
@@ -216,7 +268,7 @@
                                 <label
                                     class="user-select-none"
                                     for="select-provinces"
-                                    >Provincia</label
+                                    >Província</label
                                 >
                             </div>
                         </div>
@@ -226,7 +278,7 @@
                                     id="select-regions"
                                     ref="select-regions"
                                     :options="allRegionsFiltered"
-                                    v-model="call.regionSelected"
+                                    v-model="regionSelectedId"
                                     placeholder="Comarca"
                                 >
                                     <template #first>
@@ -236,7 +288,9 @@
                                         >
                                     </template>
                                 </b-form-select>
-                                <label class="user-select-none" for="select-regions"
+                                <label
+                                    class="user-select-none"
+                                    for="select-regions"
                                     >Comarca</label
                                 >
                             </div>
@@ -247,7 +301,7 @@
                                     id="select-towns"
                                     ref="select-towns"
                                     :options="allTownsFiltered"
-                                    v-model="call.townSelected"
+                                    v-model="townSelectedId"
                                     placeholder="Municipi"
                                 >
                                     <template #first>
@@ -257,7 +311,9 @@
                                         >
                                     </template>
                                 </b-form-select>
-                                <label class="user-select-none" for="select-towns"
+                                <label
+                                    class="user-select-none"
+                                    for="select-towns"
                                     >Municipi</label
                                 >
                             </div>
@@ -267,20 +323,36 @@
                                 <b-form-select
                                     id="select-towns"
                                     :options="allTypesLocations"
-                                    v-model="call.typeLocationSelected"
+                                    v-model="typeLocationSelectedId"
+                                    :state="
+                                        !isEmptyOrNull(
+                                            call.typeLocationSelected
+                                        )
+                                    "
+                                    aria-describedby="select-towns"
                                     placeholder="Tipus localització"
                                 >
                                     <!--<template #first>
                                     <b-form-select-option :value="null">Seleccionar tipus localització</b-form-select-option>
                                 </template>-->
                                 </b-form-select>
-                                <label class="user-select-none" for="select-towns"
+                                <label
+                                    class="user-select-none"
+                                    for="select-towns"
                                     >Tipus localització</label
                                 >
+                                <b-form-invalid-feedback
+                                    id="select-towns"
+                                >
+                                    Aquest camp és obligatori.
+                                </b-form-invalid-feedback>
                             </div>
                         </div>
                         <!-- OPTION 1 CARRERS -->
-                        <div class="col-lg-12 my-2" v-if="call.typeLocationSelected == 1">
+                        <div
+                            class="col-lg-12 my-2"
+                            v-if="typeLocationSelectedId == 1"
+                        >
                             <div class="row">
                                 <div class="col-lg-4 my-2">
                                     <div class="form-floating user-select-none">
@@ -377,7 +449,10 @@
                             </div>
                         </div>
                         <!-- OPTION 2 PUNT SINGULAR -->
-                        <div class="col-lg-12 my-2" v-else-if="call.typeLocationSelected == 2">
+                        <div
+                            class="col-lg-12 my-2"
+                            v-else-if="typeLocationSelectedId == 2"
+                        >
                             <div class="form-floating user-select-none">
                                 <b-form-input
                                     type="text"
@@ -390,7 +465,8 @@
                                 />
                                 <label
                                     class="user-select-none"
-                                    for="input-singular-point">
+                                    for="input-singular-point"
+                                >
                                     Nom del punt singular
                                 </label>
                                 <b-form-invalid-feedback
@@ -402,11 +478,14 @@
                         </div>
                         <!-- OPTION 3 Entitat POBLACIÓ -->
                         <!--<div
-                            v-show="typeLocationSelected == 3"
+                            v-show="typeLocationSelectedId == 3"
                             class="form-floating user-select-none"
                         ></div>-->
                         <!-- OPTION 4 CARRETERA -->
-                        <div class="col-lg-12 my-2" v-else-if="call.typeLocationSelected == 4">
+                        <div
+                            class="col-lg-12 my-2"
+                            v-else-if="typeLocationSelectedId == 4"
+                        >
                             <div class="row">
                                 <div class="col-lg-4 my-2">
                                     <div class="form-floating user-select-none">
@@ -462,11 +541,14 @@
                                 <b-form-textarea
                                     id="input-extra-information-street"
                                     type="text"
-                                    class="h-150"
+                                    v-model="call.extraInformationStreet"
                                     placeholder="Informació rellevant de la localització"
                                     rows="5"
                                 />
-                                <label class="user-select-none" for="input-extra-information-street">
+                                <label
+                                    class="user-select-none"
+                                    for="input-extra-information-street"
+                                >
                                     Informació rellevant de la localització
                                 </label>
                             </div>
@@ -482,10 +564,14 @@
                                     id="select-type-incident"
                                     ref="select-type-incident"
                                     :options="allTypesIncidents"
-                                    v-model="call.typeIncidentSelected"
+                                    v-model="typeIncidentSelectedId"
                                     placeholder="Tipus incident"
                                     aria-describedby="select-type-incident-feedback"
-                                    :state="!isEmptyOrNull(call.typeIncidentSelected)"
+                                    :state="
+                                        !isEmptyOrNull(
+                                            call.typeIncidentSelected
+                                        )
+                                    "
                                     required
                                 >
                                     <template #first>
@@ -513,10 +599,12 @@
                                     id="select-incident"
                                     ref="select-incident"
                                     :options="allIncidentsFiltered"
-                                    v-model="call.incidentSelected"
+                                    v-model="incidentSelectedId"
                                     placeholder="Incident"
                                     aria-describedby="select-incident-feedback"
-                                    :state="!isEmptyOrNull(call.incidentSelected)"
+                                    :state="
+                                        !isEmptyOrNull(call.incidentSelected)
+                                    "
                                     required
                                 >
                                     <template #first>
@@ -539,19 +627,31 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row mt-2" v-if="incidentSelected">
+                    <div class="row mt-2" v-if="incidentSelectedId">
                         <div class="col-lg-12 my-2">
                             <div class="d-block my-2">
-                                <label class="font-weight-bold d-block"><u>INCIDENT SELECCIONAT:</u></label>
-                                <small>{{ incidentSelected.descripcio }}</small>
+                                <label class="font-weight-bold d-block"
+                                    ><u>INCIDENT SELECCIONAT:</u></label
+                                >
+                                <small>{{
+                                    call.incidentSelected.descripcio
+                                }}</small>
                             </div>
                             <div class="d-block my-2">
-                                <label class="font-weight-bold d-block"><u>DEFINICIÓ INCIDENT:</u></label>
-                                <small>{{ incidentSelected.definicio }}</small>
+                                <label class="font-weight-bold d-block"
+                                    ><u>DEFINICIÓ INCIDENT:</u></label
+                                >
+                                <small>{{
+                                    call.incidentSelected.definicio
+                                }}</small>
                             </div>
                             <div class="d-block my-2">
-                                <label class="font-weight-bold d-block"><u>INSTRUCCIONS INCIDENT:</u></label>
-                                <small>{{ incidentSelected.instrucions }}</small>
+                                <label class="font-weight-bold d-block"
+                                    ><u>INSTRUCCIONS INCIDENT:</u></label
+                                >
+                                <small>{{
+                                    call.incidentSelected.instrucions
+                                }}</small>
                             </div>
                         </div>
                     </div>
@@ -563,7 +663,12 @@
                 </b-tab>-->
             </b-tabs>
         </form>
-        <modal-summary v-if="showSummaryModal" @hiddenModal="showSummaryModal = false" :callback="callback" :call="call"></modal-summary>
+        <modal-summary
+            v-if="showSummaryModal"
+            @hiddenModal="hiddenModalSummary"
+            :callback="callback"
+            :call="call"
+        ></modal-summary>
     </div>
 </template>
 
@@ -578,6 +683,9 @@ export default {
         this.getTypesIncidents();
         this.getIncidents();
     },
+    created() {
+        window.addEventListener("beforeunload", this.beforeWindowUnload);
+    },
     beforeDestroy() {
         if (this.requestPhones) this.requestPhones.cancel();
         if (this.requestProvinces) this.requestProvinces.cancel();
@@ -586,10 +694,16 @@ export default {
         if (this.requestLocationsTypes) this.requestLocationsTypes.cancel();
         if (this.requestTypesIncidents) this.requestTypesIncidents.cancel();
         if (this.requestIncidents) this.requestIncidents.cancel();
+
+        window.removeEventListener("beforeunload", this.beforeWindowUnload);
     },
     data() {
         return {
             call: {
+                codeCall: "",
+                cronoSeconds: 0,
+                callDateTimeIni: "",
+
                 phone: "",
                 townCallSelected: null,
                 address: "",
@@ -602,6 +716,8 @@ export default {
 
                 provinceOutOfCatalunya: "",
                 townOutOfCatalunya: "",
+
+                typeLocationSelected: null,
 
                 typeStreet: "",
                 nameStreet: "",
@@ -616,7 +732,7 @@ export default {
                 directionHighway: "",
                 kmHighway: "",
 
-                typeLocationSelected: null,
+                extraInformationStreet: "",
 
                 typeIncidentSelected: null,
                 incidentSelected: null,
@@ -625,6 +741,16 @@ export default {
                 regionSelected: null,
                 townSelected: null,
             },
+            townCallSelectedId: null,
+            provinceSelectedId: null,
+            regionSelectedId: null,
+            townSelectedId: null,
+
+            typeLocationSelectedId: null,
+
+            typeIncidentSelectedId: null,
+            incidentSelectedId: null,
+
             showSummaryModal: false,
             callback: null,
 
@@ -643,7 +769,7 @@ export default {
 
             typesIncidents: [],
             incidents: [],
-            incidentSelected: null,
+            incidentSelectedId: null,
 
             phones: [],
             phoneSelected: null,
@@ -654,15 +780,19 @@ export default {
     },
     computed: {
         filterPhones() {
-            return this.phones.filter(phone => phone.telefon.startsWith(this.call.phone));
+            return this.phones.filter((phone) =>
+                phone.telefon.startsWith(this.call.phone)
+            );
         },
         actualRegion() {
             return this.regions.find(
-                (region) => region.id == this.call.regionSelected
+                (region) => region.id == this.regionSelectedId
             );
         },
         actualTown() {
-            return this.towns.find((town) => town.id == this.call.townSelected);
+            return this.towns.find(
+                (town) => town.id == this.townSelectedId
+            );
         },
         allProvinces() {
             let provinces = this.provinces.map((province) => {
@@ -677,9 +807,10 @@ export default {
         allRegionsFiltered() {
             let regions = this.regions;
 
-            if (this.call.provinceSelected) {
+            if (this.provinceSelectedId) {
                 regions = regions.filter(
-                    (region) => region.provincies_id == this.call.provinceSelected
+                    (region) =>
+                        region.provincies_id == this.provinceSelectedId
                 );
             }
 
@@ -703,9 +834,9 @@ export default {
         allTownsFiltered() {
             let towns = this.towns;
 
-            if (this.call.regionSelected) {
+            if (this.regionSelectedId) {
                 towns = towns.filter(
-                    (town) => town.comarques_id == this.call.regionSelected
+                    (town) => town.comarques_id == this.regionSelectedId
                 );
             }
 
@@ -719,8 +850,6 @@ export default {
             return towns;
         },
         allTypesLocations() {
-            if (!this.call.typeLocationSelected) this.call.typeLocationSelected = 3;
-
             return this.typesLocations.map((type) => {
                 return {
                     value: type.id,
@@ -739,12 +868,16 @@ export default {
         allIncidentsFiltered() {
             let incidents = this.incidents;
 
-            if (this.call.typeIncidentSelected) {
-                let typeIncident = this.typesIncidents.find(typeIncident => typeIncident.id == this.call.typeIncidentSelected);
+            if (this.typeIncidentSelectedId) {
+                let typeIncident = this.typesIncidents.find(
+                    (typeIncident) =>
+                        typeIncident.id == this.typeIncidentSelectedId
+                );
 
                 if (typeIncident) {
                     incidents = incidents.filter(
-                        (incident) => incident.classes_incidents_id == typeIncident.id
+                        (incident) =>
+                            incident.classes_incidents_id == typeIncident.id
                     );
                 }
             }
@@ -767,65 +900,113 @@ export default {
         },
         queryMapBox() {
             return "Plaça espanya Barcelona 08014";
-        }
+        },
     },
     watch: {
-        'call.outCatalunya'(newValue) {
-            if (newValue) {
-                this.call.provinceSelected = null;
-                this.call.regionSelected = null;
-                this.call.townSelected = null;
-            } else {
-                this.call.provinceOutOfCatalunya = "";
-                this.call.townOutOfCatalunya = "";
+        townCallSelectedId() {
+            this.call.townCallSelected = this.towns.find(
+                (t) => t.id == this.townCallSelectedId
+            );
+        },
+        provinceSelectedId(newValue, oldValue) {
+            this.call.provinceSelected = this.provinces.find(
+                (t) => t.id == this.provinceSelectedId
+            );
+
+            if (
+                newValue != oldValue &&
+                this.$refs["select-provinces"].$el == document.activeElement
+            ) {
+                this.regionSelectedId = null;
+                this.townSelectedId = null;
             }
         },
-        'call.provinceSelected'(newValue, oldValue) {
-            if (newValue != oldValue && this.$refs["select-provinces"].$el == document.activeElement) {
-                this.call.regionSelected = null;
-                this.call.townSelected = null;
-            }
-        },
-        'call.regionSelected'(newValue, oldValue) {
-            if (this.call.regionSelected) {
-                this.call.provinceSelected = this.actualRegion.provincies_id;
+        regionSelectedId(newValue, oldValue) {
+            this.call.regionSelected = this.regions.find(
+                (t) => t.id == this.regionSelectedId
+            );
+
+            if (this.regionSelectedId) {
+                if (
+                    newValue != oldValue &&
+                    this.$refs["select-regions"].$el == document.activeElement
+                ) {
+                    this.townSelectedId = null;
+                }
+
+                this.provinceSelectedId = this.actualRegion.provincies_id;
             } else {
-                if (newValue != oldValue && this.$refs["select-regions"].$el == document.activeElement) {
-                    this.call.townSelected = null;
+                if (
+                    newValue != oldValue &&
+                    this.$refs["select-regions"].$el == document.activeElement
+                ) {
+                    this.townSelectedId = null;
                 }
             }
         },
-        'call.townSelected'() {
-            if (this.call.townSelected) {
-                this.call.regionSelected = this.actualTown.comarques_id;
-                this.call.provinceSelected = this.actualRegion.provincies_id;
+        townSelectedId() {
+            this.call.townSelected = this.towns.find(
+                (t) => t.id == this.townSelectedId
+            );
+
+            if (this.townSelectedId) {
+                this.regionSelectedId = this.actualTown.comarques_id;
+                this.provinceSelectedId = this.actualRegion.provincies_id;
             }
         },
-        'call.typeIncidentSelected'(newValue, oldValue) {
-            if (!this.call.typeIncidentSelected) {
-                this.call.incidentSelected = null;
-                this.incidentSelected = null;
+        typeLocationSelectedId() {
+            this.call.typeLocationSelected = this.typesLocations.find(
+                (t) => t.id == this.typeLocationSelectedId
+            );
+        },
+        typeIncidentSelectedId(newValue, oldValue) {
+            this.call.typeIncidentSelected = this.typesIncidents.find(
+                (t) => t.id == this.typeIncidentSelectedId
+            );
+
+            if (!this.typeIncidentSelectedId) {
+                this.incidentSelectedId = null;
             } else {
-                if (newValue != oldValue && this.$refs["select-type-incident"].$el == document.activeElement) {
-                    this.call.incidentSelected = null;
-                    this.incidentSelected = null;
+                if (
+                    newValue != oldValue &&
+                    this.$refs["select-type-incident"].$el ==
+                        document.activeElement
+                ) {
+                    this.incidentSelectedId = null;
                 }
             }
         },
-        'call.incidentSelected'() {
-            if (this.call.incidentSelected) {
-                let incident = this.incidents.find(incident => incident.id == this.call.incidentSelected);
+        incidentSelectedId(newValue, oldValue) {
+            this.call.incidentSelected = this.incidents.find(
+                (t) => t.id == this.incidentSelectedId
+            );
+
+            if (this.incidentSelectedId) {
+                let incident = this.incidents.find(
+                    (incident) => incident.id == this.incidentSelectedId
+                );
 
                 if (incident) {
                     this.incidentSelected = incident;
-                    this.call.typeIncidentSelected = this.typesIncidents.find(typeIncident => typeIncident.id == incident.classes_incidents_id).id;
+                    this.typeIncidentSelectedId = this.typesIncidents.find(
+                        (typeIncident) =>
+                            typeIncident.id == incident.classes_incidents_id
+                    ).id;
                 } else {
                     this.incidentSelected = null;
                 }
             } else {
-                if (this.$refs["select-incident"].$el == document.activeElement) this.call.typeIncidentSelected = null;
-
                 this.incidentSelected = null;
+            }
+        },
+        "call.outCatalunya"(newValue) {
+            if (newValue) {
+                this.provinceSelectedId = null;
+                this.regionSelectedId = null;
+                this.townSelectedId = null;
+            } else {
+                this.call.provinceOutOfCatalunya = "";
+                this.call.townOutOfCatalunya = "";
             }
         },
         handleInputsFilterExpedientsCall() {
@@ -837,23 +1018,51 @@ export default {
                 this.call.address = newValue.adreca;
                 this.call.antecedents = newValue.antecedents;
             }
-        }
+        },
     },
     methods: {
-        submitFormCall(callback) {
+        confirmStay() {
+            return !window.confirm(
+                "Do you really want to leave? you have unsaved changes!"
+            );
+        },
+        beforeWindowUnload(e) {
+            if (this.confirmStay()) {
+                // Cancel the event
+                e.preventDefault();
+                // Chrome requires returnValue to be set
+                e.returnValue = "";
+            }
+        },
+        hiddenModalSummary() {
+            this.$emit("resumeCrono");
+            this.showSummaryModal = false;
+        },
+        submitFormCall(callback, codeCall, cronoSeconds, callDateTimeIni) {
             this.callback = callback;
-
+            this.call.codeCall = codeCall;
+            this.call.cronoSeconds = cronoSeconds;
+            this.call.callDateTimeIni = callDateTimeIni;
             this.showSummaryModal = true;
         },
         filterExpedientsCall() {
-            this.$emit('filterExpedientsCall', {
+            this.$emit("filterExpedientsCall", {
                 phone: this.call.phone,
-                incident: this.call.incidentSelected == null ? "" : this.call.incidentSelected,
+                incident:
+                    this.incidentSelectedId == null
+                        ? ""
+                        : this.incidentSelectedId,
                 outCatalunya: this.call.outCatalunya,
                 provinceOutOfCatalunya: this.call.provinceOutOfCatalunya,
                 townOutOfCatalunya: this.call.townOutOfCatalunya,
-                provinceSelected: this.call.provinceSelected == null ? "" : this.call.provinceSelected,
-                townSelected: this.call.townSelected == null ? "" : this.call.townSelected,
+                provinceSelected:
+                    this.provinceSelectedId == null
+                        ? ""
+                        : this.provinceSelectedId,
+                townSelected:
+                    this.townSelectedId == null
+                        ? ""
+                        : this.townSelectedId,
             });
         },
         getPhones() {
@@ -965,6 +1174,9 @@ export default {
                 })
                 .then((response) => {
                     me.typesLocations = response.data;
+
+                    if (!me.typeLocationSelectedId)
+                        me.typeLocationSelectedId = 3;
                 })
                 .catch(function (error) {
                     if (!axios.isCancel(error)) {
@@ -1022,46 +1234,66 @@ export default {
                 });
         },
         handKeyUpEnterInputPhone() {
-            let elementActive = this.$refs['input-phone-autocomplete-items'].querySelector(".list-group-item.active");
+            let elementActive = this.$refs[
+                "input-phone-autocomplete-items"
+            ].querySelector(".list-group-item.active");
 
             if (elementActive) {
-                let phoneSelected = this.filterPhones.find(phone => phone.id == elementActive.dataset.idPhone);
+                let phoneSelected = this.filterPhones.find(
+                    (phone) => phone.id == elementActive.dataset.idPhone
+                );
 
                 if (phoneSelected) {
                     this.phoneSelected = phoneSelected;
 
-                    this.$refs['input-phone'].blur();
-                }
-                else
-                {
+                    this.$refs["input-phone"].blur();
+                } else {
                     this.phoneSelected = null;
                 }
-            }
-            else {
+            } else {
                 this.phoneSelected = null;
-                this.$refs['input-phone'].blur();
+                this.$refs["input-phone"].blur();
             }
         },
         selectPhoneList(direction) {
-            let elementActive = this.$refs['input-phone-autocomplete-items'].querySelector(".list-group-item.active");
+            let elementActive = this.$refs[
+                "input-phone-autocomplete-items"
+            ].querySelector(".list-group-item.active");
 
             if (elementActive) {
-                switch(direction) {
-                    case 'up':
-                        if (elementActive.previousElementSibling && elementActive.previousElementSibling.classList.contains('list-group-item')) {
-                            elementActive.classList.remove('active');
-                            elementActive.previousElementSibling.classList.add('active');
+                switch (direction) {
+                    case "up":
+                        if (
+                            elementActive.previousElementSibling &&
+                            elementActive.previousElementSibling.classList.contains(
+                                "list-group-item"
+                            )
+                        ) {
+                            elementActive.classList.remove("active");
+                            elementActive.previousElementSibling.classList.add(
+                                "active"
+                            );
                         }
-                    case 'down':
-                        if (elementActive.nextElementSibling && elementActive.nextElementSibling.classList.contains('list-group-item')) {
-                            elementActive.classList.remove('active');
-                            elementActive.nextElementSibling.classList.add('active');
+                    case "down":
+                        if (
+                            elementActive.nextElementSibling &&
+                            elementActive.nextElementSibling.classList.contains(
+                                "list-group-item"
+                            )
+                        ) {
+                            elementActive.classList.remove("active");
+                            elementActive.nextElementSibling.classList.add(
+                                "active"
+                            );
                         }
                 }
             }
         },
         handlePhoneInput() {
-            let phoneExact = this.phones.find(phone => phone.telefon.toLowerCase() == this.call.phone.toLowerCase());
+            let phoneExact = this.phones.find(
+                (phone) =>
+                    phone.telefon.toLowerCase() == this.call.phone.toLowerCase()
+            );
 
             if (phoneExact) {
                 this.phoneSelected = phoneExact;
@@ -1082,9 +1314,6 @@ export default {
 <style scoped>
 small {
     font-size: 90%;
-}
-.h-150 {
-    height: 150px !important;
 }
 .center {
     display: flex;
