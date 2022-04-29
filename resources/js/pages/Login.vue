@@ -1,5 +1,5 @@
 <template>
-    <div class="row d-flex justify-content-center align-items-center h-100">
+    <main class="row d-flex justify-content-center align-items-center h-100" style="padding-bottom: 4rem !important;">
         <b-card
             class="col-lg-4 col-md-8 col-sm-8 p-4 shadow-lg user-select-none"
             no-body
@@ -68,7 +68,7 @@
                 </b-form>
             </b-card-body>
         </b-card>
-    </div>
+    </main>
 </template>
 
 <script>

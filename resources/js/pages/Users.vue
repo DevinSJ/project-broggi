@@ -1,5 +1,5 @@
 <template>
-    <main>
+    <main style="padding-bottom: 4rem !important;">
         <div class="botones">
             <!--Panel filtrado-->
             <b-card class="show-card">

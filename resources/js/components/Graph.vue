@@ -1,5 +1,6 @@
 <script>
 import { Bar } from "vue-chartjs";
+
 export default {
     extends: Bar,
     props: ["opcionGraph"],
@@ -21,7 +22,7 @@ export default {
                         data: [],
                     },
                 ],
-                request: null
+                request: null,
             },
             options: {
                 scales: {
@@ -72,7 +73,7 @@ export default {
                         me.chartData.labels.push(element.estat);
                     });
 
-                    me.returnDatos=me.chartData.labels
+                    me.returnDatos = me.chartData.labels;
 
                     me.chartData.datasets[0].data = [];
                     response.data.forEach((element) => {
@@ -101,8 +102,8 @@ export default {
                 })
                 .catch((error) => {
                     console.log(error);
-                }).
-                finally(() => me.$emit("finishedRequest"));
+                })
+                .finally(() => me.$emit("finishedRequest"));
         },
         obtenerDatosUsuarios() {
             this.$emit("startRequest");
@@ -140,17 +141,18 @@ export default {
                     me.chartData.datasets[0].borderColor = [
                         "rgb(255, 120, 0 , 1)",
                         "rgb(0, 255, 240, 1)",
-                        "rgb(219, 21, 55,1)"
+                        "rgb(219, 21, 55,1)",
                     ];
 
                     this.renderChart(this.chartData, this.options);
                 })
                 .catch((error) => {
                     console.log(error);
-                }).
-                finally(() => me.$emit("finishedRequest"));
-        },obtenerDatosLlamada(){
-             this.$emit("startRequest");
+                })
+                .finally(() => me.$emit("finishedRequest"));
+        },
+        obtenerDatosLlamada() {
+            this.$emit("startRequest");
 
             if (this.request) this.request.cancel();
 
@@ -163,7 +165,8 @@ export default {
                     cancelToken: axiosSource.token,
                 })
                 .then((response) => {
-                    me.chartData.datasets[0].label = "Estadistiques de trucades";
+                    me.chartData.datasets[0].label =
+                        "Estadistiques de trucades";
                     me.chartData.labels = [];
                     response.data.forEach((element) => {
                         me.chartData.labels.push(element.descripcio);
@@ -179,7 +182,7 @@ export default {
                         "rgb(108, 120, 50 , 0.2)",
                         "rgb(0, 255, 240, 0.2)",
                         "rgb(219, 21, 55,0.2)",
-                        "rgb(128, 120, 200,0.2)"
+                        "rgb(128, 120, 200,0.2)",
                     ];
 
                     me.chartData.datasets[0].borderColor = [];
@@ -187,17 +190,16 @@ export default {
                         "rgb(108, 120, 50 , 1)",
                         "rgb(0, 255, 240, 1)",
                         "rgb(219, 21, 55,1)",
-                        "rgb(128, 120, 200,1)"
+                        "rgb(128, 120, 200,1)",
                     ];
 
                     this.renderChart(this.chartData, this.options);
                 })
                 .catch((error) => {
                     console.log(error);
-                }).
-                finally(() => me.$emit("finishedRequest"));
-
-        }
+                })
+                .finally(() => me.$emit("finishedRequest"));
+        },
     },
     mounted() {
         switch (this.opcionGraph) {

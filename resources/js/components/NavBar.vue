@@ -54,7 +54,7 @@
                     <template #button-content>
                         <em class="mr-2">{{ user.cognoms }}, {{ user.nom }}</em>
                     </template>
-                    <b-dropdown-item @click="openProfileModal"
+                    <b-dropdown-item @click="showModalProfile = true"
                         ><i class="fa-solid fa-key mr-2"></i>Canviar contrasenya</b-dropdown-item
                     >
                     <b-dropdown-item href="/logout"
@@ -65,14 +65,12 @@
             </b-navbar-nav>
         </b-collapse>
 
-        <profile ref="openProfile" :user="user"/>
+        <profile v-if="showModalProfile" @hideModalProfile="showModalProfile = false" :user="user"/>
     </b-navbar>
 </template>
 
 <script>
-import Profile from './Profile.vue';
 export default {
-  components: { Profile },
     props: ["user"],
     mounted() {
         window.Vue.prototype.$user = this.user;
@@ -109,15 +107,9 @@ export default {
     },
     data() {
         return {
-
+            showModalProfile: false,
         }
     },
-
-    methods: {
-        openProfileModal() {
-            this.$refs.openProfile.openModal();
-        }
-    }
 };
 </script>
 
