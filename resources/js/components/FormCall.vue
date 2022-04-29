@@ -1,566 +1,569 @@
 <template>
     <div class="container-fluid p-0">
-        <b-tabs fill lazy>
-            <!-- TAB Identificació de la trucada -->
-            <b-tab title="Identificació de la trucada" active>
-                <div class="row">
-                    <div class="col-lg-12 my-2">
-                        <div class="input-autocomplete w-100">
+        <form ref="formCall">
+            <b-tabs fill lazy>
+                <!-- TAB Identificació de la trucada -->
+                <b-tab title="Identificació de la trucada" active>
+                    <div class="row">
+                        <div class="col-lg-12 my-2">
+                            <div class="input-autocomplete w-100">
+                                <div class="form-floating user-select-none">
+                                    <b-form-input
+                                        type="tel"
+                                        ref="input-phone"
+                                        id="input-phone"
+                                        v-model="call.phone"
+                                        :state="!isEmptyOrNull(call.phone)"
+                                        @focus="isInputPhoneFocus = true"
+                                        @blur="isInputPhoneFocus = false"
+                                        @input="handlePhoneInput()"
+                                        @keydown.enter="handKeyUpEnterInputPhone"
+                                        @keydown.up="selectPhoneList('up')"
+                                        @keydown.down="selectPhoneList('down')"
+                                        aria-describedby="input-phone-feedback"
+                                        placeholder="Nº telèfon"
+                                        required
+                                    />
+                                    <label
+                                        class="user-select-none"
+                                        for="input-phone"
+                                        >Nº telèfon</label
+                                    >
+                                    <small :class="`font-weight-bold  ${phoneSelected ? 'text-success' : 'text-danger'}`" v-if="!isEmptyOrNull(call.phone)">{{ phoneSelected ? 'Aquest telèfon està guardat.' : 'Aquest telèfon no està guardat.' }}</small>
+                                    <b-form-invalid-feedback id="input-phone-feedback">
+                                        Aquest camp és obligatori
+                                    </b-form-invalid-feedback>
+                                </div>
+                                <b-list-group   ref="input-phone-autocomplete-items"
+                                                class="input-autocomplete-items"
+                                                @mouseover="isSelectingPhone = true"
+                                                @mouseleave="isSelectingPhone = false"
+                                                v-if="!phoneSelected && !isEmptyOrNull(call.phone) && isInputPhoneFocus || isSelectingPhone">
+                                    <b-list-group-item disabled v-if="isLoadingPhones"><svg-vue icon="spinner" width="25"/></b-list-group-item>
+                                    <b-list-group-item disabled v-else-if="!filterPhones.length">No hi ha cap coincidencia</b-list-group-item>
+                                    <b-list-group-item v-else v-for="(phone, index) in filterPhones" role="button" @click="phoneSelected = phone" :active="index == 0" :key="phone.id" :data-id-phone="phone.id">{{ phone.telefon }}</b-list-group-item>
+                                </b-list-group>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-lg-6 my-2">
+                            <div class="form-floating user-select-none">
+                                <b-form-select
+                                    ref="select-towns-call"
+                                    id="select-towns-call"
+                                    v-model="call.townCallSelected"
+                                    :options="allTowns"
+                                    placeholder="Municipi"
+                                >
+                                    <template #first>
+                                        <b-form-select-option :value="null"
+                                            >Seleccionar
+                                            municipi</b-form-select-option
+                                        >
+                                    </template>
+                                </b-form-select>
+                                <label class="user-select-none" for="select-towns-call"
+                                    >Municipi</label
+                                >
+                            </div>
+                        </div>
+                        <div class="col-lg-6 my-2">
                             <div class="form-floating user-select-none">
                                 <b-form-input
-                                    type="tel"
-                                    ref="input-phone"
-                                    id="input-phone"
-                                    v-model="call.phone"
-                                    :state="!isEmptyOrNull(call.phone)"
-                                    @focus="isInputPhoneFocus = true"
-                                    @blur="isInputPhoneFocus = false"
-                                    @input="handlePhoneInput()"
-                                    @keydown.enter="handKeyUpEnterInputPhone"
-                                    @keydown.up="selectPhoneList('up')"
-                                    @keydown.down="selectPhoneList('down')"
-                                    aria-describedby="input-phone-feedback"
-                                    placeholder="Nº telèfon"
+                                    type="text"
+                                    id="input-address"
+                                    v-model="call.address"
+                                    placeholder="Adreça"
+                                />
+                                <label
+                                    class="user-select-none"
+                                    for="input-address"
+                                    >Adreça</label
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row my-2">
+                        <div class="col-lg-6 my-2">
+                            <div class="form-floating user-select-none">
+                                <b-form-input
+                                    type="text"
+                                    id="input-provenance"
+                                    v-model="call.provenance"
+                                    placeholder="Procedència"
+                                />
+                                <label
+                                    class="user-select-none"
+                                    for="input-provenance"
+                                    >Procedència</label
+                                >
+                            </div>
+                        </div>
+                        <div class="col-lg-6 my-2">
+                            <div class="form-floating user-select-none">
+                                <b-form-input
+                                    type="text"
+                                    id="input-antecedents"
+                                    v-model="call.antecedents"
+                                    placeholder="Antecedents del telèfon"
+                                />
+                                <label
+                                    class="user-select-none"
+                                    for="input-antecedents"
+                                    >Antecedents del telèfon</label
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </b-tab>
+                <!-- TAB Nota comuna-->
+                <b-tab title="Nota comuna">
+                    <div class="row">
+                        <div class="col-lg-12 my-2">
+                            <div class="form-floating user-select-none">
+                                <b-form-textarea
+                                    type="text"
+                                    class="h-150"
+                                    id="input-common-note"
+                                    v-model="call.commonNote"
+                                    placeholder="Nom i cognoms del trucant, relació e l’alertant amb l’incident, telèfon de contacte i descripció del fet"
+                                    aria-describedby="input-common-note-feedback"
+                                    :state="!isEmptyOrNull(call.commonNote)"
+                                    rows="5"
                                     required
                                 />
                                 <label
                                     class="user-select-none"
-                                    for="input-phone"
-                                    >Nº telèfon</label
+                                    for="input-common-note"
                                 >
-                                <small :class="`font-weight-bold  ${phoneSelected ? 'text-success' : 'text-danger'}`" v-if="!isEmptyOrNull(call.phone)">{{ phoneSelected ? 'Aquest telèfon està guardat.' : 'Aquest telèfon no està guardat.' }}</small>
-                                <b-form-invalid-feedback id="input-phone-feedback">
-                                    Aquest camp és obligatori
+                                    Nom i cognoms del trucant, relació e l’alertant amb l’incident, telèfon de contacte i descripció del fet
+                                </label>
+                                <b-form-invalid-feedback
+                                    id="input-common-note-feedback"
+                                >
+                                    Aquest camp és obligatori.
                                 </b-form-invalid-feedback>
                             </div>
-                            <b-list-group   ref="input-phone-autocomplete-items"
-                                            class="input-autocomplete-items"
-                                            @mouseover="isSelectingPhone = true"
-                                            @mouseleave="isSelectingPhone = false"
-                                            v-if="!phoneSelected && !isEmptyOrNull(call.phone) && isInputPhoneFocus || isSelectingPhone">
-                                <b-list-group-item disabled v-if="isLoadingPhones"><svg-vue icon="spinner" width="25"/></b-list-group-item>
-                                <b-list-group-item disabled v-else-if="!filterPhones.length">No hi ha cap coincidencia</b-list-group-item>
-                                <b-list-group-item v-else v-for="(phone, index) in filterPhones" role="button" @click="phoneSelected = phone" :active="index == 0" :key="phone.id" :data-id-phone="phone.id">{{ phone.telefon }}</b-list-group-item>
-                            </b-list-group>
                         </div>
                     </div>
-                </div>
-                <div class="row my-2">
-                    <div class="col-lg-6 my-2">
-                        <div class="form-floating user-select-none">
-                            <b-form-select
-                                ref="select-towns-call"
-                                id="select-towns-call"
-                                v-model="call.townCallSelected"
-                                :options="allTowns"
-                                placeholder="Municipi"
+                </b-tab>
+                <!-- TAB Localització de l’emergència -->
+                <b-tab title="Localització de l’emergència">
+                    <div class="row">
+                        <div class="col-lg-12 my-2">
+                            <b-form-checkbox
+                                id="check-out-catalunya"
+                                v-model="call.outCatalunya"
                             >
-                                <template #first>
-                                    <b-form-select-option :value="null"
-                                        >Seleccionar
-                                        municipi</b-form-select-option
-                                    >
-                                </template>
-                            </b-form-select>
-                            <label class="user-select-none" for="select-towns-call"
-                                >Municipi</label
-                            >
+                                Fora de Cataluña
+                            </b-form-checkbox>
                         </div>
                     </div>
-                    <div class="col-lg-6 my-2">
-                        <div class="form-floating user-select-none">
-                            <b-form-input
-                                type="text"
-                                id="input-address"
-                                v-model="call.address"
-                                placeholder="Adreça"
-                            />
-                            <label
-                                class="user-select-none"
-                                for="input-address"
-                                >Adreça</label
-                            >
+                    <div class="row" v-if="call.outCatalunya">
+                        <div class="col-lg-6 my-2">
+                            <div class="form-floating user-select-none">
+                                <b-form-input
+                                    type="text"
+                                    id="input-province-out-catalunya"
+                                    v-model="call.provinceOutOfCatalunya"
+                                    placeholder="Provincia"
+                                    :state="!isEmptyOrNull(call.provinceOutOfCatalunya)"
+                                    aria-describedby="input-province-out-catalunya-feedback"
+                                    required
+                                />
+                                <label class="user-select-none" for="input-province-out-catalunya"
+                                    >Provincia</label
+                                >
+                                <b-form-invalid-feedback
+                                    id="input-province-out-catalunya-feedback"
+                                >
+                                    Aquest camp és obligatori.
+                                </b-form-invalid-feedback>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 my-2">
+                            <div class="form-floating user-select-none">
+                                <b-form-input
+                                    type="text"
+                                    id="input-town-out-catalunya"
+                                    v-model="call.townOutOfCatalunya"
+                                    placeholder="Municipi"
+                                />
+                                <label class="user-select-none" for="input-town-out-catalunya"
+                                    >Municipi</label
+                                >
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row my-2">
-                    <div class="col-lg-6 my-2">
-                        <div class="form-floating user-select-none">
-                            <b-form-input
-                                type="text"
-                                id="input-provenance"
-                                v-model="call.provenance"
-                                placeholder="Procedència"
-                            />
-                            <label
-                                class="user-select-none"
-                                for="input-provenance"
-                                >Procedència</label
-                            >
+                    <div class="row" v-else>
+                        <div class="col-lg-4 my-2">
+                            <div class="form-floating user-select-none">
+                                <b-form-select
+                                    id="select-provinces"
+                                    ref="select-provinces"
+                                    :options="allProvinces"
+                                    v-model="call.provinceSelected"
+                                    placeholder="Provincia"
+                                >
+                                    <template #first>
+                                        <b-form-select-option :value="null"
+                                            >Seleccionar
+                                            provincia</b-form-select-option
+                                        >
+                                    </template>
+                                </b-form-select>
+                                <label
+                                    class="user-select-none"
+                                    for="select-provinces"
+                                    >Provincia</label
+                                >
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-lg-6 my-2">
-                        <div class="form-floating user-select-none">
-                            <b-form-input
-                                type="text"
-                                id="input-antecedents"
-                                v-model="call.antecedents"
-                                placeholder="Antecedents del telèfon"
-                            />
-                            <label
-                                class="user-select-none"
-                                for="input-antecedents"
-                                >Antecedents del telèfon</label
-                            >
+                        <div class="col-lg-4 my-2">
+                            <div class="form-floating user-select-none">
+                                <b-form-select
+                                    id="select-regions"
+                                    ref="select-regions"
+                                    :options="allRegionsFiltered"
+                                    v-model="call.regionSelected"
+                                    placeholder="Comarca"
+                                >
+                                    <template #first>
+                                        <b-form-select-option :value="null"
+                                            >Seleccionar
+                                            comarca</b-form-select-option
+                                        >
+                                    </template>
+                                </b-form-select>
+                                <label class="user-select-none" for="select-regions"
+                                    >Comarca</label
+                                >
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </b-tab>
-            <!-- TAB Nota comuna-->
-            <b-tab title="Nota comuna">
-                <div class="row">
-                    <div class="col-lg-12 my-2">
-                        <div class="form-floating user-select-none">
-                            <b-form-textarea
-                                type="text"
-                                class="h-150"
-                                id="input-common-note"
-                                v-model="call.commonNote"
-                                placeholder="Nota comuna"
-                                aria-describedby="input-common-note-feedback"
-                                :state="!isEmptyOrNull(call.commonNote)"
-                                rows="5"
-                                required
-                            />
-                            <label
-                                class="user-select-none"
-                                for="input-common-note"
-                            >
-                                Nota comuna
-                            </label>
-                            <b-form-invalid-feedback
-                                id="input-common-note-feedback"
-                            >
-                                Aquest camp és obligatori.
-                            </b-form-invalid-feedback>
+                        <div class="col-lg-4 my-2">
+                            <div class="form-floating user-select-none">
+                                <b-form-select
+                                    id="select-towns"
+                                    ref="select-towns"
+                                    :options="allTownsFiltered"
+                                    v-model="call.townSelected"
+                                    placeholder="Municipi"
+                                >
+                                    <template #first>
+                                        <b-form-select-option :value="null"
+                                            >Seleccionar
+                                            municipi</b-form-select-option
+                                        >
+                                    </template>
+                                </b-form-select>
+                                <label class="user-select-none" for="select-towns"
+                                    >Municipi</label
+                                >
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </b-tab>
-            <!-- TAB Localització de l’emergència -->
-            <b-tab title="Localització de l’emergència">
-                <div class="row">
-                    <div class="col-lg-12 my-2">
-                        <b-form-checkbox
-                            id="check-out-catalunya"
-                            v-model="call.outCatalunya"
-                        >
-                            Fora de Cataluña
-                        </b-form-checkbox>
-                    </div>
-                </div>
-                <div class="row" v-if="call.outCatalunya">
-                    <div class="col-lg-6 my-2">
-                        <div class="form-floating user-select-none">
-                            <b-form-input
-                                type="text"
-                                id="input-province-out-catalunya"
-                                v-model="call.provinceOutOfCatalunya"
-                                placeholder="Provincia"
-                                :state="!isEmptyOrNull(call.provinceOutOfCatalunya)"
-                                aria-describedby="input-province-out-catalunya-feedback"
-                                required
-                            />
-                            <label class="user-select-none" for="input-province-out-catalunya"
-                                >Provincia</label
-                            >
-                            <b-form-invalid-feedback
-                                id="input-province-out-catalunya-feedback"
-                            >
-                                Aquest camp és obligatori.
-                            </b-form-invalid-feedback>
+                        <div class="col-lg-12 my-2">
+                            <div class="form-floating user-select-none">
+                                <b-form-select
+                                    id="select-towns"
+                                    :options="allTypesLocations"
+                                    v-model="call.typeLocationSelected"
+                                    placeholder="Tipus localització"
+                                >
+                                    <!--<template #first>
+                                    <b-form-select-option :value="null">Seleccionar tipus localització</b-form-select-option>
+                                </template>-->
+                                </b-form-select>
+                                <label class="user-select-none" for="select-towns"
+                                    >Tipus localització</label
+                                >
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-lg-6 my-2">
-                        <div class="form-floating user-select-none">
-                            <b-form-input
-                                type="text"
-                                id="input-town-out-catalunya"
-                                v-model="call.townOutOfCatalunya"
-                                placeholder="Municipi"
-                            />
-                            <label class="user-select-none" for="input-town-out-catalunya"
-                                >Municipi</label
-                            >
-                        </div>
-                    </div>
-                </div>
-                <div class="row" v-else>
-                    <div class="col-lg-4 my-2">
-                        <div class="form-floating user-select-none">
-                            <b-form-select
-                                id="select-provinces"
-                                ref="select-provinces"
-                                :options="allProvinces"
-                                v-model="call.provinceSelected"
-                                placeholder="Provincia"
-                            >
-                                <template #first>
-                                    <b-form-select-option :value="null"
-                                        >Seleccionar
-                                        provincia</b-form-select-option
-                                    >
-                                </template>
-                            </b-form-select>
-                            <label
-                                class="user-select-none"
-                                for="select-provinces"
-                                >Provincia</label
-                            >
-                        </div>
-                    </div>
-                    <div class="col-lg-4 my-2">
-                        <div class="form-floating user-select-none">
-                            <b-form-select
-                                id="select-regions"
-                                ref="select-regions"
-                                :options="allRegionsFiltered"
-                                v-model="call.regionSelected"
-                                placeholder="Comarca"
-                            >
-                                <template #first>
-                                    <b-form-select-option :value="null"
-                                        >Seleccionar
-                                        comarca</b-form-select-option
-                                    >
-                                </template>
-                            </b-form-select>
-                            <label class="user-select-none" for="select-regions"
-                                >Comarca</label
-                            >
-                        </div>
-                    </div>
-                    <div class="col-lg-4 my-2">
-                        <div class="form-floating user-select-none">
-                            <b-form-select
-                                id="select-towns"
-                                ref="select-towns"
-                                :options="allTownsFiltered"
-                                v-model="call.townSelected"
-                                placeholder="Municipi"
-                            >
-                                <template #first>
-                                    <b-form-select-option :value="null"
-                                        >Seleccionar
-                                        municipi</b-form-select-option
-                                    >
-                                </template>
-                            </b-form-select>
-                            <label class="user-select-none" for="select-towns"
-                                >Municipi</label
-                            >
-                        </div>
-                    </div>
-                    <div class="col-lg-12 my-2">
-                        <div class="form-floating user-select-none">
-                            <b-form-select
-                                id="select-towns"
-                                :options="allTypesLocations"
-                                v-model="call.typeLocationSelected"
-                                placeholder="Tipus localització"
-                            >
-                                <!--<template #first>
-                                <b-form-select-option :value="null">Seleccionar tipus localització</b-form-select-option>
-                            </template>-->
-                            </b-form-select>
-                            <label class="user-select-none" for="select-towns"
-                                >Tipus localització</label
-                            >
-                        </div>
-                    </div>
-                    <!-- OPTION 1 CARRERS -->
-                    <div class="col-lg-12 my-2" v-if="call.typeLocationSelected == 1">
-                        <div class="row">
-                            <div class="col-lg-4 my-2">
-                                <div class="form-floating user-select-none">
-                                    <b-form-input
-                                        type="text"
-                                        id="input-type-street"
-                                        v-model="call.typeStreet"
-                                        placeholder="Tipus de via"
-                                    />
-                                    <label
-                                        class="user-select-none"
-                                        for="input-type-street"
-                                        >Tipus de via</label
-                                    >
+                        <!-- OPTION 1 CARRERS -->
+                        <div class="col-lg-12 my-2" v-if="call.typeLocationSelected == 1">
+                            <div class="row">
+                                <div class="col-lg-4 my-2">
+                                    <div class="form-floating user-select-none">
+                                        <b-form-input
+                                            type="text"
+                                            id="input-type-street"
+                                            v-model="call.typeStreet"
+                                            placeholder="Tipus de via"
+                                        />
+                                        <label
+                                            class="user-select-none"
+                                            for="input-type-street"
+                                            >Tipus de via</label
+                                        >
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 my-2">
+                                    <div class="form-floating user-select-none">
+                                        <b-form-input
+                                            type="text"
+                                            id="input-name-street"
+                                            v-model="call.nameStreet"
+                                            placeholder="Nom del carrer"
+                                        />
+                                        <label
+                                            class="user-select-none"
+                                            for="input-name-street"
+                                            >Nom del carrer</label
+                                        >
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 my-2">
+                                    <div class="form-floating user-select-none">
+                                        <b-form-input
+                                            type="text"
+                                            id="input-number-street"
+                                            v-model="call.numberStreet"
+                                            placeholder="Número"
+                                        />
+                                        <label
+                                            class="user-select-none"
+                                            for="input-number-street"
+                                            >Número</label
+                                        >
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-lg-4 my-2">
-                                <div class="form-floating user-select-none">
-                                    <b-form-input
-                                        type="text"
-                                        id="input-name-street"
-                                        v-model="call.nameStreet"
-                                        placeholder="Nom del carrer"
-                                    />
-                                    <label
-                                        class="user-select-none"
-                                        for="input-name-street"
-                                        >Nom del carrer</label
-                                    >
+                            <div class="row">
+                                <div class="col-lg-4 my-2">
+                                    <div class="form-floating user-select-none">
+                                        <b-form-input
+                                            type="text"
+                                            id="input-number-stair"
+                                            v-model="call.numberStair"
+                                            placeholder="Escala"
+                                        />
+                                        <label
+                                            class="user-select-none"
+                                            for="input-number-stair"
+                                            >Escala</label
+                                        >
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-4 my-2">
-                                <div class="form-floating user-select-none">
-                                    <b-form-input
-                                        type="text"
-                                        id="input-number-street"
-                                        v-model="call.numberStreet"
-                                        placeholder="Número"
-                                    />
-                                    <label
-                                        class="user-select-none"
-                                        for="input-number-street"
-                                        >Número</label
-                                    >
+                                <div class="col-lg-4 my-2">
+                                    <div class="form-floating user-select-none">
+                                        <b-form-input
+                                            type="text"
+                                            id="input-number-floor"
+                                            v-model="call.numberFloor"
+                                            placeholder="Pis"
+                                        />
+                                        <label
+                                            class="user-select-none"
+                                            for="input-number-floor"
+                                            >Pis</label
+                                        >
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 my-2">
+                                    <div class="form-floating user-select-none">
+                                        <b-form-input
+                                            type="text"
+                                            id="input-number-door"
+                                            v-model="call.numberDoor"
+                                            placeholder="Porta"
+                                        />
+                                        <label
+                                            class="user-select-none"
+                                            for="input-number-door"
+                                            >Porta</label
+                                        >
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-4 my-2">
-                                <div class="form-floating user-select-none">
-                                    <b-form-input
-                                        type="text"
-                                        id="input-number-stair"
-                                        v-model="call.numberStair"
-                                        placeholder="Escala"
-                                    />
-                                    <label
-                                        class="user-select-none"
-                                        for="input-number-stair"
-                                        >Escala</label
-                                    >
-                                </div>
+                        <!-- OPTION 2 PUNT SINGULAR -->
+                        <div class="col-lg-12 my-2" v-else-if="call.typeLocationSelected == 2">
+                            <div class="form-floating user-select-none">
+                                <b-form-input
+                                    type="text"
+                                    id="input-singular-point"
+                                    v-model="call.singularPoint"
+                                    aria-describedby="input-singular-point-feedback"
+                                    :state="!isEmptyOrNull(call.singularPoint)"
+                                    placeholder="Nom del punt singular"
+                                    required
+                                />
+                                <label
+                                    class="user-select-none"
+                                    for="input-singular-point">
+                                    Nom del punt singular
+                                </label>
+                                <b-form-invalid-feedback
+                                    id="input-singular-point-feedback"
+                                >
+                                    Aquest camp és obligatori.
+                                </b-form-invalid-feedback>
                             </div>
-                            <div class="col-lg-4 my-2">
-                                <div class="form-floating user-select-none">
-                                    <b-form-input
-                                        type="text"
-                                        id="input-number-floor"
-                                        v-model="call.numberFloor"
-                                        placeholder="Pis"
-                                    />
-                                    <label
-                                        class="user-select-none"
-                                        for="input-number-floor"
-                                        >Pis</label
-                                    >
+                        </div>
+                        <!-- OPTION 3 Entitat POBLACIÓ -->
+                        <!--<div
+                            v-show="typeLocationSelected == 3"
+                            class="form-floating user-select-none"
+                        ></div>-->
+                        <!-- OPTION 4 CARRETERA -->
+                        <div class="col-lg-12 my-2" v-else-if="call.typeLocationSelected == 4">
+                            <div class="row">
+                                <div class="col-lg-4 my-2">
+                                    <div class="form-floating user-select-none">
+                                        <b-form-input
+                                            type="text"
+                                            id="input-name-highway"
+                                            v-model="call.nameHighway"
+                                            placeholder="Nom de la carretera"
+                                        />
+                                        <label
+                                            class="user-select-none"
+                                            for="input-name-highway"
+                                            >Nom de la carretera</label
+                                        >
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-4 my-2">
-                                <div class="form-floating user-select-none">
-                                    <b-form-input
-                                        type="text"
-                                        id="input-number-door"
-                                        v-model="call.numberDoor"
-                                        placeholder="Porta"
-                                    />
-                                    <label
-                                        class="user-select-none"
-                                        for="input-number-door"
-                                        >Porta</label
-                                    >
+                                <div class="col-lg-4 my-2">
+                                    <div class="form-floating user-select-none">
+                                        <b-form-input
+                                            type="text"
+                                            id="input-direction-highway"
+                                            v-model="call.directionHighway"
+                                            placeholder="Sentit de la carretera"
+                                        />
+                                        <label
+                                            class="user-select-none"
+                                            for="input-direction-highway"
+                                            >Sentit de la carretera</label
+                                        >
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 my-2">
+                                    <div class="form-floating user-select-none">
+                                        <b-form-input
+                                            type="text"
+                                            id="input-km-highway"
+                                            v-model="call.kmHighway"
+                                            placeholder="KM de la carretera"
+                                        />
+                                        <label
+                                            class="user-select-none"
+                                            for="input-km-highway"
+                                            >KM de la carretera</label
+                                        >
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- OPTION 2 PUNT SINGULAR -->
-                    <div class="col-lg-12 my-2" v-else-if="call.typeLocationSelected == 2">
-                        <div class="form-floating user-select-none">
-                            <b-form-input
-                                type="text"
-                                id="input-singular-point"
-                                v-model="call.singularPoint"
-                                aria-describedby="input-singular-point-feedback"
-                                :state="!isEmptyOrNull(call.singularPoint)"
-                                placeholder="Nom del punt singular"
-                                required
-                            />
-                            <label
-                                class="user-select-none"
-                                for="input-singular-point">
-                                Nom del punt singular
-                            </label>
-                            <b-form-invalid-feedback
-                                id="input-singular-point-feedback"
-                            >
-                                Aquest camp és obligatori.
-                            </b-form-invalid-feedback>
-                        </div>
-                    </div>
-                    <!-- OPTION 3 Entitat POBLACIÓ -->
-                    <!--<div
-                        v-show="typeLocationSelected == 3"
-                        class="form-floating user-select-none"
-                    ></div>-->
-                    <!-- OPTION 4 CARRETERA -->
-                    <div class="col-lg-12 my-2" v-else-if="call.typeLocationSelected == 4">
-                        <div class="row">
-                            <div class="col-lg-4 my-2">
-                                <div class="form-floating user-select-none">
-                                    <b-form-input
-                                        type="text"
-                                        id="input-name-highway"
-                                        v-model="call.nameHighway"
-                                        placeholder="Nom de la carretera"
-                                    />
-                                    <label
-                                        class="user-select-none"
-                                        for="input-name-highway"
-                                        >Nom de la carretera</label
-                                    >
-                                </div>
-                            </div>
-                            <div class="col-lg-4 my-2">
-                                <div class="form-floating user-select-none">
-                                    <b-form-input
-                                        type="text"
-                                        id="input-direction-highway"
-                                        v-model="call.directionHighway"
-                                        placeholder="Sentit de la carretera"
-                                    />
-                                    <label
-                                        class="user-select-none"
-                                        for="input-direction-highway"
-                                        >Sentit de la carretera</label
-                                    >
-                                </div>
-                            </div>
-                            <div class="col-lg-4 my-2">
-                                <div class="form-floating user-select-none">
-                                    <b-form-input
-                                        type="text"
-                                        id="input-km-highway"
-                                        v-model="call.kmHighway"
-                                        placeholder="KM de la carretera"
-                                    />
-                                    <label
-                                        class="user-select-none"
-                                        for="input-km-highway"
-                                        >KM de la carretera</label
-                                    >
-                                </div>
+                    <div class="row">
+                        <div class="col-lg-12 my-2">
+                            <div class="form-floating user-select-none">
+                                <b-form-textarea
+                                    id="input-extra-information-street"
+                                    type="text"
+                                    class="h-150"
+                                    placeholder="Informació rellevant de la localització"
+                                    rows="5"
+                                />
+                                <label class="user-select-none" for="input-extra-information-street">
+                                    Informació rellevant de la localització
+                                </label>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12 my-2">
-                        <div class="form-floating user-select-none">
-                            <b-form-textarea
-                                id="input-extra-information-street"
-                                type="text"
-                                class="h-150"
-                                placeholder="Informació rellevant de la localització"
-                                rows="5"
-                            />
-                            <label class="user-select-none" for="input-extra-information-street">
-                                Informació rellevant de la localització
-                            </label>
+                </b-tab>
+                <!-- TAB Tipificació de l'emergència -->
+                <b-tab title="Tipificació de l'emergència">
+                    <div class="row">
+                        <div class="col-lg-6 my-2">
+                            <div class="form-floating user-select-none">
+                                <b-form-select
+                                    id="select-type-incident"
+                                    ref="select-type-incident"
+                                    :options="allTypesIncidents"
+                                    v-model="call.typeIncidentSelected"
+                                    placeholder="Tipus incident"
+                                    aria-describedby="select-type-incident-feedback"
+                                    :state="!isEmptyOrNull(call.typeIncidentSelected)"
+                                    required
+                                >
+                                    <template #first>
+                                        <b-form-select-option :value="null"
+                                            >Seleccionar tipus
+                                            incident</b-form-select-option
+                                        >
+                                    </template>
+                                </b-form-select>
+                                <label
+                                    class="user-select-none"
+                                    for="select-type-incident"
+                                    >Tipus incident</label
+                                >
+                                <b-form-invalid-feedback
+                                    id="select-type-incident-feedback"
+                                >
+                                    Aquest camp és obligatori.
+                                </b-form-invalid-feedback>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 my-2">
+                            <div class="form-floating user-select-none">
+                                <b-form-select
+                                    id="select-incident"
+                                    ref="select-incident"
+                                    :options="allIncidentsFiltered"
+                                    v-model="call.incidentSelected"
+                                    placeholder="Incident"
+                                    aria-describedby="select-incident-feedback"
+                                    :state="!isEmptyOrNull(call.incidentSelected)"
+                                    required
+                                >
+                                    <template #first>
+                                        <b-form-select-option :value="null"
+                                            >Seleccionar
+                                            incident</b-form-select-option
+                                        >
+                                    </template>
+                                </b-form-select>
+                                <label
+                                    class="user-select-none"
+                                    for="select-incident"
+                                    >Incident</label
+                                >
+                                <b-form-invalid-feedback
+                                    id="select-incident-feedback"
+                                >
+                                    Aquest camp és obligatori.
+                                </b-form-invalid-feedback>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </b-tab>
-            <!-- TAB Tipificació de l'emergència -->
-            <b-tab title="Tipificació de l'emergència">
-                <div class="row">
-                    <div class="col-lg-6 my-2">
-                        <div class="form-floating user-select-none">
-                            <b-form-select
-                                id="select-type-incident"
-                                ref="select-type-incident"
-                                :options="allTypesIncidents"
-                                v-model="call.typeIncidentSelected"
-                                placeholder="Tipus incident"
-                                aria-describedby="select-type-incident-feedback"
-                                :state="!isEmptyOrNull(call.typeIncidentSelected)"
-                                required
-                            >
-                                <template #first>
-                                    <b-form-select-option :value="null"
-                                        >Seleccionar tipus
-                                        incident</b-form-select-option
-                                    >
-                                </template>
-                            </b-form-select>
-                            <label
-                                class="user-select-none"
-                                for="select-type-incident"
-                                >Tipus incident</label
-                            >
-                            <b-form-invalid-feedback
-                                id="select-type-incident-feedback"
-                            >
-                                Aquest camp és obligatori.
-                            </b-form-invalid-feedback>
+                    <div class="row mt-2" v-if="incidentSelected">
+                        <div class="col-lg-12 my-2">
+                            <div class="d-block my-2">
+                                <label class="font-weight-bold d-block"><u>INCIDENT SELECCIONAT:</u></label>
+                                <small>{{ incidentSelected.descripcio }}</small>
+                            </div>
+                            <div class="d-block my-2">
+                                <label class="font-weight-bold d-block"><u>DEFINICIÓ INCIDENT:</u></label>
+                                <small>{{ incidentSelected.definicio }}</small>
+                            </div>
+                            <div class="d-block my-2">
+                                <label class="font-weight-bold d-block"><u>INSTRUCCIONS INCIDENT:</u></label>
+                                <small>{{ incidentSelected.instrucions }}</small>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-6 my-2">
-                        <div class="form-floating user-select-none">
-                            <b-form-select
-                                id="select-incident"
-                                ref="select-incident"
-                                :options="allIncidentsFiltered"
-                                v-model="call.incidentSelected"
-                                placeholder="Incident"
-                                aria-describedby="select-incident-feedback"
-                                :state="!isEmptyOrNull(call.incidentSelected)"
-                                required
-                            >
-                                <template #first>
-                                    <b-form-select-option :value="null"
-                                        >Seleccionar
-                                        incident</b-form-select-option
-                                    >
-                                </template>
-                            </b-form-select>
-                            <label
-                                class="user-select-none"
-                                for="select-incident"
-                                >Incident</label
-                            >
-                            <b-form-invalid-feedback
-                                id="select-incident-feedback"
-                            >
-                                Aquest camp és obligatori.
-                            </b-form-invalid-feedback>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-2" v-if="incidentSelected">
-                    <div class="col-lg-12 my-2">
-                        <div class="d-block my-2">
-                            <label class="font-weight-bold d-block"><u>INCIDENT SELECCIONAT:</u></label>
-                            <small>{{ incidentSelected.descripcio }}</small>
-                        </div>
-                        <div class="d-block my-2">
-                            <label class="font-weight-bold d-block"><u>DEFINICIÓ INCIDENT:</u></label>
-                            <small>{{ incidentSelected.definicio }}</small>
-                        </div>
-                        <div class="d-block my-2">
-                            <label class="font-weight-bold d-block"><u>INSTRUCCIONS INCIDENT:</u></label>
-                            <small>{{ incidentSelected.instrucions }}</small>
-                        </div>
-                    </div>
-                </div>
-            </b-tab>
-            <!-- TAB Agencies -->
-            <!--
-            <b-tab title="Agencies">
-                <map-box :query="queryMapBox"></map-box>
-            </b-tab>-->
-        </b-tabs>
+                </b-tab>
+                <!-- TAB Agencies -->
+                <!--
+                <b-tab title="Agencies">
+                    <map-box :query="queryMapBox"></map-box>
+                </b-tab>-->
+            </b-tabs>
+        </form>
+        <modal-summary v-if="showSummaryModal" @hiddenModal="showSummaryModal = false" :callback="callback" :call="call"></modal-summary>
     </div>
 </template>
 
@@ -622,6 +625,9 @@ export default {
                 regionSelected: null,
                 townSelected: null,
             },
+            showSummaryModal: false,
+            callback: null,
+
             requestProvinces: null,
             requestRegions: null,
             requestTowns: null,
@@ -834,6 +840,11 @@ export default {
         }
     },
     methods: {
+        submitFormCall(callback) {
+            this.callback = callback;
+
+            this.showSummaryModal = true;
+        },
         filterExpedientsCall() {
             this.$emit('filterExpedientsCall', {
                 phone: this.call.phone,

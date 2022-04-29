@@ -1,7 +1,7 @@
 <template>
     <div>
-        <button-call @toggleButton="showCardsCall = !showCardsCall"/>
-        <cards-call v-if="showCardsCall"/>
+        <button-call ref="buttonCall" @toggleButton="toggleButtonCall"/>
+        <cards-call ref="cardsCall" v-if="showCardsCall"/>
         <b-card v-else class="show-card">
             <b-tabs content-class="mt-3" fill>
                 <b-tab title="Estat dels expedients" lazy>
@@ -58,7 +58,23 @@ export default {
             isLoading: true,
         };
     },
-    methods: {},
+    methods: {
+        toggleButtonCall() {
+            if (this.showCardsCall) {
+                let me = this;
+
+                this.$refs.buttonCall.changeButton(true);
+
+                this.$refs.cardsCall.submitFormCall(() => {
+                    me.showCardsCall = false;
+                    me.$refs.buttonCall.changeButton(false);
+                });
+            } else {
+                this.showCardsCall = true;
+                this.$refs.buttonCall.changeButton(true);
+            }
+        }
+    }
 };
 </script>
 
