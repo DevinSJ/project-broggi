@@ -18,7 +18,7 @@
                             type="button"
                             class="btn btn-sm btn-secondary"
                             title="Veure trucades del expedient"
-                            v-b-modal.modal-expedients
+                            v-b-modal.modal-call-expedients
                             @click="loadModalExpedient(expedient)"
                         >
                             <i class="fa-solid fa-phone"></i>
@@ -49,7 +49,7 @@
         </div>
         <b-modal
             v-show="!isLoading2"
-            id="modal-expedients"
+            id="modal-call-expedients"
             class="modal-calls"
             :title="`Trucades de l'expedient (${codeExpedients})`"
             size="huge"
@@ -104,7 +104,7 @@
                 aquest usuari.
             </div>
 
-            <div v-show="this.isLoading2" class="loading-spinner">
+            <div v-show="isLoading2" class="loading-spinner">
                 <svg-vue icon="spinner" class="mx-auto my-auto" width="100" />
             </div>
         </b-modal>
@@ -145,7 +145,7 @@
                 </b-table>
             </div>
 
-            <div v-show="this.isLoading3" class="loading-spinner">
+            <div v-show="isLoading3" class="loading-spinner">
                 <svg-vue icon="spinner" class="mx-auto my-auto" width="100" />
             </div>
         </b-modal>
@@ -231,15 +231,15 @@ export default {
             isLoading3: true,
             showTrucades: true,
             modal_agencia: true,
+            request: null,
+            codeExpedients: "",
             expedients: [],
+            modalTitle2: "",
             agencies_contactades: [],
             expedientSelected: {
                 id: -1
             },
-            request: null,
-            codeExpedients: "",
             user: {},
-            modalTitle2: "",
         };
     },
     methods: {
@@ -419,6 +419,11 @@ export default {
             }
         }
     },
+    watch: {
+        expedientSelected() {
+            this.$emit('expedientSelected', this.expedientSelected);
+        }
+    }
 };
 </script>
 
@@ -456,13 +461,11 @@ small {
     max-height: 620px;
     overflow-y: scroll;
 }
-
 .loading-spinner {
     width: 100%;
     text-align: center;
     justify-content: center;
 }
-
 .active {
     background-color: #eaf4f6;
     border-color: #eaf4f6;

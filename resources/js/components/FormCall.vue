@@ -744,6 +744,10 @@ export default {
                 provinceSelected: null,
                 regionSelected: null,
                 townSelected: null,
+
+                expedientSelected: {
+                    id: -1
+                },
             },
             townCallSelectedId: null,
             provinceSelectedId: null,
@@ -1041,6 +1045,9 @@ export default {
         hiddenModalSummary() {
             this.$emit("resumeCrono");
             this.showSummaryModal = false;
+        },
+        addExpedientSelected(expedientSelected) {
+            this.call.expedientSelected = expedientSelected;
         },
         submitFormCall(callback, codeCall, cronoSeconds, callDateTimeIni) {
             this.callback = callback;
