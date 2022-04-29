@@ -36,7 +36,7 @@ button:focus {
     position: relative;
 }
 
-.form-floating > .form-control,
+.form-floating > .form-control:not(textarea),
 .form-floating > .form-select,
 .form-floating > .custom-select {
     height: calc(3.5rem + 2px);

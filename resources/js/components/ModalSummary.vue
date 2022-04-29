@@ -1,24 +1,178 @@
 <template>
     <div>
         <b-modal
-            ref="modal"
+            ref="modal-summary"
             centered
             title="Resum de la trucada"
             size="huge"
             modal-class="zoominout"
-            body-class="p-0"
+            footer-class="d-flex justify-content-stretch"
+            scrollable
             @hidden="handleHiddenModal"
-            hide-footer
         >
-            <section class="d-block">
-                <b-alert v-if="errorMessage" variant="danger">
-                    {{ errorMessage }}
-                </b-alert>
-            </section>
-            <footer class="d-flex justify-content-stretch">
+            <b-alert v-if="errorMessage" show variant="danger" v-html="errorMessage">
+            </b-alert>
+            <h5 class="font-weight-bold my-2"><u>DADES INICIALS</u></h5>
+            <div class="row">
+                <div class="col-lg-4 my-2">
+                    <label class="font-weight-bold d-block"><i>Codi de trucada</i></label>
+                    <label>{{ call.codeCall }}</label>
+                </div>
+                <div class="col-lg-4 my-2">
+                    <label class="font-weight-bold d-block"><i>Data i hora inici de la trucada</i></label>
+                    <label>{{ call.callDateTimeIni }}</label>
+                </div>
+                <div class="col-lg-4 my-2">
+                    <label class="font-weight-bold d-block"><i>Duració de la trucada (hh:mm:ss)</i></label>
+                    <label>{{ getFormatCrono }}</label>
+                </div>
+            </div>
+            <hr/>
+            <h5 class="font-weight-bold my-2"><u>IDENTIFICACIÓ DE LA TRUCADA</u></h5>
+            <div class="row">
+                <div class="col-lg-3 my-2">
+                    <label class="font-weight-bold d-block"><i>Nº telèfon</i></label>
+                    <label>{{ call.phone }}</label>
+                </div>
+                <div class="col-lg-3 my-2">
+                    <label class="font-weight-bold d-block"><i>Municipi</i></label>
+                    <label>{{ call.townCallSelected ? call.townCallSelected.nom : '' }}</label>
+                </div>
+                <div class="col-lg-3 my-2">
+                    <label class="font-weight-bold d-block"><i>Adreça</i></label>
+                    <label>{{ call.address }}</label>
+
+                </div>
+                <div class="col-lg-3 my-2">
+                    <label class="font-weight-bold d-block"><i>Procedència</i></label>
+                    <label>{{ call.provenance }}</label>
+                </div>
+                <div class="col-lg-3 my-2">
+                    <label class="font-weight-bold d-block"><i>Antecedents</i></label>
+                    <label>{{ call.antecedents }}</label>
+                </div>
+            </div>
+            <hr/>
+            <h5 class="font-weight-bold my-2"><u>NOTA COMUNA</u></h5>
+            <div class="row">
+                <div class="col-lg-12 my-2">
+                    <label class="font-weight-bold d-block"><i>Nota comuna</i></label>
+                    <label class="text-pre-wrap">{{ call.commonNote }}</label>
+                </div>
+            </div>
+            <hr/>
+            <h5 class="font-weight-bold my-2"><u>LOCALITZACIÓ DE L'EMERGÈNCIA</u></h5>
+            <div class="row">
+                <div class="col-lg-12 my-2">
+                    <label class="font-weight-bold d-block"><i>Fora de catalunya</i></label>
+                    <label>{{ call.outOfCatalunya ? 'Si' : 'No' }}</label>
+                </div>
+            </div>
+            <div class="row" v-if="!call.outOfCatalunya">
+                <div class="col-lg-4 my-2">
+                    <label class="font-weight-bold d-block"><i>Província</i></label>
+                    <label>{{ call.provinceSelected ? call.provinceSelected.nom : '' }}</label>
+                </div>
+                <div class="col-lg-4 my-2">
+                    <label class="font-weight-bold d-block"><i>Comarca</i></label>
+                    <label>{{ call.regionSelected ? call.regionSelected.nom : '' }}</label>
+                </div>
+                <div class="col-lg-4 my-2">
+                    <label class="font-weight-bold d-block"><i>Municipi</i></label>
+                    <label>{{ call.townSelected ? call.townSelected.nom : '' }}</label>
+                </div>
+            </div>
+            <div class="row" v-else>
+                <div class="col-lg-6 my-2">
+                    <label class="font-weight-bold d-block"><i>Província</i></label>
+                    <label>{{ call.provinceOutOfCatalunya}}</label>
+                </div>
+                <div class="col-lg-6 my-2">
+                    <label class="font-weight-bold d-block"><i>Municipi</i></label>
+                    <label>{{ call.townOutOfCatalunya }}</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 my-2">
+                    <label class="font-weight-bold d-block"><i>Tipus localització</i></label>
+                    <label>{{ call.typeLocationSelected ? call.typeLocationSelected.tipus : '' }}</label>
+                </div>
+                <div v-if="call.typeLocationSelected && call.typeLocationSelected.id == 1" class="col-lg-8 my-2">
+                    <label class="font-weight-bold d-block"><i>Carrers</i></label>
+                    <label>
+                        {{
+                            `${call.typeStreet} ${call.nameStreet} ${call.numberStreet}, Escalera ${call.numberStair}, Pis ${call.numberFloor} Porta ${call.numberDoor}`.trim() == ', Escalera , Pis  Porta' ?
+                            ''
+                            :
+                            `${call.typeStreet} ${call.nameStreet} ${call.numberStreet}, Escalera ${call.numberStair}, Pis ${call.numberFloor} Porta ${call.numberDoor}`
+                        }}
+                    </label>
+                </div>
+                <div v-else-if="call.typeLocationSelected && call.typeLocationSelected.id == 2" class="col-lg-8 my-2">
+                    <label class="font-weight-bold d-block"><i>Punt singular</i></label>
+                    <label>
+                        {{
+                            `${call.singularPoint}`
+                        }}
+                    </label>
+                </div>
+                <div v-else-if="call.typeLocationSelected && call.typeLocationSelected.id == 4" class="col-lg-8 my-2">
+                    <label class="font-weight-bold d-block"><i>Carretera</i></label>
+                    <label>
+                        {{
+                            `Carretera ${call.nameHighway}, Direcció ${call.directionHighway}, KM ${call.kmHighway}`.trim() == 'Carretera , Direcció , KM' ?
+                            ''
+                            :
+                            `Carretera ${call.nameHighway}, Direcció ${call.directionHighway}, KM ${call.kmHighway}`
+                        }}
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 my-2">
+                    <label class="font-weight-bold d-block"><i>Informació rellevant de la localització</i></label>
+                    <label>{{ call.extraInformationStreet }}</label>
+                </div>
+            </div>
+            <hr/>
+            <h5 class="font-weight-bold my-2"><u>TIPIFICACIÓ DE L'EMERGÈNCIA</u></h5>
+            <div class="row">
+                <div class="col-lg-6 my-2">
+                    <label class="font-weight-bold d-block"><i>TIPUS INCIDENT</i></label>
+                    <label>{{ call.typeIncidentSelected ? call.typeIncidentSelected.descripcio : '' }}</label>
+                </div>
+                <div class="col-lg-6 my-2">
+                    <label class="font-weight-bold d-block"><i>INCIDENT</i></label>
+                    <label>{{ call.incidentSelected ? call.incidentSelected.descripcio : '' }}</label>
+                </div>
+            </div>
+            <div class="row" v-if="call.incidentSelected">
+                    <div class="col-lg-6 my-2">
+                        <div class="d-block">
+                            <label class="font-weight-bold d-block"
+                                ><u>DEFINICIÓ INCIDENT:</u></label
+                            >
+                            <small>{{
+                                call.incidentSelected.definicio
+                            }}</small>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 my-2">
+                        <div class="d-block">
+                            <label class="font-weight-bold d-block"
+                                ><u>INSTRUCCIONS INCIDENT:</u></label
+                            >
+                            <small>{{
+                                call.incidentSelected.instrucions
+                            }}</small>
+                        </div>
+                    </div>
+                </div>
+            <template #modal-footer>
                 <b-button v-b-modal.modal-confirm-discard variant="danger" class="font-weight-bold flex-fill mr-2"><i class="fa-solid fa-x mr-2"></i>DESCARTAR TRUCADA</b-button>
-                <b-button variant="primary" class="font-weight-bold flex-fill ml-2" @click="saveCall"><i class="fa-solid fa-floppy-disk mr-2"></i>GUARDAR TRUCADA</b-button>
-            </footer>
+                <b-button v-if="!errorMessage" variant="primary" class="font-weight-bold flex-fill ml-2" @click="saveCall"><i class="fa-solid fa-floppy-disk mr-2"></i>GUARDAR TRUCADA</b-button>
+                <b-button v-else variant="primary" class="font-weight-bold flex-fill ml-2" @click="dismissModalSummary"><i class="fa-solid fa-angle-left mr-2"></i>TORNAR AL FORMULARI DE LA TRUCADA</b-button>
+            </template>
         </b-modal>
         <b-modal
             id="modal-confirm-discard"
@@ -27,38 +181,64 @@
             title="Confirmació"
             size="m"
             body-class="p-0"
+            footer-class="d-flex justify-content-stretch"
             modal-class="zoominout"
-            hide-footer
         >
             <section class="d-block">
                 Segur que vols descartar la trucada?<br/>
                 Tots els camps que has introduït s'eliminaran.
             </section>
-            <footer class="d-flex justify-content-stretch">
+            <template #modal-footer>
                 <b-button variant="primary" class="font-weight-bold flex-fill mr-2" @click="dismissModalConfirm">CANCEL·LAR</b-button>
                 <b-button variant="danger" class="font-weight-bold flex-fill ml-2" @click="discardCall">CONFIRMAR</b-button>
-            </footer>
+            </template>
         </b-modal>
     </div>
 </template>
 
 <script>
+import moment from 'moment';
+
 export default {
     props: ['callback', 'call'],
     mounted() {
         this.checkFieldsCall();
-        this.$refs.modal.show();
+        this.$refs['modal-summary'].show();
     },
     data() {
         return {
+            errorMessage: "",
         };
     },
     methods: {
         checkFieldsCall() {
+            if (!this.call.phone.trim()) this.errorMessage += "<li>Nº Telèfon</li>";
+            if (!this.call.commonNote.trim()) this.errorMessage += "<li>Nota comuna</li>";
 
+
+            if (this.call.outCatalunya)
+                if (!this.call.provinceOutOfCatalunya.trim()) this.errorMessage += "<li>Província (Fora de catalunya)</li>";
+
+            if (!this.call.outCatalunya && !this.call.provinceSelected && !this.call.regionSelected && !this.call.townSelected)
+                this.errorMessage += "<li>La província, comarca o municipi (Dins de catalunya)</li>";
+
+            if (this.call.typeLocationSelected && this.call.typeLocationSelected.id == 2)
+                if (!this.call.singularPoint.trim()) this.errorMessage += "<li>El nom del punt singular</li>";
+
+            if (!this.call.typeLocationSelected)
+                this.errorMessage += "<li>El tipus de localització</li>";
+
+            if (!this.call.typeIncidentSelected) this.errorMessage += "<li>Tipus incident</li>";
+            if (!this.call.incidentSelected) this.errorMessage += "<li>Incident</li>";
+
+            if (this.errorMessage)
+                this.errorMessage = `Els següents camps són obligatoris!<ul class="m-0">${this.errorMessage}</ul>`;
         },
         handleHiddenModal() {
             this.$emit('hiddenModal');
+        },
+        dismissModalSummary() {
+            this.$refs['modal-summary'].hide();
         },
         dismissModalConfirm() {
             this.$refs['modal-confirm-discard'].hide();
@@ -69,14 +249,19 @@ export default {
         saveCall() {
 
         }
+    },
+    computed: {
+        getFormatCrono() {
+            return moment.utc(this.call.cronoSeconds * 1000).format('HH:mm:ss');
+        }
     }
 }
 </script>
 
 <style scoped>
 ::v-deep .modal .modal-huge {
-    max-width: 90%;
-    width: 90%;
+    max-width: 80%;
+    width: 80%;
 }
 section {
     padding: 1rem 1rem;
@@ -84,5 +269,8 @@ section {
 footer {
     border-top: 1px solid #dee2e6;
     padding: 1rem 1rem;
+}
+.text-pre-wrap {
+    white-space: pre-wrap;
 }
 </style>

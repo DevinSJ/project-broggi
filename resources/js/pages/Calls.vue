@@ -1,5 +1,5 @@
 <template>
-    <main>
+    <main style="padding-bottom: 4rem !important;">
         <button-call ref="buttonCall" @toggleButton="toggleButtonCall"/>
         <cards-call ref="cardsCall" v-if="showCardsCall"/>
         <calls-table v-else/>

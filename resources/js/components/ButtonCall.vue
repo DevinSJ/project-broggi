@@ -1,5 +1,5 @@
 <template>
-    <main class="mb-2">
+    <div class="mb-2">
          <button
             ref="input-button-call"
             class="input-button-call"
@@ -18,7 +18,7 @@
             ></i>
             {{ !buttonChecked ? "Iniciar trucada" : "Finalitzar trucada" }}
         </label>
-    </main>
+    </div>
 </template>
 
 <script>

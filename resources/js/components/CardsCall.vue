@@ -1,5 +1,5 @@
 <template>
-    <main>
+    <div>
         <div class="row">
             <div class="col-xl-8 p-2">
                 <b-card
@@ -51,13 +51,13 @@
                             >
                                 Duració de la trucada
                             </h5>
-                            <h5>{{ time }}</h5>
+                            <h5>{{ getFormatCrono }}</h5>
                         </div>
                     </div>
                     <hr class="my-4" />
                     <div class="row">
                         <div class="col">
-                            <form-call ref="formCall" @filterExpedientsCall="filterExpedientsCall"></form-call>
+                            <form-call ref="formCall" @resumeCrono="resumeCrono" @filterExpedientsCall="filterExpedientsCall"/>
                         </div>
                     </div>
                 </b-card>
@@ -95,7 +95,7 @@
                                 {{ lastUpdateTimeExpedientsCall }}
                             </h6>
                             <button
-                                class="btn btn-sm btn-secondary my-auto"
+                                class="btn btn-sm btn-warning my-auto"
                                 title="Refrescar llista d'expedients"
                                 @click="refreshListExpedientsCall"
                             >
@@ -107,11 +107,11 @@
                 </b-card>
             </div>
         </div>
-    </main>
+    </div>
 </template>
 
 <script>
-import moment from "moment";
+import moment from 'moment';
 
 export default {
     mounted() {
@@ -124,27 +124,26 @@ export default {
             }, 10 * index);
         });
 
+        this.callDateTimeIni = this.today.format("DD/MM/yyyy HH:mm:ss");
+
         this.startCrono();
 
         this.generateCodeCall();
     },
     data() {
         return {
-            crono: true,
-            time: "00:00:00",
-            running: false,
-            intervalCrono: null,
-            timeBegan: null,
-            timeStopped: null,
-            stoppedDuration: 0,
-            callDateTimeIni: "",
             codeCall: "",
+            today: moment().locale("es"),
+            cronoSeconds: 0,
+            intervalCrono: null,
+            callDateTimeIni: "",
             lastUpdateTimeExpedientsCall: null,
         };
     },
     methods: {
         submitFormCall(callback) {
-            this.$refs.formCall.submitFormCall(callback);
+            this.stopCrono();
+            this.$refs.formCall.submitFormCall(callback, this.codeCall, this.cronoSeconds, this.callDateTimeIni);
         },
         filterExpedientsCall(filter) {
             this.$refs.expedientsCall.getExpedients(filter);
@@ -156,59 +155,16 @@ export default {
             this.lastUpdateTimeExpedientsCall = moment().locale("es").format("DD/MM/YYYY HH:mm:ss");
         },
         generateCodeCall() {
-            let today = moment().locale("es");
-
-            this.callDateTimeIni = today.format("DD/MM/yyyy HH:mm:ss");
-
-            this.codeCall = "CA-" + today.format("DDMMyyyyHHmmssS");
+            this.codeCall = "CA-" + this.today.format("DDMMyyyyHHmmssS");
         },
         startCrono() {
-            if (this.running) return;
-
-            if (this.timeBegan === null) {
-                this.resetCrono();
-                this.timeBegan = new Date();
-            }
-
-            if (this.timeStopped !== null) {
-                this.stoppedDuration += new Date() - this.timeStopped;
-            }
-
-            this.intervalCrono = setInterval(this.clockRunning, 10);
-            this.running = true;
+            this.intervalCrono = setInterval(() => this.cronoSeconds++, 1000);
         },
         stopCrono() {
-            this.running = false;
-
-            this.timeStopped = new Date();
-
             clearInterval(this.intervalCrono);
-
-            this.timeBegan = null;
         },
-        resetCrono() {
-            this.running = false;
-            clearInterval(this.intervalCrono);
-            this.stoppedDuration = 0;
-            this.timeBegan = null;
-            this.timeStopped = null;
-            this.time = "00:00:00.000";
-        },
-        clockRunning() {
-            var currentTime = new Date(),
-                timeElapsed = new Date(
-                    currentTime - this.timeBegan - this.stoppedDuration
-                ),
-                hour = timeElapsed.getUTCHours(),
-                min = timeElapsed.getUTCMinutes(),
-                sec = timeElapsed.getUTCSeconds();
-
-            this.time =
-                this.zeroPrefix(hour, 2) +
-                ":" +
-                this.zeroPrefix(min, 2) +
-                ":" +
-                this.zeroPrefix(sec, 2);
+        resumeCrono() {
+            this.intervalCrono = setInterval(() => this.cronoSeconds++, 1000);
         },
         zeroPrefix(num, digit) {
             var zero = "";
@@ -223,6 +179,11 @@ export default {
             return value.trim().length === 0;
         },
     },
+    computed: {
+        getFormatCrono() {
+            return moment.utc(this.cronoSeconds * 1000).format('HH:mm:ss');
+        }
+    }
 };
 </script>
 
