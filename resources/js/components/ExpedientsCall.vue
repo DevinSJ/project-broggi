@@ -26,8 +26,20 @@
 <script scoped>
 
 export default {
+    props: {
+        expedientDefaultSelected: {
+            type: Object,
+            required: false,
+            default: null,
+        },
+        filterExpedientsCall: {
+            type: Object,
+            required: false,
+            default: null,
+        }
+    },
     mounted() {
-        this.getExpedients(null);
+        this.getExpedients(this.filterExpedientsCall);
     },
     beforeDestroy() {
         if (this.request) this.request.cancel();
@@ -58,6 +70,8 @@ export default {
                     cancelToken: axiosSource.token,
                 })
                 .then((data) => {
+                    if (me.expedientDefaultSelected) me.expedientSelected = me.expedientDefaultSelected;
+
                     me.expedients = data.data;
 
                     me.$emit("finishFetchExpedientsCall");

@@ -45,9 +45,16 @@
             <div class="row">
                 <div class="col-lg-3 my-2">
                     <label class="font-weight-bold d-block"
-                        ><i>Nº telèfon</i></label
+                        ><i>Nº telèfon {{ !call.phoneSelected && call.phone.trim() ? '(Nou telèfon)' : ''}}</i></label
                     >
                     <label>{{ call.phone }}</label>
+                    <b-form-checkbox
+                        v-if="!call.phoneSelected && call.phone.trim()"
+                        v-model="createNewPhone"
+                        class="font-weight-bold text-danger"
+                    >
+                        Guardar el Nº telèfon
+                    </b-form-checkbox>
                 </div>
                 <div class="col-lg-3 my-2">
                     <label class="font-weight-bold d-block"
@@ -320,12 +327,13 @@
                 <b-button
                     variant="primary"
                     class="font-weight-bold flex-fill mr-2"
+                    v-b-modal.modal-expedients-call
                     style="position: relative;height: 100px; max-width: 50%;padding-left: 75px;font-size: 13px;"
                     ><i
                         class="fa-solid fa-folder-open fa-2xl mr-2"
                         style="position: absolute; top: 45px; left: 30px"
                     ></i
-                    >ASSOCIANT UN EXPEDIENT EXISTENT</b-button
+                    >{{ call.expedientSelected.id != -1 ? 'ASSOCIANT A UN ALTRE EXPEDIENT EXISTENT' : 'ASSOCIANT UN EXPEDIENT EXISTENT'}}</b-button
                 >
                 <b-button
                     variant="danger"
@@ -351,6 +359,49 @@
         >
             <details-expedients-item :expedient="call.expedientSelected" />
         </b-modal>
+        <b-modal
+            id="modal-expedients-call"
+            ref="modal-expedients-call"
+            centered
+            title="Llistat d'expedients relacionat"
+            size="m"
+            modal-class="zoominout"
+        >
+            <template #modal-header>
+                <div class="d-flex justify-content-between">
+                    <h6 class="font-weight-bold my-auto">
+                        Llistat d'expedients relacionat
+                    </h6>
+                    <i id="expedients-call-help-modal" class="fa-solid fa-circle-question"></i>
+                    <b-tooltip target="expedients-call-help-modal" triggers="hover">
+                        Els criteris que es fan fer servir per trobar un expedient relacionat són:
+                        <ul class="text-justify">
+                            <li>Trucades del mateix telèfon.</li>
+                            <li>Trucades de la mateixa localització<br/>(Si es fora catalunya, mateixa provincia o municipi).</li>
+                            <li>Expedients amb la mateixa tipificació.</li>
+                        </ul>
+                        <span class="font-weight-bold">ELS EXPEDIENTS AMB EL ESTAT 'TANCAT' NO ES MOSTRARÁ EN LA LLISTA.</span>
+                    </b-tooltip>
+                </div>
+            </template>
+            <template #modal-footer>
+                <div class="d-flex justify-content-between">
+                    <h6 class="font-weight-bold my-auto">
+                        Última actualització:
+                        {{ lastUpdateTimeExpedientsCall }}
+                    </h6>
+                    <button
+                        class="btn btn-sm btn-warning my-auto"
+                        title="Refrescar llista d'expedients"
+                        @click="refreshListExpedientsCall"
+                    >
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                    </button>
+                </div>
+            </template>
+
+            <expedients-call ref="expedientsCall" :expedientDefaultSelected="call.expedientSelected" :filter="filterExpedientsCall" />
+        </b-modal>
     </div>
 </template>
 
@@ -358,7 +409,7 @@
 import moment from 'moment';
 
 export default {
-    props: ["callback", "call"],
+    props: ["callback", "call", "phoneSelected", "filterExpedientsCall"],
     mounted() {
         this.checkFieldsCall();
         this.$refs["modal-summary"].show();
@@ -366,6 +417,7 @@ export default {
     data() {
         return {
             errorMessage: "",
+            lastUpdateTimeExpedientsCall: "",
         };
     },
     methods: {
@@ -418,6 +470,12 @@ export default {
         },
         discardCall() {
             this.callback();
+        },
+        refreshListExpedientsCall() {
+            this.$refs.expedientsCall.getExpedients(this.filterExpedientsCall);
+        },
+        finishFetchExpedientsCall() {
+            this.lastUpdateTimeExpedientsCall = moment().locale("es").format("DD/MM/YYYY HH:mm:ss");
         },
         saveCall() {},
     },

@@ -258,60 +258,6 @@ export default {
 
             return classname;
         },
-        loadModalExpedient(expedient) {
-            if (this.request) this.request.cancel();
-
-            let axiosSource = axios.CancelToken.source();
-            this.request = { cancel: axiosSource.cancel };
-
-            this.isLoading = true;
-            this.codeExpedients = expedient.codi;
-
-            let me = this;
-
-            axios
-                .get(
-                    "/api/cartes_trucades/list/" +
-                        this.expedient.id +
-                        "?id_rol=" +
-                        this.user.perfils_id +
-                        "&id_user=" +
-                        this.user.id,
-                    {
-                        cancelToken: axiosSource.token,
-                    }
-                )
-                .then((response) => {
-                    if (response.status === 200) {
-                        me.trucades = response.data;
-                    }
-                })
-                .catch(function (error) {
-                    if (!axios.isCancel(error)) {
-                        console.error(error);
-                    }
-                })
-                .finally(() => {
-                    me.request = null;
-                    me.isLoading = false;
-                });
-
-            this.$refs['modal-call-expedients'].show();
-        },
-        loadInfo(name, nota_comuna_descripcio) {
-            this.$refs['modal-info-calls'].show();
-            this.name_call = name;
-            this.description_call = nota_comuna_descripcio;
-            this.modal_agencia = false;
-            this.modalTitle = "Nota comuna";
-        },
-        loadAgencies(agencies, call) {
-            this.$refs['modal-info-calls'].show();
-            this.call = call;
-            this.agencies_contactades = agencies;
-            this.modal_agencia = true;
-            this.modalTitle = "Agències contactades";
-        },
         toggleSelectExpedient(expedient) {
             this.$emit("toggleSelectExpedient", expedient);
         },

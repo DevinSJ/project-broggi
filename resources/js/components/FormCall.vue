@@ -1,6 +1,6 @@
 <template>
     <div class="container-fluid p-0">
-        <form ref="formCall">
+        <form ref="formCall" autocomplete="off">
             <b-tabs active-nav-item-class="bg-primary text-white" fill lazy>
                 <!-- TAB Identificació de la trucada -->
                 <b-tab title="Identificació de la trucada" active>
@@ -33,15 +33,15 @@
                                     >
                                     <small
                                         :class="`font-weight-bold  ${
-                                            phoneSelected
+                                            call.phoneSelected
                                                 ? 'text-success'
                                                 : 'text-danger'
                                         }`"
                                         v-if="!isEmptyOrNull(call.phone)"
                                         >{{
-                                            phoneSelected
-                                                ? "Aquest telèfon està guardat."
-                                                : "Aquest telèfon no està guardat."
+                                            call.phoneSelected
+                                                ? "Aquest telèfon està guardat"
+                                                : "Aquest telèfon no està guardat"
                                         }}</small
                                     >
                                     <b-form-invalid-feedback
@@ -56,7 +56,7 @@
                                     @mouseover="isSelectingPhone = true"
                                     @mouseleave="isSelectingPhone = false"
                                     v-if="
-                                        (!phoneSelected &&
+                                        (!call.phoneSelected &&
                                             !isEmptyOrNull(call.phone) &&
                                             isInputPhoneFocus) ||
                                         isSelectingPhone
@@ -77,7 +77,7 @@
                                         v-else
                                         v-for="(phone, index) in filterPhones"
                                         role="button"
-                                        @click="phoneSelected = phone"
+                                        @click="call.phoneSelected = phone"
                                         :active="index == 0"
                                         :key="phone.id"
                                         :data-id-phone="phone.id"
@@ -668,6 +668,7 @@
             @hiddenModal="hiddenModalSummary"
             :callback="callback"
             :call="call"
+            :filterExpedientsCall="filter"
         ></modal-summary>
     </div>
 </template>
@@ -709,6 +710,7 @@ export default {
                 callDateTimeIni: "",
 
                 phone: "",
+                phoneSelected: null,
                 townCallSelected: null,
                 address: "",
                 provenance: "",
@@ -754,6 +756,8 @@ export default {
             regionSelectedId: null,
             townSelectedId: null,
 
+            filter: null,
+
             typeLocationSelectedId: null,
 
             typeIncidentSelectedId: null,
@@ -780,7 +784,6 @@ export default {
             incidentSelectedId: null,
 
             phones: [],
-            phoneSelected: null,
             isLoadingPhones: false,
             isInputPhoneFocus: false,
             isSelectingPhone: false,
@@ -1020,7 +1023,7 @@ export default {
         handleInputsFilterExpedientsCall() {
             this.filterExpedientsCall();
         },
-        phoneSelected(newValue) {
+        "call.phoneSelected"(newValue) {
             if (newValue) {
                 this.call.phone = newValue.telefon;
                 this.call.address = newValue.adreca;
@@ -1057,7 +1060,7 @@ export default {
             this.showSummaryModal = true;
         },
         filterExpedientsCall() {
-            this.$emit("filterExpedientsCall", {
+            this.filter = {
                 phone: this.call.phone,
                 incident:
                     this.incidentSelectedId == null
@@ -1074,7 +1077,9 @@ export default {
                     this.townSelectedId == null
                         ? ""
                         : this.townSelectedId,
-            });
+            };
+
+            this.$emit("filterExpedientsCall", this.filter);
         },
         getPhones() {
             if (this.requestPhones) this.requestPhones.cancel();
@@ -1250,19 +1255,19 @@ export default {
             ].querySelector(".list-group-item.active");
 
             if (elementActive) {
-                let phoneSelected = this.filterPhones.find(
+                let phone = this.filterPhones.find(
                     (phone) => phone.id == elementActive.dataset.idPhone
                 );
 
-                if (phoneSelected) {
-                    this.phoneSelected = phoneSelected;
+                if (phone) {
+                    this.call.phoneSelected = phone;
 
                     this.$refs["input-phone"].blur();
                 } else {
-                    this.phoneSelected = null;
+                    this.call.phoneSelected = null;
                 }
             } else {
-                this.phoneSelected = null;
+                this.call.phoneSelected = null;
                 this.$refs["input-phone"].blur();
             }
         },
@@ -1307,9 +1312,9 @@ export default {
             );
 
             if (phoneExact) {
-                this.phoneSelected = phoneExact;
+                this.call.phoneSelected = phoneExact;
             } else {
-                this.phoneSelected = null;
+                this.call.phoneSelected = null;
             }
         },
         isEmptyOrNull(value) {
