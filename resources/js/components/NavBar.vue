@@ -52,7 +52,7 @@
             <b-navbar-nav class="ml-auto">
                 <b-nav-item-dropdown class="ml-2" right>
                     <template #button-content>
-                        <em class="mr-2">{{ user.cognoms }}, {{ user.nom }}</em>
+                        <em class="mr-2">{{ user.cognoms }}, {{ user.nom }} ({{ user.perfil.nom}})</em>
                     </template>
                     <b-dropdown-item @click="showModalProfile = true"
                         ><i class="fa-solid fa-key mr-2"></i>Canviar contrasenya</b-dropdown-item

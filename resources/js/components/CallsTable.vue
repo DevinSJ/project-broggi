@@ -1,707 +1,318 @@
 <template>
-  <div>
-    <div class="mb-2">
-      <!--Panel filtrado-->
-      <b-card class="show-card" body-class="card_body">
-        <b-row class="text-center">
-          <b-col cols="3"> </b-col>
-          <b-col cols="9" class="col-filtrar">
-            <b-form inline class="justify-content-end">
-              <label class="mr-sm-2" for="filtre-codi">Codi de trucada</label>
-              <b-form-input
-                name="filtre-codi"
-                id="filtre-codi"
-                v-model="filtre.call_code"
-                class="mb-2 mr-sm-2 mb-sm-0 form-control-sm"
-                placeholder="Exemple: CA-..."
-              ></b-form-input>
-              <label class="mr-sm-2" for="filtre-codi"
-                >Codi de l'expedient</label
-              >
-              <b-form-input
-                name="filtre-codi"
-                id="filtre-codi"
-                v-model="filtre.exp_code"
-                class="mb-2 mr-sm-2 mb-sm-0 form-control-sm"
-                placeholder="Exemple: EXP-..."
-              ></b-form-input>
-              <b-button variant="info" class="btn-sm" @click="filtrar"
-                ><i class="fa-solid fa-filter"></i> Filtrar</b-button
-              >
-              <b-button
-                class="btn-sm"
-                variant="secondary ml-2"
-                @click="getCalls()"
-              >
-                <i class="fa-solid fa-magnifying-glass"></i>
-                Mostrar tots</b-button
-              >
-            </b-form>
-          </b-col>
-        </b-row>
-      </b-card>
-    </div>
+    <div>
+        <div class="mb-2">
+            <!--Panel filtrado-->
+            <b-card class="show-card" body-class="card_body">
+                <b-row class="text-center">
+                    <b-col cols="3"> </b-col>
+                    <b-col cols="9" class="col-filtrar">
+                        <b-form inline class="justify-content-end">
+                            <label class="mr-sm-2" for="filtre-codi"
+                                >Codi de trucada</label
+                            >
+                            <b-form-input
+                                name="filtre-codi"
+                                id="filtre-codi"
+                                v-model="filtre.call_code"
+                                class="mb-2 mr-sm-2 mb-sm-0 form-control-sm"
+                                placeholder="Exemple: CA-..."
+                            ></b-form-input>
+                            <label class="mr-sm-2" for="filtre-codi"
+                                >Codi de l'expedient</label
+                            >
+                            <b-form-input
+                                name="filtre-codi"
+                                id="filtre-codi"
+                                v-model="filtre.exp_code"
+                                class="mb-2 mr-sm-2 mb-sm-0 form-control-sm"
+                                placeholder="Exemple: EXP-..."
+                            ></b-form-input>
+                            <b-button
+                                variant="info"
+                                class="btn-sm"
+                                @click="fetchCalls()"
+                                ><i class="fa-solid fa-filter"></i>
+                                Filtrar</b-button
+                            >
+                            <b-button
+                                class="btn-sm"
+                                variant="secondary ml-2"
+                                @click="fetchCalls()"
+                            >
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                Mostrar tots</b-button
+                            >
+                        </b-form>
+                    </b-col>
+                </b-row>
+            </b-card>
+        </div>
 
-    <b-card class="p-3 card-container">
-      <b-table
-        v-if="!isLoading"
-        striped
-        hover
-        small
-        thead-class="thead-dark"
-        :items="calls.data"
-        :fields="fields"
-      >
-        <template #cell(see_call)="data">
-          <div>
-            <button
-              type="button"
-              class="btn btn-sm button-edit"
-              title="Veure dades"
-              v-b-modal.modal-calls
-              @click="loadCallInfo(data.item.id)"
+        <b-card class="p-3 card-container">
+            <b-table
+                v-if="!isLoading"
+                striped
+                hover
+                small
+                thead-class="thead-dark"
+                :items="calls.data"
+                :fields="fields"
             >
-              <i class="fa-solid fa-eye"></i>
-            </button>
-          </div>
-        </template>
-      </b-table>
+                <template #cell(see_call)="data">
+                    <div>
+                        <button
+                            type="button"
+                            class="btn btn-sm button-edit"
+                            title="Veure dades"
+                            @click="toggleModalCalls(data.item.id)"
+                        >
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </template>
+            </b-table>
 
-      <div v-else class="loading-spinner">
-        <svg-vue icon="spinner" class="mx-auto my-auto" width="100" />
-      </div>
+            <div v-else class="loading-spinner">
+                <svg-vue icon="spinner" class="mx-auto my-auto" width="100" />
+            </div>
 
-      <pagination
-          v-show="!isLoading"
-          class="justify-center-center pagination-sm"
-          :data="calls"
-          @pagination-change-page="fetchCalls"
-        >
-        </pagination>
-    </b-card>
+            <pagination
+                v-show="!isLoading"
+                class="justify-center-center pagination-sm"
+                :data="calls"
+                @pagination-change-page="fetchCalls"
+            >
+            </pagination>
+        </b-card>
 
-    <!-- Modal -->
-    <b-modal id="modal-calls" title="Dades de la trucada" size="huge" hide-footer>
-      <div>
-        <b-tabs content-class="mt-3" fill>
-          <b-tab title="Identificació de la trucada" active>
-            <div class="col-12 row mt-3 justify-content-between">
-                <div>
-                <b-form-group
-                  id="input-group-2"
-                  label="Codi de la trucada:"
-                  label-for="input-2"
-                  label-class="font-weight-bold"
-                >
-                  <b-form-input
-                    id="input-2"
-                    v-model="call.codi_trucada"
-                    disabled
-                    plaintext
-                  ></b-form-input>
-                </b-form-group>
-              </div>
-              <div>
-                <b-form-group
-                  id="input-group-2"
-                  label="Nº telèfon:"
-                  label-for="input-2"
-                  label-class="font-weight-bold"
-                >
-                  <b-form-input
-                    id="input-2"
-                    v-model="call.telefon"
-                    disabled
-                    required
-                    plaintext
-                  ></b-form-input>
-                </b-form-group>
-              </div>
-              <div>
-                <b-form-group
-                  id="input-group-2"
-                  label="Duració de trucada:"
-                  label-for="input-2"
-                  label-class="font-weight-bold"
-                >
-                  <b-form-input
-                    id="input-2"
-                    v-model="call_duration"
-                    disabled
-                    plaintext
-                  ></b-form-input>
-                </b-form-group>
-              </div>
-              <div>
-                <b-form-group
-                  id="input-group-2"
-                  label="Data de la trucada:"
-                  label-for="input-2"
-                  label-class="font-weight-bold"
-                >
-                  <b-form-input
-                    id="input-2"
-                    v-model="call.data_hora"
-                    disabled
-                    plaintext
-                  ></b-form-input>
-                </b-form-group>
-              </div>
-            </div>
-            <div class="col-12 row mt-3 justify-content-between">
-                <div>
-                    <b-form-group
-                    id="input-group-2"
-                    label="Municipi:"
-                    label-for="input-2"
-                    label-class="font-weight-bold"
-                    >
-                    <b-form-input
-                        id="input-2"
-                        v-model="call.municipi.nom"
-                        disabled
-                        plaintext
-                    ></b-form-input>
-                    </b-form-group>
-                </div>
-                <div>
-                    <b-form-group
-                    id="input-group-2"
-                    label="Adreça:"
-                    label-for="input-2"
-                    label-class="font-weight-bold"
-                    >
-                    <b-form-input
-                        id="input-2"
-                        v-model="call.dada_personal.adreca"
-                        disabled
-                        plaintext
-                    ></b-form-input>
-                    </b-form-group>
-                </div>
-                <div>
-                    <b-form-group
-                    id="input-group-2"
-                    label="Procedència:"
-                    label-for="input-2"
-                    label-class="font-weight-bold"
-                    >
-                    <b-form-input
-                        id="input-2"
-                        v-model="call.procedencia_trucada"
-                        disabled
-                        plaintext
-                    ></b-form-input>
-                    </b-form-group>
-                </div>
-                <div>
-                    <b-form-group
-                    id="input-group-2"
-                    label="Antecedents del telèfon:"
-                    label-for="input-2"
-                    label-class="font-weight-bold"
-                    >
-                    <b-form-input
-                        id="input-2"
-                        v-model="call.dada_personal.antecedents"
-                        disabled
-                        plaintext
-                    ></b-form-input>
-                    </b-form-group>
-                </div>
-            </div>
-          </b-tab>
-          <b-tab title="Nota comuna">
-            <div class="col-12 p-0">
-              <div class="form-floating user-select-none">
-                <b-form-textarea
-                  id="description"
-                  v-model="call.nota_comuna_descripcio"
-                  class="mt-3 h-100 text-area-disabled"
-                  type="text"
-                  rows="5"
-                  no-auto-shrink
-                  no-resize
-                  disabled
-                />
-                <label
-                  class="user-select-none font-weight-bold"
-                  for="input-relation"
-                >
-                  Descripció de l'incident
-                </label>
-              </div>
-            </div>
-          </b-tab>
-
-          <b-tab title="Localització de l'emergència">
-            <div class="col-12 row mt-3 justify-content-start">
-              <div>
-                <b-form-group
-                  id="input-group-2"
-                  label="Fora de Catalunya:"
-                  label-for="input-2"
-                  label-class="font-weight-bold"
-                >
-                  <b-form-input
-                    id="input-2"
-                    v-model="fora_cat"
-                    disabled
-                    plaintext
-                  ></b-form-input>
-                </b-form-group>
-              </div>
-            </div>
-            <div class="col-12 row mt-3 justify-content-between">
-              <div>
-                <b-form-group
-                  id="input-group-2"
-                  label="Província:"
-                  label-for="input-2"
-                  label-class="font-weight-bold"
-                >
-                  <b-form-input
-                    id="input-2"
-                    v-model="call.provincia.nom"
-                    disabled
-                    plaintext
-                  ></b-form-input>
-                </b-form-group>
-              </div>
-              <div>
-                <b-form-group
-                  id="input-group-2"
-                  label="Comarca:"
-                  label-for="input-2"
-                  label-class="font-weight-bold"
-                >
-                  <b-form-input
-                    id="input-2"
-                    v-model="call.municipi.comarca.nom"
-                    disabled
-                    plaintext
-                  ></b-form-input>
-                </b-form-group>
-              </div>
-              <div>
-                <b-form-group
-                  id="input-group-2"
-                  label="Municipi:"
-                  label-for="input-2"
-                  label-class="font-weight-bold"
-                >
-                  <b-form-input
-                    id="input-2"
-                    v-model="call.municipi.nom"
-                    disabled
-                    plaintext
-                  ></b-form-input>
-                </b-form-group>
-              </div>
-            </div>
-            <div class="col-12 p-0 mt-3">
-                <div>
-                <b-form-group
-                  id="input-group-2"
-                  label="Tipus de localització:"
-                  label-for="input-2"
-                  label-class="font-weight-bold"
-                >
-                  <b-form-input
-                    id="input-2"
-                    v-model="call.tipo_localitzacio.tipus"
-                    disabled
-                    plaintext
-                  ></b-form-input>
-                </b-form-group>
-              </div>
-            </div>
-            <div class="col-12 p-0 mt-3">
-              <b-form-group
-                id="input-group-2"
-                label="Informació rellevant de la localització:"
-                label-for="input-2"
-                label-class="font-weight-bold"
-              >
-                <b-form-input
-                  id="input-2"
-                  v-model="call.descripcio_localitzacio"
-                  disabled
-                  plaintext
-                ></b-form-input>
-              </b-form-group>
-            </div>
-          </b-tab>
-          <b-tab title="Tipificació de l'emergència">
-            <div class="col-12 row mt-3 justify-content-between">
-              <div class="col-3">
-                <b-form-group
-                  id="input-group-2"
-                  label="Tipus d'incident:"
-                  label-for="input-2"
-                  label-class="font-weight-bold"
-                >
-                  <b-form-input
-                    id="input-2"
-                    v-model="call.incident.tipo_incident.descripcio"
-                    disabled
-                    plaintext
-                  ></b-form-input>
-                </b-form-group>
-              </div>
-              <div class="col-4">
-                <b-form-group
-                  id="input-group-2"
-                  label="Incident:"
-                  label-for="input-2"
-                  label-class="font-weight-bold"
-                >
-                  <b-form-input
-                    id="input-2"
-                    v-model="call.incident.descripcio"
-                    disabled
-                    plaintext
-                  ></b-form-input>
-                </b-form-group>
-              </div>
-            </div>
-          </b-tab>
-          <b-tab title="Agencies">
-              <div class="col-12 p-0">
-                <b-form-group
-                  id="input-group-2"
-                  label="Agència/es associades:"
-                  label-for="input-2"
-                  label-class="font-weight-bold"
-                >
-                  <b-form-input
-                    v-for="agencia in call.cartes_trucades_has_agencies"
-                    :key="agencia.agencia.id"
-                    id="input-2"
-                    v-model="agencia.agencia.nom"
-                    disabled
-                    plaintext
-                  ></b-form-input>
-                </b-form-group>
-              </div>
-          </b-tab>
-        </b-tabs>
-      </div>
-    </b-modal>
-  </div>
+        <modal-calls-details ref="modal-calls-details" />
+    </div>
 </template>
 
 <script>
 import moment from 'moment';
 
 export default {
-  mounted() {
-    document.title = "Trucades - Broggi";
-    this.user = window.Vue.prototype.$user;
-    this.getCalls();
-  },
-  data() {
-    return {
-      isLoading: true,
-      user: {},
-      fields: [
-        {
-          key: "codi_trucada",
-          label: "Codi trucada",
-          sortable: true,
-          tdClass: "centered-text-class",
-          thClass: "codi-th-column",
-        },
-        {
-          key: "telefon",
-          label: "Telèfon",
-          tdClass: "centered-text-class",
-          thClass: "telf-th-column",
-        },
-        {
-          key: "data_hora",
-          label: "Data",
-          sortable: true,
-          tdClass: "centered-text-class",
-          thClass: "data-th-column",
-          formatter: (value) => {
-            return moment(value).locale("es").format("DD/MM/yyyy HH:mm:ss");
-          },
-        },
-        {
-          key: "expedient.codi",
-          label: "Codi Expedient",
-          sortable: true,
-          tdClass: "centered-text-class",
-          thClass: "codi-exp-th-column",
-        },
-        {
-          key: "see_call",
-          label: "Més dades",
-          tdClass: "centered-text-class",
-          thClass: "edit-th-column",
-        },
-      ],
-      calls: {},
-      call: {
-        provincia: "",
-        municipi: {
-          comarca: {},
-        },
-        tipo_localitzacio: "",
-        incident: {
-          tipo_incident: {},
-        },
-        dada_personal:{
-
-        }
-      },
-      filtre: {
-        call_code: "",
-        exp_code: "",
-      },
-      call_duration: "",
-      fora_cat: ""
-    };
-  },
-  methods: {
-    getCalls() {
-      this.filtre.exp_code = "";
-      this.filtre.call_code = "";
-      this.isLoading = true;
-
-      let axiosSource = axios.CancelToken.source();
-      this.request = { cancel: axiosSource.cancel };
-
-      let me = this;
-      axios
-        .get(
-          "/api/cartes_trucades?user_id=" +
-            this.user.id +
-            "&user_type_id=" +
-            this.user.perfils_id,
-          {
-            cancelToken: axiosSource.token,
-          }
-        )
-        .then((response) => {
-          me.calls = response.data;
-        })
-        .catch((error) => {
-          if (!axios.isCancel(error)) {
-            console.error(error);
-          }
-        })
-        .finally(() => {
-          me.request = null;
-          me.isLoading = false;
-        });
+    mounted() {
+        document.title = "Trucades - Broggi";
+        this.user = window.Vue.prototype.$user;
+        this.fetchCalls();
     },
-    loadCallInfo(call_id) {
-      let currentCall = this.calls.data.filter((call) => call.id == call_id);
-      this.call = {... currentCall[0]}
-      this.call.data_hora = moment(this.call.data_hora)
-        .locale("es")
-        .format("DD/MM/yyyy HH:mm:ss");
-      this.call_duration = moment.utc(this.call.temps_trucada).format('HH:mm:ss');
-      this.fora_cat = this.call.fora_catalunya == 1 ? "Si" : "No";
+    data() {
+        return {
+            isLoading: true,
+            user: {},
+            fields: [
+                {
+                    key: "codi_trucada",
+                    label: "Codi trucada",
+                    sortable: true,
+                    tdClass: "align-middle",
+                    thClass: "codi-th-column",
+                },
+                {
+                    key: "telefon",
+                    label: "Telèfon",
+                    tdClass: "align-middle",
+                    thClass: "telf-th-column",
+                },
+                {
+                    key: "data_hora",
+                    label: "Data",
+                    sortable: true,
+                    tdClass: "align-middle",
+                    thClass: "data-th-column",
+                    formatter: (value) => {
+                        return moment(value)
+                            .locale("es")
+                            .format("DD/MM/yyyy HH:mm:ss");
+                    },
+                },
+                {
+                    key: "expedient.codi",
+                    label: "Codi Expedient",
+                    sortable: true,
+                    tdClass: "align-middle",
+                    thClass: "codi-exp-th-column",
+                },
+                {
+                    key: "see_call",
+                    label: "Més dades",
+                    tdClass: "align-middle",
+                    thClass: "edit-th-column",
+                },
+            ],
+            filtre: {
+                call_code: "",
+                exp_code: "",
+            },
+            calls: {},
+        };
     },
-    filtrar() {
-      this.isLoading = true;
+    methods: {
+        fetchCalls(page = 1) {
+            this.isLoading = true;
 
-      let consulta = new URLSearchParams({
-        filtreCodiCall: this.filtre.call_code,
-        filtreCodiExp: this.filtre.exp_code,
-        userTypeId: 1,
-        userId: 2,
-      });
+            let consulta = new URLSearchParams({
+                filtreCodiCall: this.filtre.call_code,
+                filtreCodiExp: this.filtre.exp_code,
+                userTypeId: this.user.perfils_id,
+                userId: this.user.id,
+            });
 
-      if (this.request) this.request.cancel();
+            if (this.request) this.request.cancel();
 
-      let axiosSource = axios.CancelToken.source();
-      this.request = { cancel: axiosSource.cancel };
+            let axiosSource = axios.CancelToken.source();
+            this.request = { cancel: axiosSource.cancel };
 
-      let me = this;
+            let me = this;
 
-      axios
-        .get("/api/cartes_trucades/?" + consulta, {
-          cancelToken: axiosSource.token,
-        })
-        .then((response) => {
-          me.calls = response.data;
-        })
-        .catch((error) => {
-          if (!axios.isCancel(error)) {
-            console.error(error);
-          }
-        })
-        .finally(() => {
-          me.request = null;
+            axios
+                .get(`api/cartes_trucades?page=${page}&${consulta}`, {
+                    cancelToken: axiosSource.token,
+                })
+                .then((response) => {
+                    me.calls = response.data;
+                })
+                .catch((error) => {
+                    if (!axios.isCancel(error)) {
+                        console.error(error);
+                    }
+                })
+                .finally(() => {
+                    me.request = null;
 
-          me.isLoading = false;
-        });
+                    me.isLoading = false;
+                });
+        },
+        toggleModalCalls(id_call) {
+            const call_selected = this.calls.data.filter(
+                (call) => call.id == id_call
+            );
+
+            if (call_selected)
+                this.$refs["modal-calls-details"].loadCallInfo(call_selected);
+        },
     },
-    fetchCalls(page = 1) {
-      this.isLoading = true;
-
-      if (this.request) this.request.cancel();
-
-      let axiosSource = axios.CancelToken.source();
-      this.request = { cancel: axiosSource.cancel };
-
-      let me = this;
-
-      axios
-        .get(`api/cartes_trucades/?page=${page}`, {
-          cancelToken: axiosSource.token,
-        })
-        .then((response) => {
-          me.calls = response.data;
-        })
-        .catch((error) => {
-          if (!axios.isCancel(error)) {
-            console.error(error);
-          }
-        })
-        .finally(() => {
-          me.request = null;
-
-          me.isLoading = false;
-        });
-    },
-  },
 };
 </script>
 
 <style scoped>
 .card-container {
-  background-color: white;
-  border: 1px;
-  box-shadow: 0px 5px 25px 0px rgb(0 0 0 / 20%);
+    background-color: white;
+    border: 1px;
+    box-shadow: 0px 5px 25px 0px rgb(0 0 0 / 20%);
 }
 
 .button-edit {
-  border-radius: 5px;
-  border: 0px;
-  background-color: #06adc4;
-  padding-inline: 10px;
-  color: white;
+    border-radius: 5px;
+    border: 0px;
+    background-color: #06adc4;
+    padding-inline: 10px;
+    color: white;
 }
 
 .button-edit:hover {
-  transform: scale(1.1);
-  transition: 500ms;
+    transform: scale(1.1);
+    transition: 500ms;
 }
 
 .loading-spinner {
-  width: 100%;
-  text-align: center;
-  justify-content: center;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
 }
 
 /* CLASSES TABLA */
-::v-deep .centered-text-class {
-  text-align: center;
-  vertical-align: middle;
-}
-
 ::v-deep .codi-th-column {
-  text-align: center;
-  width: 5%;
-  vertical-align: middle;
+    text-align: center;
+    width: 5%;
+    vertical-align: middle;
 }
 
 ::v-deep .telf-th-column {
-  text-align: center;
-  vertical-align: middle;
-  width: 5%;
+    text-align: center;
+    vertical-align: middle;
+    width: 5%;
 }
 
 ::v-deep .data-th-column {
-  text-align: center;
-  vertical-align: middle;
-  width: 20%;
+    text-align: center;
+    vertical-align: middle;
+    width: 20%;
 }
 
 ::v-deep .codi-exp-th-column {
-  text-align: center;
-  vertical-align: middle;
-  width: 10%;
+    text-align: center;
+    vertical-align: middle;
+    width: 10%;
 }
 
 ::v-deep .edit-th-column {
-  text-align: center;
-  vertical-align: middle;
-  width: 10%;
-}
-
-@media (min-width: 992px) {
-  ::v-deep .modal .modal-huge {
-    max-width: 90% !important;
-    width: 70% !important;
-  }
+    text-align: center;
+    vertical-align: middle;
+    width: 10%;
 }
 
 .div-expedient-estate {
-  width: 150px;
-  padding-top: 30px;
+    width: 150px;
+    padding-top: 30px;
 }
 
 ::v-deep .modal-body {
-  padding: 30px !important;
+    padding: 30px !important;
 }
 
 ::v-deep .select-agency {
-  width: 100%;
-  text-align: center;
+    width: 100%;
+    text-align: center;
 }
 
 /* CSS FILTROS */
 .leyenda {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  vertical-align: middle;
-  justify-content: space-around;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    vertical-align: middle;
+    justify-content: space-around;
 }
 
 .col-filtrar {
-  display: flex;
-  justify-content: flex-end;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .show-card {
-  background-color: white;
-  border: 1px;
-  box-shadow: 0px 5px 25px 0px rgb(0 0 0 / 20%);
+    background-color: white;
+    border: 1px;
+    box-shadow: 0px 5px 25px 0px rgb(0 0 0 / 20%);
 }
 
 ::v-deep .card_body {
-  padding: 1rem;
-  padding-inline: 2.25rem;
+    padding: 1rem;
+    padding-inline: 2.25rem;
 }
-
 .btn-estat {
-  background: transparent;
-  color: black;
-  border: 0px;
+    background: transparent;
+    color: black;
+    border: 0px;
 }
 
 ::v-deep .leyenda .focus {
-  box-shadow: 0 0 0 0 !important;
+    box-shadow: 0 0 0 0 !important;
 }
 
 ::v-deep .leyenda .active {
-  background: transparent !important;
-  color: black !important;
-  box-shadow: 0 0 0 0.1rem black !important;
+    background: transparent !important;
+    color: black !important;
+    box-shadow: 0 0 0 0.1rem black !important;
 }
 
 ::v-deep .text-area-disabled:disabled {
-  background: white;
+    background: white;
 }
 
 ::v-deep .text-area-disabled:disabled {
-  background: white;
+    background: white;
 }
 </style>

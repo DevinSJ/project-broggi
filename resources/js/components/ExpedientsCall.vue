@@ -4,34 +4,7 @@
             <b-list-group v-if="!isLoading" class="list-expedients">
                 <div v-if="expedients.length">
                     <b-list-group-item v-for="expedient in expedients" :key="expedient.id" :active="expedient.id === expedientSelected.id" class="flex-column align-items-start">
-                        <div class="d-flex w-100 my-1 justify-content-between">
-                            <h5 class="mb-1">{{ expedient.codi }}</h5>
-                        </div>
-                        <p class="mb-1">
-                            <small class="d-block"><span class="font-weight-bold">Data i hora creació: </span>{{ formatDate(expedient.data_creacio) }}</small>
-                            <small class="d-block"><span class="font-weight-bold">Estat: </span>{{ expedient.estat_expedient.estat }} <i :class="getStateColor(expedient.estats_expedients_id)"></i></small>
-                            <small class="d-block"><span class="font-weight-bold">Fora catalunya: </span>{{ checkIsOutCatalunya(expedient.cartes_trucades) ? "Si" : "No" }}</small>
-                            <small class="d-block"><span class="font-weight-bold">Localització: </span>{{ getLocationIncident(expedient.cartes_trucades) }}</small>
-                            <small class="d-block"><span class="font-weight-bold">Tipificació: </span>{{ getTypesIncidentsUnique(expedient.cartes_trucades) }}</small>
-                        </p>
-                        <button
-                            type="button"
-                            class="btn btn-sm btn-secondary"
-                            title="Veure trucades del expedient"
-                            v-b-modal.modal-call-expedients
-                            @click="loadModalExpedient(expedient)"
-                        >
-                            <i class="fa-solid fa-phone"></i>
-                            <b-badge class="ml-2" variant="light">{{ expedient.cartes_trucades.length }}<span class="sr-only">trucades</span></b-badge>
-                        </button>
-                        <button
-                            type="button"
-                            class="btn btn-sm btn-primary"
-                            :title="(expedient.id === expedientSelected.id ? 'Desseleccionar' : 'Seleccionar')"
-                            @click="toggleSelectExpedient(expedient)"
-                        >
-                            {{ expedient.id === expedientSelected.id ? "Desseleccionar" : "Seleccionar" }}
-                        </button>
+                        <details-expedients-item :expedient="expedient" @toggleSelectExpedient="toggleSelectExpedient" :isSelected="expedient.id === expedientSelected.id"/>
                     </b-list-group-item>
                 </div>
                 <div v-else>
@@ -47,283 +20,29 @@
                 width="50"
             />
         </div>
-        <b-modal
-            v-show="!isLoading2"
-            id="modal-call-expedients"
-            class="modal-calls"
-            :title="`Trucades de l'expedient (${codeExpedients})`"
-            size="huge"
-            hide-footer
-        >
-            <b-table
-                v-if="trucades.length > 0"
-                striped
-                hover
-                small
-                thead-class="thead-dark"
-                :items="trucades"
-                :fields="callFields"
-                v-show="!isLoading2"
-            >
-                <template #cell(cartes_trucades_has_agencies)="data">
-                    <p style="display: none">{{ data.item.id }}</p>
-                    <button
-                        class="button-edit"
-                        v-b-modal.modal-info-calls
-                        @click="
-                            loadAgencies(
-                                data.item.cartes_trucades_has_agencies,
-                                data.item
-                            )
-                        "
-                    >
-                        <i class="fa-solid fa-eye m-1"></i>
-                    </button>
-                </template>
-                <template #cell(show-nota-comuna)="data">
-                    <div>
-                        <p style="display: none">{{ data.item.id }}</p>
-                        <button
-                            class="button-edit"
-                            v-b-modal.modal-info-calls
-                            @click="
-                                loadInfo(
-                                    data.item.nom_trucada,
-                                    data.item.nota_comuna_descripcio
-                                )
-                            "
-                        >
-                            <i class="fa-solid fa-eye m-1"></i>
-                        </button>
-                    </div>
-                </template>
-            </b-table>
-
-            <div v-else v-show="!showTrucades">
-                No hi ha trucades enllaçades a aquest expedient realitzades per
-                aquest usuari.
-            </div>
-
-            <div v-show="isLoading2" class="loading-spinner">
-                <svg-vue icon="spinner" class="mx-auto my-auto" width="100" />
-            </div>
-        </b-modal>
-
-        <!-- Modal with call information -->
-        <b-modal
-            id="modal-info-calls"
-            class="modal-info-calls"
-            :title="modalTitle2"
-            size="lg"
-            ok-only
-            hide-footer
-        >
-            <div v-if="!this.modal_agencia">
-                <p>Nom: {{ this.name_call }}</p>
-                <label for="txtNotaComuna">Descripció:</label>
-                <textarea
-                    name="txtNotaComuna"
-                    id="txtNotaComuna"
-                    class="w-100 p-2"
-                    cols="30"
-                    rows="10"
-                    v-model="this.description_call"
-                    readonly
-                ></textarea>
-            </div>
-            <div v-else>
-                <b-table
-                    striped
-                    hover
-                    small
-                    bordered
-                    thead-class="thead-dark"
-                    :items="agencies_contactades"
-                    :fields="agenciesFields"
-                    v-show="!isLoading3"
-                >
-                </b-table>
-            </div>
-
-            <div v-show="isLoading3" class="loading-spinner">
-                <svg-vue icon="spinner" class="mx-auto my-auto" width="100" />
-            </div>
-        </b-modal>
     </div>
 </template>
 
 <script scoped>
-import moment from 'moment';
 
 export default {
     mounted() {
-        this.getExpedients({});
-        this.user = window.Vue.prototype.$user;
+        this.getExpedients(null);
     },
     beforeDestroy() {
         if (this.request) this.request.cancel();
     },
     data() {
         return {
-            callFields: [
-                {
-                    key: "codi_trucada",
-                    label: "Codi",
-                    sortable: true,
-                    tdClass: "centered-text-class",
-                    thClass: "codi-th-column",
-                },
-                {
-                    key: "telefon",
-                    label: "Número de telèfon",
-                    tdClass: "centered-text-class",
-                    thClass: "num-telf-th-column",
-                },
-                {
-                    key: "descripcio_localitzacio",
-                    label: "Localització",
-                    tdClass: "centered-text-class",
-                    thClass: "localitzacio-th-column",
-                },
-                {
-                    key: "incident.descripcio",
-                    label: "Incident",
-                    tdClass: "centered-text-class",
-                    thClass: "incident-th-column",
-                },
-                {
-                    key: "cartes_trucades_has_agencies",
-                    label: "Agències",
-                    tdClass: "centered-text-class",
-                    thClass: "agencies-th-column",
-                },
-                {
-                    key: "show-nota-comuna",
-                    label: "Nota comuna",
-                    tdClass: "centered-text-class",
-                    thClass: "nota-comuna-th-column",
-                },
-            ],
-            agenciesFields: [
-                {
-                    key: "agencia.id",
-                    label: "Id",
-                    sortable: true,
-                    tdClass: "centered-text-class",
-                    thClass: "id-th-column",
-                },
-                {
-                    key: "agencia.nom",
-                    label: "Nom",
-                    tdClass: "centered-text-class",
-                    thClass: "localitzacio-th-column",
-                },
-                {
-                    key: "estat_agencia.estat",
-                    label: "Estat",
-                    tdClass: "centered-text-class",
-                    thClass: "estats-agencies-th-column",
-                },
-            ],
-            trucades: [],
             isLoading: false,
-            isLoading2: true,
-            isLoading3: true,
-            showTrucades: true,
-            modal_agencia: true,
-            request: null,
-            codeExpedients: "",
-            expedients: [],
-            modalTitle2: "",
-            agencies_contactades: [],
             expedientSelected: {
                 id: -1
             },
-            user: {},
+            expedients: [],
+            request: null,
         };
     },
     methods: {
-        getStateColor(state) {
-            let classname = "";
-
-            switch (state) {
-                case 1:
-                    classname = "fa-solid fa-circle in-progress";
-                    break;
-                case 2:
-                    classname = "fa-solid fa-circle requested";
-                    break;
-                case 3:
-                    classname = "fa-solid fa-circle accepted";
-                    break;
-                case 4:
-                    classname = "fa-solid fa-circle closed";
-                    break;
-                case 5:
-                    classname = "fa-solid fa-circle immobilized";
-                    break;
-            }
-
-            return classname;
-        },
-        loadModalExpedient(expedient) {
-            if (this.request) this.request.cancel();
-
-            let axiosSource = axios.CancelToken.source();
-            this.request = { cancel: axiosSource.cancel };
-
-            this.expedient = expedient;
-            this.showTrucades = true;
-            this.isLoading2 = true;
-
-            let me = this;
-
-            this.codeExpedients = expedient.codi;
-
-            axios
-                .get(
-                    "/api/cartes_trucades/list/" +
-                        this.expedient.id +
-                        "?id_rol=" +
-                        this.user.perfils_id +
-                        "&id_user=" +
-                        this.user.id,
-                    {
-                        cancelToken: axiosSource.token,
-                    }
-                )
-                .then((response) => {
-                    if (response.status === 200) {
-                        me.trucades = response.data;
-                        if (me.trucades.length == 0) {
-                            me.showTrucades = false;
-                        }
-                    }
-                })
-                .catch(function (error) {
-                    if (!axios.isCancel(error)) {
-                        console.error(error);
-                    }
-                })
-                .finally(() => {
-                    me.request = null;
-                    me.isLoading2 = false;
-                });
-        },
-        loadInfo(name, nota_comuna_descripcio) {
-            this.name_call = name;
-            this.description_call = nota_comuna_descripcio;
-            this.isLoading3 = false;
-            this.modal_agencia = false;
-            this.modalTitle2 = "Nota comuna";
-        },
-        loadAgencies(agencies, call) {
-            this.call = call;
-            this.agencies_contactades = agencies;
-            this.isLoading3 = false;
-            this.modal_agencia = true;
-            this.modalTitle2 = "Agències contactades";
-        },
         getExpedients(filter) {
             if (this.request) this.request.cancel();
 
@@ -362,62 +81,6 @@ export default {
                 else this.expedientSelected = {id: -1};
             }
         },
-        formatDate(value) {
-            return moment(value).locale("es").format("DD/MM/yyyy HH:mm:ss")
-        },
-        checkIsOutCatalunya(calls) {
-            return calls.find(c => c.fora_catalunya == "1");
-        },
-        getTypesIncidentsUnique(calls) {
-            return calls.map(c => c.incident.descripcio).filter((value, index, self) => self.indexOf(value) === index).join(', ');
-        },
-        getLocationIncident(calls) {
-            if (calls.length > 0)
-            {
-                let town = "MUNICIPI NO INDICAT";
-                let province = "PROVINCIA NO INDICAT";
-                let description_location = "DESCRIPCIÓ NO INDICAT";
-
-                if (!this.checkIsOutCatalunya(calls)) {
-                    let call = calls.find(c => c.municipi);
-
-                    if (call) town = call.municipi.nom;
-
-                    call = calls.find(c => c.provincia);
-
-                    if (call) province = call.provincia.nom;
-
-                    call = calls.find(c => c.descripcio_localitzacio);
-
-                    if (call) description_location = call.descripcio_localitzacio;
-
-                    return `${description_location} (${province}, ${town})`;
-                } else {
-                    let call = calls.find(c => c.descripcio_localitzacio);
-
-                    if (call) {
-                        if (call.descripcio_localitzacio.split(";").length == 2) {
-                            province = call.descripcio_localitzacio.split(";")[0];
-                            town =  call.descripcio_localitzacio.split(";")[1];
-
-                            return `${province}, ${town}`;
-                        } else if (call.descripcio_localitzacio.split(";").length == 1) {
-                            province = call.descripcio_localitzacio.split(";")[0];
-
-                            return `${province}`;
-                        } else {
-                            return `${description_location}`;
-                        }
-                    } else {
-                        return `${description_location}`;
-                    }
-                }
-            }
-            else
-            {
-                return "No hi ha trucades en aquest expedient...";
-            }
-        }
     },
     watch: {
         expedientSelected() {
@@ -428,67 +91,14 @@ export default {
 </script>
 
 <style scoped>
-.in-progress {
-    color: rgb(5, 100, 8);
-    border-radius: 50%;
-    height: 15px;
-}
-.requested {
-    color: #f9d71c;
-    border-radius: 50%;
-    height: 15px;
-}
-.accepted {
-    color: rgb(3, 250, 3);
-    border-radius: 50%;
-    height: 15px;
-}
-.closed {
-    color: blue;
-    border-radius: 50%;
-    height: 15px;
-}
-.immobilized {
-    color: rgb(150, 22, 150);
-    border-radius: 50%;
-    height: 15px;
-}
-small {
-    font-size: 90%;
-}
 .list-expedients {
     width: 100%;
     max-height: 620px;
     overflow-y: scroll;
 }
-.loading-spinner {
-    width: 100%;
-    text-align: center;
-    justify-content: center;
-}
 .active {
     background-color: #eaf4f6;
     border-color: #eaf4f6;
     color: black;
-}
-
-@media (min-width: 992px) {
-    ::v-deep .modal .modal-huge {
-        max-width: 90% !important;
-        width: 90% !important;
-    }
-}
-
-.button-edit {
-    border-radius: 5px;
-    border: 0px;
-    background-color: #06adc4;
-    padding-inline: 10px;
-    color: white;
-}
-
-.button-edit:hover {
-    transform: scale(1.1);
-    transition: 500ms;
 }
 </style>

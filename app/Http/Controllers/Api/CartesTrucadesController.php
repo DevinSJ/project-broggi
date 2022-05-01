@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Expedients;
 use Illuminate\Http\Request;
 use App\Models\Cartes_trucades;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
-use App\Http\Resources\ExpedientsResource;
 use App\Http\Resources\Cartes_trucadesResource;
 
 class CartesTrucadesController extends Controller
@@ -21,36 +19,32 @@ class CartesTrucadesController extends Controller
     public function index(Request $request)
     {
         $query = Cartes_trucades::query()
-                                    ->with('cartes_trucades_has_agencies.agencia')
-                                    ->with('usuari')
-                                    ->with('tipo_localitzacio')
-                                    ->with('expedient')
-                                    ->with('dada_personal')
-                                    ->with('provincia')
-                                    ->with('municipi.comarca')
-                                    ->with('municipi_trucada')
-                                    ->with('incident.tipo_incident');
+            ->with('cartes_trucades_has_agencies.agencia')
+            ->with('usuari')
+            ->with('tipo_localitzacio')
+            ->with('expedient')
+            ->with('dada_personal')
+            ->with('provincia')
+            ->with('municipi.comarca')
+            ->with('municipi_trucada')
+            ->with('incident.tipo_incident');
 
-        if($request->input('filtreCodiCall')){
+        if ($request->input('filtreCodiCall')) {
             $query->where('codi_trucada', 'like', $request->input('filtreCodiCall'));
         }
 
-        if($request->input('filtreCodiExp')){
+        if ($request->input('filtreCodiExp')) {
             // $expedients = Expedients::select('id')->where('codi', 'like', '%' .$request->input('filtreCodiExp') .'%')->get();
-            $query->whereHas('expedient', function (Builder $builder) use ($request){
-                $builder->where('codi', 'like', '%' . $request->input('filtreCodiExp') .'%');
-            } );
+            $query->whereHas('expedient', function (Builder $builder) use ($request) {
+                $builder->where('codi', 'like', '%' . $request->input('filtreCodiExp') . '%');
+            });
         }
 
-        if($request->input('user_type_id') == 1){
-            $query->where('usuaris_id', '=', $request->input('user_id'));
-        }
-
-        if($request->input('userTypeId') == 1){
+        if ($request->input('userTypeId') == 1) {
             $query->where('usuaris_id', '=', $request->input('userId'));
         }
 
-        $trucades = $query->paginate(10);
+        $trucades = $query->paginate(5);
 
         return Cartes_trucadesResource::collection($trucades);
     }
@@ -65,25 +59,38 @@ class CartesTrucadesController extends Controller
         $id_rol = $request->input("id_rol");
         $id_user = $request->input("id_user");
 
-        if($id_rol == '1'){
-            $trucades = Cartes_trucades::with('incident.tipo_incident')
+        if ($id_rol == '1') {
+            $trucades = Cartes_trucades::with('cartes_trucades_has_agencies.agencia')
+                ->with('usuari')
+                ->with('tipo_localitzacio')
+                ->with('expedient')
+                ->with('dada_personal')
+                ->with('provincia')
+                ->with('municipi.comarca')
+                ->with('municipi_trucada')
+                ->with('incident.tipo_incident')
                 ->with('cartes_trucades_has_agencies.agencia')
                 ->with('cartes_trucades_has_agencies.estat_agencia')
                 ->where('expedients_id', '=', $idExpedient)
                 ->where('usuaris_id', '=', $id_user)
                 ->get();
-        }else{
-            $trucades = Cartes_trucades::with('incident.tipo_incident')
+        } else {
+            $trucades = Cartes_trucades::with('cartes_trucades_has_agencies.agencia')
+                ->with('usuari')
+                ->with('tipo_localitzacio')
+                ->with('expedient')
+                ->with('dada_personal')
+                ->with('provincia')
+                ->with('municipi.comarca')
+                ->with('municipi_trucada')
+                ->with('incident.tipo_incident')
                 ->with('cartes_trucades_has_agencies.agencia')
                 ->with('cartes_trucades_has_agencies.estat_agencia')
                 ->where('expedients_id', '=', $idExpedient)
                 ->get();
         }
 
-
-
         return Cartes_trucadesResource::collection($trucades);
-        // return response()->json(["id_rol" => $request->input("id_rol")]);
     }
 
     /**

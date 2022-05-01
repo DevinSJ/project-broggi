@@ -1,3 +1,4 @@
+@php  use App\Models\Usuaris; @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -12,7 +13,7 @@
 <body>
     <div id="app">
         @if (Auth::check())
-            <nav-bar :user="{{ Auth::user() }}"></nav-bar>
+            <nav-bar :user="{{ Usuaris::with('perfil')->find(Auth::id())}}"></nav-bar>
 
             <router-view class="container-fluid p-4">
             </router-view>

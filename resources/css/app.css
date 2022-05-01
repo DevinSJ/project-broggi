@@ -1,12 +1,13 @@
 #app {
     height: 100vh;
 }
-
 /* General */
 button:focus {
     box-shadow: none !important;
 }
-
+td, th {
+    text-align: center;
+}
 .input-password {
     padding-right: 40px !important;
 }

@@ -1,7 +1,7 @@
 <template>
     <main class="row d-flex justify-content-center align-items-center h-100" style="padding-bottom: 4rem !important;">
         <b-card
-            class="col-lg-4 col-md-8 col-sm-8 p-4 shadow-lg user-select-none"
+            class="col-lg-4 col-md-8 col-sm-8 p-5 shadow-lg user-select-none"
             no-body
         >
             <svg-vue icon="logo" class="card-img mb-4"/>

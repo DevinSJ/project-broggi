@@ -16,7 +16,7 @@
                             @change="filtrar"
                         >
                             <i class="fa-solid fa-circle in-progress mr-2"></i
-                            >En progrés
+                            >En procés
                         </b-form-checkbox>
                         <b-form-checkbox
                             v-model="filtre.estat.requested"
@@ -288,7 +288,7 @@
 </template>
 
 <script>
-import moment from "moment";
+import moment from 'moment';
 
 export default {
     mounted() {
@@ -321,28 +321,28 @@ export default {
                     key: "estats_expedients_id",
                     label: "Estat",
                     sortable: true,
-                    tdClass: "centered-text-class",
+                    tdClass: "align-middle",
                     thClass: "estat-th-column",
                 },
                 {
                     key: "id",
                     label: "Id",
                     sortable: true,
-                    tdClass: "centered-text-class",
+                    tdClass: "align-middle",
                     thClass: "id-th-column",
                 },
                 {
                     key: "codi",
                     label: "Codi Expedient",
                     sortable: true,
-                    tdClass: "centered-text-class",
+                    tdClass: "align-middle",
                     thClass: "codi-exp-th-column",
                 },
                 {
                     key: "data_creacio",
                     label: "Data creació",
                     sortable: true,
-                    tdClass: "centered-text-class",
+                    tdClass: "align-middle",
                     thClass: "created-th-column",
                     formatter: (value) => {
                         return moment(value)
@@ -354,7 +354,7 @@ export default {
                     key: "data_ultima_modificacio",
                     label: "Ultima modificació",
                     sortable: true,
-                    tdClass: "centered-text-class",
+                    tdClass: "align-middle",
                     thClass: "modified-th-column",
                     formatter: (value) => {
                         return moment(value)
@@ -366,7 +366,7 @@ export default {
                     key: "cartes_trucades",
                     label: "Quantitat trucades",
                     sortable: true,
-                    tdClass: "centered-text-class",
+                    tdClass: "align-middle",
                     thClass: "quantity-call-th-column",
                     formatter: (value) => {
                         return value.length;
@@ -375,7 +375,7 @@ export default {
                 {
                     key: "see_expedient",
                     label: "Més dades",
-                    tdClass: "centered-text-class",
+                    tdClass: "align-middle",
                     thClass: "edit-th-column",
                 },
             ],
@@ -384,37 +384,37 @@ export default {
                     key: "codi_trucada",
                     label: "Codi",
                     sortable: true,
-                    tdClass: "centered-text-class",
+                    tdClass: "align-middle",
                     thClass: "codi-th-column",
                 },
                 {
                     key: "telefon",
                     label: "Número de telèfon",
-                    tdClass: "centered-text-class",
+                    tdClass: "align-middle",
                     thClass: "num-telf-th-column",
                 },
                 {
                     key: "descripcio_localitzacio",
                     label: "Localització",
-                    tdClass: "centered-text-class",
+                    tdClass: "align-middle",
                     thClass: "localitzacio-th-column",
                 },
                 {
                     key: "incident.descripcio",
                     label: "Incident",
-                    tdClass: "centered-text-class",
+                    tdClass: "align-middle",
                     thClass: "incident-th-column",
                 },
                 {
                     key: "cartes_trucades_has_agencies",
                     label: "Agències",
-                    tdClass: "centered-text-class",
+                    tdClass: "align-middle",
                     thClass: "agencies-th-column",
                 },
                 {
                     key: "show-nota-comuna",
                     label: "Nota comuna",
-                    tdClass: "centered-text-class",
+                    tdClass: "align-middle",
                     thClass: "nota-comuna-th-column",
                 },
             ],
@@ -423,19 +423,19 @@ export default {
                     key: "agencia.id",
                     label: "Id",
                     sortable: true,
-                    tdClass: "centered-text-class",
+                    tdClass: "align-middle",
                     thClass: "id-th-column",
                 },
                 {
                     key: "agencia.nom",
                     label: "Nom",
-                    tdClass: "centered-text-class",
+                    tdClass: "align-middle",
                     thClass: "localitzacio-th-column",
                 },
                 {
                     key: "estats_agencies_id",
                     label: "Estat",
-                    tdClass: "centered-text-class",
+                    tdClass: "align-middle",
                     thClass: "estats-agencies-th-column",
                 },
             ],
@@ -838,12 +838,6 @@ export default {
     text-align: center;
     justify-content: center;
 }
-
-::v-deep .centered-text-class {
-    text-align: center;
-    vertical-align: middle;
-}
-
 ::v-deep .estat-th-column {
     text-align: center;
     width: 2%;

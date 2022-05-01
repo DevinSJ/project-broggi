@@ -25,7 +25,7 @@ class LoginController extends Controller
         $username = $request->input('username');
         $password = $request->input('password');
 
-        $user = Usuaris::where('usuari', $username)->first();
+        $user = Usuaris::with('perfil')->where('usuari', $username)->first();
 
         if ($user && Hash::check($password, $user->contrassenya)) {
             Auth::login($user);
