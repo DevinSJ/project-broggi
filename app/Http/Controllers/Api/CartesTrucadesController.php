@@ -252,7 +252,6 @@ class CartesTrucadesController extends Controller
             DB::rollback();
         }
 
-
         return $response;
     }
 

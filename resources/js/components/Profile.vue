@@ -209,8 +209,9 @@ export default {
             this.checkPassword();
         },
         checkPassword() {
-            let me = this;
             this.isLoading = true;
+
+            let me = this;
 
             axios
                 .post(
@@ -225,19 +226,18 @@ export default {
                 )
                 .then((response) => {
                     if (response.status === 200) {
-                        this.$refs["modalCorrect"].show();
+                        me.$refs["modalCorrect"].show();
                     }
                 })
                 .catch((error) => {
                     console.error(error);
 
-                    this.currentState = false;
+                    me.currentState = false;
 
-                    this.validatorCurrent =
-                        "La contrasenya actual és incorrecte.";
+                    me.validatorCurrent = "La contrasenya actual és incorrecte.";
                 })
                 .finally(() => {
-                    this.isLoading = false;
+                    me.isLoading = false;
                 });
         },
         timer() {

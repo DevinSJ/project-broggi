@@ -11,10 +11,10 @@
             @hidden="handleHiddenModal"
         >
             <b-alert
-                v-if="errorMessage"
+                v-if="errorInputsMessage"
                 show
                 variant="danger"
-                v-html="errorMessage"
+                v-html="errorInputsMessage"
             >
             </b-alert>
             <h5 class="font-weight-bold my-2"><u>DADES INICIALS</u></h5>
@@ -102,10 +102,10 @@
                     <label class="font-weight-bold d-block"
                         ><i>Fora de catalunya</i></label
                     >
-                    <label>{{ call.outOfCatalunya ? "Si" : "No" }}</label>
+                    <label>{{ call.outCatalunya ? "Si" : "No" }}</label>
                 </div>
             </div>
-            <div class="row" v-if="!call.outOfCatalunya">
+            <div class="row" v-if="!call.outCatalunya">
                 <div class="col-lg-4 my-2">
                     <label class="font-weight-bold d-block"
                         ><i>Província</i></label
@@ -269,7 +269,7 @@
                 >
                 <b-button
                     v-b-modal.modal-options
-                    v-if="!errorMessage"
+                    v-if="!errorInputsMessage"
                     variant="primary"
                     class="font-weight-bold flex-fill ml-2"
                     ><i class="fa-solid fa-floppy-disk mr-2"></i>GUARDAR
@@ -399,6 +399,23 @@
                     </button>
                 </div>
         </b-modal>
+        <b-modal
+            id="modal-loading-save"
+            ref="modal-loading-save"
+            body-class="myModal"
+            size="sm"
+            hide-footer
+            hide-header
+            centered
+        >
+            <svg-vue v-if="isLoadingSave" icon="spinner" class="mx-auto my-auto" width="50" />
+            <div v-else>
+                <i v-if="errorInputsMessage" class="fas fa-check-circle fa-2xl text-success"></i>
+                <i v-else class="fas fa-circle-x fa-2xl text-danger"></i>
+                <label v-if="errorInputsMessage" class="text-success">{{ errorInputsMessage }}</label>
+                <label v-else class="text-danger">{{ correctSaveMessage }}</label>
+            </div>
+        </b-modal>
     </div>
 </template>
 
@@ -413,21 +430,24 @@ export default {
     },
     data() {
         return {
-            errorMessage: "",
+            errorInputsMessage: "",
+            errorSaveMessage: "",
+            correctSaveMessage: "",
             lastUpdateTimeExpedientsCall: "",
             createNewPhone: false,
+            isLoadingSave: false,
         };
     },
     methods: {
         checkFieldsCall() {
             if (!this.call.phone.trim())
-                this.errorMessage += "<li>Nº Telèfon</li>";
+                this.errorInputsMessage += "<li>Nº Telèfon</li>";
             if (!this.call.commonNote.trim())
-                this.errorMessage += "<li>Nota comuna</li>";
+                this.errorInputsMessage += "<li>Nota comuna</li>";
 
             if (this.call.outCatalunya)
                 if (!this.call.provinceOutOfCatalunya.trim())
-                    this.errorMessage +=
+                    this.errorInputsMessage +=
                         "<li>Província (Fora de catalunya)</li>";
 
             if (
@@ -436,7 +456,7 @@ export default {
                 !this.call.regionSelected &&
                 !this.call.townSelected
             )
-                this.errorMessage +=
+                this.errorInputsMessage +=
                     "<li>La província, comarca o municipi (Dins de catalunya)</li>";
 
             if (
@@ -444,18 +464,18 @@ export default {
                 this.call.typeLocationSelected.id == 2
             )
                 if (!this.call.singularPoint.trim())
-                    this.errorMessage += "<li>El nom del punt singular</li>";
+                    this.errorInputsMessage += "<li>El nom del punt singular</li>";
 
             if (!this.call.typeLocationSelected)
-                this.errorMessage += "<li>El tipus de localització</li>";
+                this.errorInputsMessage += "<li>El tipus de localització</li>";
 
             if (!this.call.typeIncidentSelected)
-                this.errorMessage += "<li>Tipus incident</li>";
+                this.errorInputsMessage += "<li>Tipus incident</li>";
             if (!this.call.incidentSelected)
-                this.errorMessage += "<li>Incident</li>";
+                this.errorInputsMessage += "<li>Incident</li>";
 
-            if (this.errorMessage)
-                this.errorMessage = `Els següents camps són obligatoris!<ul class="m-0">${this.errorMessage}</ul>`;
+            if (this.errorInputsMessage)
+                this.errorInputsMessage = `Els següents camps són obligatoris!<ul class="m-0">${this.errorInputsMessage}</ul>`;
         },
         handleHiddenModal() {
             this.$emit("hiddenModal");
@@ -492,20 +512,31 @@ export default {
             this.call.saveNewPhoneNumber = this.createNewPhone;
             this.call.user = window.Vue.prototype.$user;
 
+            this.$refs['modal-loading-save'].show();
+
+            this.errorSaveMessage = "";
+            this.correctSaveMessage = "";
+            this.isLoadingSave = true;
+
             let me = this;
 
             axios
                 .post('api/cartes_trucades', this.call)
                 .then((response) => {
                     if (response.status === 201) {
-                        me.callback();
+                        me.correctSaveMessage = "Guardat correctament."
+                    } else {
+                        me.errorSaveMessage = "S'ha produït un error inesperat...";
                     }
                 })
                 .catch((error) => {
                     console.error(error);
+                    me.errorSaveMessage = "S'ha produït un error inesperat...";
                 })
                 .finally(() => {
-                    this.isLoading = false;
+                    me.isLoadingSave = false;
+
+                    //setTimeout(() => this.$refs['modal-loading-save'].hide(), 3000);
                 });
         },
     },
@@ -518,6 +549,12 @@ export default {
 </script>
 
 <style scoped>
+::v-deep .myModal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+}
 ::v-deep .modal .modal-huge {
     max-width: 80%;
     width: 80%;
