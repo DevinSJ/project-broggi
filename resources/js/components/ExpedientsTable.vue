@@ -689,7 +689,7 @@ export default {
                     }
                 })
                 .catch((error) => {
-                    console.log(error);
+                    console.error(error);
                 })
                 .finally(() => {
                     this.getExpedients(false);
@@ -715,7 +715,7 @@ export default {
                     this.updateExpedient();
                 })
                 .catch((error) => {
-                    console.log(error);
+                    console.error(error);
                 });
         },
         fetchExpedients(page = 1) {

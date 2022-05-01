@@ -269,6 +269,52 @@ export default {
             if (call_selected)
                 this.$refs["modal-calls-details"].loadCallInfo(call_selected);
         },
+        loadModalExpedient(expedient) {
+            if (this.request) this.request.cancel();
+
+            let axiosSource = axios.CancelToken.source();
+            this.request = { cancel: axiosSource.cancel };
+
+            this.expedient = expedient;
+            this.showTrucades = true;
+            this.isLoading = true;
+
+            let me = this;
+
+            this.codeExpedients = expedient.codi;
+
+            axios
+                .get(
+                    "/api/cartes_trucades/list/" +
+                        this.expedient.id +
+                        "?id_rol=" +
+                        this.user.perfils_id +
+                        "&id_user=" +
+                        this.user.id,
+                    {
+                        cancelToken: axiosSource.token,
+                    }
+                )
+                .then((response) => {
+                    if (response.status === 200) {
+                        me.trucades = response.data;
+                        if (me.trucades.length == 0) {
+                            me.showTrucades = false;
+                        }
+                    }
+                })
+                .catch(function (error) {
+                    if (!axios.isCancel(error)) {
+                        console.error(error);
+                    }
+                })
+                .finally(() => {
+                    me.request = null;
+                    me.isLoading = false;
+                });
+
+            this.$refs['modal-call-expedients'].show();
+        },
     },
 };
 </script>

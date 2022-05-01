@@ -30,7 +30,9 @@ export default {
         expedientDefaultSelected: {
             type: Object,
             required: false,
-            default: null,
+            default() {
+                return { id: -1 };
+            }
         },
         filterExpedientsCall: {
             type: Object,
@@ -52,6 +54,7 @@ export default {
             },
             expedients: [],
             request: null,
+            watchExpedientSelected: true,
         };
     },
     methods: {
@@ -91,14 +94,19 @@ export default {
             if (this.expedientSelected.id === -1) this.expedientSelected = expedient;
             else
             {
-                if (this.expedientSelected != expedient) this.expedientSelected = expedient;
-                else this.expedientSelected = {id: -1};
+                if (this.expedientSelected.id != expedient.id) this.expedientSelected = expedient;
+                else this.expedientSelected = { id: -1 };
             }
         },
+        changeExpedientSelected(expedient) {
+            this.watchExpedientSelected = false;
+            this.expedientSelected = expedient;
+            this.watchExpedientSelected = true;
+        }
     },
     watch: {
         expedientSelected() {
-            this.$emit('expedientSelected', this.expedientSelected);
+            if (this.watchExpedientSelected) this.$emit('expedientSelected', this.expedientSelected);
         }
     }
 };

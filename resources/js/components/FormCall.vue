@@ -657,10 +657,9 @@
                     </div>
                 </b-tab>
                 <!-- TAB Agencies -->
-                <!--
                 <b-tab title="Agencies">
-                    <map-box :query="queryMapBox"></map-box>
-                </b-tab>-->
+                    <map-box :query="queryMapBox" @changeAgenciesSelected="changeAgenciesSelected" :agenciesSelectedDefault="call.agenciesSelected" :isOutCatalunya="call.outCatalunya"></map-box>
+                </b-tab>
             </b-tabs>
         </form>
         <modal-summary
@@ -734,6 +733,10 @@ export default {
 
                 singularPoint: "",
 
+                provinceSelected: null,
+                regionSelected: null,
+                townSelected: null,
+
                 nameHighway: "",
                 directionHighway: "",
                 kmHighway: "",
@@ -743,13 +746,11 @@ export default {
                 typeIncidentSelected: null,
                 incidentSelected: null,
 
-                provinceSelected: null,
-                regionSelected: null,
-                townSelected: null,
-
                 expedientSelected: {
                     id: -1
                 },
+
+                agenciesSelected: [],
             },
             townCallSelectedId: null,
             provinceSelectedId: null,
@@ -910,7 +911,38 @@ export default {
                     ${this.call.townSelected}`;
         },
         queryMapBox() {
-            return "Plaça espanya Barcelona 08014";
+            let query = "";
+
+            let province = "";
+            let region = "";
+            let town = "";
+
+            if (this.call.provinceSelected) province = this.call.provinceSelected.nom;
+            if (this.call.regionSelected) region = this.call.regionSelected.nom;
+            if (this.call.townSelected) town = this.call.townSelected.nom;
+
+            if (this.call.typeLocationSelected) {
+                switch(this.call.typeLocationSelected.id) {
+                    case 1: //CARRERS
+                        query = `${this.call.typeStreet} ${this.call.nameStreet} ${this.call.numberStreet}, ${province} ${region} ${town}`;
+
+                        break;
+                    case 2: //PUNT SINGULAR
+                        query = `${this.call.singularPoint}, ${town}`;
+
+                        break;
+                    case 3: //ENTITAT POBLACIÓ
+                        query = `${province} ${region} ${town}`;
+
+                        break;
+                    case 4: //CARRETERA
+                        query = `${this.call.nameHighway}, ${province} ${region} ${town}`;
+
+                        break;
+                }
+            }
+
+            return query.trim();
         },
     },
     watch: {
@@ -1030,6 +1062,9 @@ export default {
                 this.call.antecedents = newValue.antecedents;
             }
         },
+        "call.expedientSelected"(newValue) {
+            this.$emit('changeExpedientSelected', newValue);
+        }
     },
     methods: {
         confirmStay() {
@@ -1044,6 +1079,9 @@ export default {
                 // Chrome requires returnValue to be set
                 e.returnValue = "";
             }
+        },
+        changeAgenciesSelected(agenciesSelected) {
+            this.call.agenciesSelected = agenciesSelected;
         },
         hiddenModalSummary() {
             this.$emit("resumeCrono");

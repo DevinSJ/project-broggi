@@ -1,7 +1,11 @@
 <template>
     <div class="my-2">
+        <label v-if="query && !isOutCatalunya" class="font-weight-bold">Localització de l'emergència:</label>
+        <span v-if="query && !isOutCatalunya">{{ query }}</span>
         <div id="map" :style="`filter: ${isLoading ? 'brightness(0.3)' : 'none'};`"></div>
         <div v-if="isLoading" class="loading-text">Carregant agencies...</div>
+        <label v-if="!query && !isOutCatalunya" class="loading-text text-dark">No s'ha especificat la localització de l'emergència</label>
+        <label v-else-if="isOutCatalunya" class="loading-text text-dark">La localització de l'emergència es fora de catalunya.</label>
     </div>
 </template>
 
@@ -12,7 +16,7 @@ const PopupMapBoxClass = Vue.extend(PopupMapBox);
 const sizeDot = 200;
 
 export default {
-    props: ["query"],
+    props: ["query", "isOutCatalunya", "agenciesSelectedDefault"],
     mounted() {
         let me = this;
 
@@ -85,6 +89,8 @@ export default {
         };
 
         this.markIncident();
+
+        this.agenciesSelected = this.agenciesSelectedDefault;
     },
     data() {
         return {
@@ -198,22 +204,23 @@ export default {
             return className.trim();
         },
         markIncident() {
-            let me = this;
+            if (this.query) {
+                let me = this;
 
-            mapboxgl.accessToken =
-                'pk.eyJ1Ijoic21hcmVzY2F0ODYiLCJhIjoiY2wxZXVzNnJ6MDlxNTNxdWdsbTI4ZXNyNyJ9.yole3xZeEEoqwWT6ZgP4FA';
-            this.mapboxClient = mapboxSdk({
-                accessToken: mapboxgl.accessToken,
-            });
+                mapboxgl.accessToken =
+                    'pk.eyJ1Ijoic21hcmVzY2F0ODYiLCJhIjoiY2wxZXVzNnJ6MDlxNTNxdWdsbTI4ZXNyNyJ9.yole3xZeEEoqwWT6ZgP4FA';
+                this.mapboxClient = mapboxSdk({
+                    accessToken: mapboxgl.accessToken,
+                });
 
-            this.mapboxClient.geocoding
-                .forwardGeocode({
-                    query: this.query,
-                    autocomplete: false,
-                    limit: 1,
-                })
-                .send()
-                .then((response) => {
+                this.mapboxClient.geocoding
+                    .forwardGeocode({
+                        query: this.query,
+                        autocomplete: false,
+                        limit: 1,
+                    })
+                    .send()
+                    .then((response) => {
                     if (
                         !response ||
                         !response.body ||
@@ -273,6 +280,7 @@ export default {
 
                     this.getAgencies();
                 });
+            }
         },
         getAgencies() {
             let me = this;
@@ -294,21 +302,31 @@ export default {
                     Promise.all(requestsAgencies).then(() => {
                         me.map.resize();
                         me.isLoading = false;
+                        me.agenciesSelected.forEach(a => {
+                            document.querySelector(`#agency-marker-${a.id}`).classList.add('agency-marked');
+                        });
                     });
                 })
                 .catch((error) => {
-                    console.log(error);
+                    console.error(error);
                 });
         },
         addAgency(_agency) {
             let isExist = this.agenciesSelected.some(agency => agency === _agency);
 
-            if (!isExist) this.agenciesSelected.push(_agency);
+            if (!isExist)
+            {
+                this.agenciesSelected.push(_agency);
+
+                this.$emit('changeAgenciesSelected', this.agenciesSelected);
+            }
         },
         removeAgency(_agency) {
             this.agenciesSelected = this.agenciesSelected.filter(agency => {
                 return agency != _agency;
             });
+
+            this.$emit('changeAgenciesSelected', this.agenciesSelected);
         }
     },
 };
@@ -322,7 +340,7 @@ export default {
     position: absolute;
     top: 50%;
     right: 50%;
-    font-size: 36px;
+    font-size: 21px;
     transform: translate(50%, -50%);
     color: white;
     font-weight: bold;
@@ -338,21 +356,5 @@ export default {
 .agency-marked {
     border-radius: 50%;
     box-shadow: 0 0 5px 5px red;
-}
-
-.marker-police {
-  background-image: url('/img/police.png');
-}
-
-.marker-firefighters {
-  background-image: url('/img/firefighters.png');
-}
-
-.marker-transit {
-  background-image: url('/img/transit.png');
-}
-
-.marker-person-info {
-  background-image: url('/img/person-info.png');
 }
 </style>

@@ -101,7 +101,7 @@ export default {
                     this.renderChart(this.chartData, this.options);
                 })
                 .catch((error) => {
-                    console.log(error);
+                    console.error(error);
                 })
                 .finally(() => me.$emit("finishedRequest"));
         },
@@ -147,7 +147,7 @@ export default {
                     this.renderChart(this.chartData, this.options);
                 })
                 .catch((error) => {
-                    console.log(error);
+                    console.error(error);
                 })
                 .finally(() => me.$emit("finishedRequest"));
         },
@@ -196,7 +196,7 @@ export default {
                     this.renderChart(this.chartData, this.options);
                 })
                 .catch((error) => {
-                    console.log(error);
+                    console.error(error);
                 })
                 .finally(() => me.$emit("finishedRequest"));
         },
@@ -205,15 +205,12 @@ export default {
         switch (this.opcionGraph) {
             case "1":
                 this.obtenerDatosExpedientes();
-                console.log(this.opcionGraph);
                 break;
             case "2":
                 this.obtenerDatosLlamada();
-                console.log(this.opcionGraph);
                 break;
             case "3":
                 this.obtenerDatosUsuarios();
-                console.log(this.opcionGraph);
                 break;
         }
     },

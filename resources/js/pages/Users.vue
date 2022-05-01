@@ -540,7 +540,6 @@ export default {
                         this.disabled_ok_button_modal = false;
                         this.isLoadingButton = false;
                     } else {
-                        console.log(me.usuari.actiu);
                         axios
                             .post("/api/users/", me.usuari)
                             .then(function (response) {
@@ -669,8 +668,6 @@ export default {
             this.msgError = "";
             this.msgInfo = "";
             this.btnClassForm = "success";
-
-            console.log(this.usuari);
         },
         colorCabezalEditarUsuari() {
             this.repetirContrassenya = "";
@@ -681,8 +678,6 @@ export default {
             this.msgError = "";
             this.msgInfo = "";
             this.btnClassForm = "warning";
-
-            console.log(this.usuari);
         },
         colorCabezalEditarContrasenya() {
             this.repetirContrassenya = "";
@@ -694,8 +689,6 @@ export default {
             this.msgError = "";
             this.msgInfo = "";
             this.btnClassForm = "dark";
-
-            console.log(this.usuari);
         },
         handleOk(event) {
             event.preventDefault();

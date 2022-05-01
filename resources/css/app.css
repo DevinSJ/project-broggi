@@ -5,7 +5,8 @@
 button:focus {
     box-shadow: none !important;
 }
-td, th {
+td,
+th {
     text-align: center;
 }
 .input-password {
@@ -135,7 +136,24 @@ td, th {
 }
 /* ================================================================= */
 /* Tooltip width */
-.tooltip-inner{
-  max-width: none;
+.tooltip-inner {
+    max-width: none;
+}
+/* ================================================================= */
+/* Marker mapbox */
+.marker-police {
+    background-image: url("/img/police.png");
+}
+
+.marker-firefighters {
+    background-image: url("/img/firefighters.png");
+}
+
+.marker-transit {
+    background-image: url("/img/transit.png");
+}
+
+.marker-person-info {
+    background-image: url("/img/person-info.png");
 }
 /* ================================================================= */

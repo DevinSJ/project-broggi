@@ -243,23 +243,21 @@
                     }}</label>
                 </div>
             </div>
-            <div class="row" v-if="call.incidentSelected">
-                <div class="col-lg-6 my-2">
-                    <div class="d-block">
-                        <label class="font-weight-bold d-block"
-                            ><u>DEFINICIÓ INCIDENT:</u></label
-                        >
-                        <small>{{ call.incidentSelected.definicio }}</small>
-                    </div>
+            <hr />
+            <h5 class="font-weight-bold my-2">
+                <u>AGENCIES</u>
+            </h5>
+            <div v-if="call.agenciesSelected.length" class="row">
+                <div class="col-md-12 d-block" v-for="agencia in call.agenciesSelected" :key="agencia.id">
+                    <b-form-input
+                        v-model="agencia.nom"
+                        disabled
+                        plaintext
+                    ></b-form-input>
                 </div>
-                <div class="col-lg-6 my-2">
-                    <div class="d-block">
-                        <label class="font-weight-bold d-block"
-                            ><u>INSTRUCCIONS INCIDENT:</u></label
-                        >
-                        <small>{{ call.incidentSelected.instrucions }}</small>
-                    </div>
-                </div>
+            </div>
+            <div v-else class="row">
+                <label class="col-md-12">No s'ha seleccionat cap agencia.</label>
             </div>
             <template #modal-footer>
                 <b-button
@@ -271,7 +269,7 @@
                 >
                 <b-button
                     v-b-modal.modal-options
-                    v-if="true"
+                    v-if="!errorMessage"
                     variant="primary"
                     class="font-weight-bold flex-fill ml-2"
                     ><i class="fa-solid fa-floppy-disk mr-2"></i>GUARDAR
@@ -322,10 +320,9 @@
             hide-footer
             modal-class="zoominout"
         >
-            <span v-if="call.expedientSelected.id != -1" class="font-weight-bold text-danger">Ja tens un expedient seleccionat! <a role="button" v-b-modal.modal-expedient-details><u>Veure dades del expedient</u></a></span>
             <section class="d-flex p-0 mt-2">
                 <b-button
-                    variant="primary"
+                    variant="danger"
                     class="font-weight-bold flex-fill mr-2"
                     v-b-modal.modal-expedients-call
                     style="position: relative;height: 100px; max-width: 50%;padding-left: 75px;font-size: 13px;"
@@ -333,11 +330,12 @@
                         class="fa-solid fa-folder-open fa-2xl mr-2"
                         style="position: absolute; top: 45px; left: 30px"
                     ></i
-                    >{{ call.expedientSelected.id != -1 ? 'ASSOCIANT A UN ALTRE EXPEDIENT EXISTENT' : 'ASSOCIANT UN EXPEDIENT EXISTENT'}}</b-button
+                    >ASSOCIANT UN EXPEDIENT EXISTENT</b-button
                 >
                 <b-button
-                    variant="danger"
+                    variant="primary"
                     class="font-weight-bold flex-fill ml-2"
+                    @click="saveCall(true)"
                     style="position: relative;height: 100px; max-width: 50%;padding-left: 75px;font-size: 13px;"
                     ><i
                         class="fa-solid fa-folder-plus fa-2xl mr-2"
@@ -348,31 +346,21 @@
             </section>
         </b-modal>
         <b-modal
-            id="modal-expedient-details"
-            ref="modal-expedient-details"
-            v-if="call.expedientSelected.id != -1"
-            centered
-            title="Detalls del expedient"
-            size="m"
-            hide-footer
-            modal-class="zoominout"
-        >
-            <details-expedients-item :expedient="call.expedientSelected" />
-        </b-modal>
-        <b-modal
             id="modal-expedients-call"
             ref="modal-expedients-call"
             centered
             title="Llistat d'expedients relacionat"
             size="m"
             modal-class="zoominout"
+            header-class="d-block"
+            footer-class="d-block"
         >
             <template #modal-header>
                 <div class="d-flex justify-content-between">
                     <h6 class="font-weight-bold my-auto">
                         Llistat d'expedients relacionat
                     </h6>
-                    <i id="expedients-call-help-modal" class="fa-solid fa-circle-question"></i>
+                    <i id="expedients-call-help-modal" class="fa-solid fa-circle-question my-auto ml-2"></i>
                     <b-tooltip target="expedients-call-help-modal" triggers="hover">
                         Els criteris que es fan fer servir per trobar un expedient relacionat són:
                         <ul class="text-justify">
@@ -382,10 +370,22 @@
                         </ul>
                         <span class="font-weight-bold">ELS EXPEDIENTS AMB EL ESTAT 'TANCAT' NO ES MOSTRARÁ EN LA LLISTA.</span>
                     </b-tooltip>
+                    <button type="button" aria-label="Close" class="close" @click="hideModalExpedientsCall">×</button>
                 </div>
             </template>
             <template #modal-footer>
-                <div class="d-flex justify-content-between">
+                <b-button
+                    variant="primary"
+                    class="font-weight-bold w-100"
+                    @click="saveCall(false)"
+                    :disabled="!(call.expedientSelected && call.expedientSelected.id != -1)"
+                    ><i class="fa-solid fa-circle-plus mr-2"></i>
+                    CREAR LA CARTA TRUCADA</b-button
+                >
+            </template>
+
+            <expedients-call ref="expedientsCall" @finishFetchExpedientsCall="finishFetchExpedientsCall" @expedientSelected="expedientSelected" :expedientDefaultSelected="call.expedientSelected" :filterExpedientsCall="filterExpedientsCall" />
+            <div class="d-flex justify-content-between mt-2">
                     <h6 class="font-weight-bold my-auto">
                         Última actualització:
                         {{ lastUpdateTimeExpedientsCall }}
@@ -398,9 +398,6 @@
                         <i class="fa-solid fa-arrows-rotate"></i>
                     </button>
                 </div>
-            </template>
-
-            <expedients-call ref="expedientsCall" :expedientDefaultSelected="call.expedientSelected" :filter="filterExpedientsCall" />
         </b-modal>
     </div>
 </template>
@@ -418,6 +415,7 @@ export default {
         return {
             errorMessage: "",
             lastUpdateTimeExpedientsCall: "",
+            createNewPhone: false,
         };
     },
     methods: {
@@ -477,7 +475,39 @@ export default {
         finishFetchExpedientsCall() {
             this.lastUpdateTimeExpedientsCall = moment().locale("es").format("DD/MM/YYYY HH:mm:ss");
         },
-        saveCall() {},
+        hideModalExpedientsCall() {
+            this.$refs['modal-expedients-call'].hide();
+        },
+        expedientSelected(_expedientSelected) {
+            this.call.expedientSelected = _expedientSelected;
+        },
+        saveCall(createNewExpedient) {
+            if (createNewExpedient) {
+                this.call.expedientCode = "EXP-" + moment().locale("es").format("DDMMyyyyHHmmssS");
+            } else {
+                if (!this.call.expedientSelected) return;
+            }
+
+            this.call.createNewExpedient = createNewExpedient;
+            this.call.saveNewPhoneNumber = this.createNewPhone;
+            this.call.user = window.Vue.prototype.$user;
+
+            let me = this;
+
+            axios
+                .post('api/cartes_trucades', this.call)
+                .then((response) => {
+                    if (response.status === 201) {
+                        me.callback();
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                });
+        },
     },
     computed: {
         getFormatCrono() {
@@ -491,6 +521,9 @@ export default {
 ::v-deep .modal .modal-huge {
     max-width: 80%;
     width: 80%;
+}
+#expedients-call-help {
+    font-size: 20px;
 }
 section {
     padding: 1rem 1rem;

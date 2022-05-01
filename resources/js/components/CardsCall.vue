@@ -57,7 +57,7 @@
                     <hr class="my-4" />
                     <div class="row">
                         <div class="col">
-                            <form-call ref="formCall" @resumeCrono="resumeCrono" @filterExpedientsCall="filterExpedientsCall"/>
+                            <form-call ref="formCall" @resumeCrono="resumeCrono" @filterExpedientsCall="filterExpedientsCall" @changeExpedientSelected="changeExpedientSelected"/>
                         </div>
                     </div>
                 </b-card>
@@ -180,6 +180,9 @@ export default {
         },
         isEmpty(value) {
             return value.trim().length === 0;
+        },
+        changeExpedientSelected(expedient) {
+            this.$refs.expedientsCall.changeExpedientSelected(expedient);
         },
     },
     computed: {
