@@ -169,7 +169,7 @@
                                     type="text"
                                     id="input-common-note"
                                     v-model="call.commonNote"
-                                    placeholder="Nom i cognoms del trucant, relació e l’alertant amb l’incident, telèfon de contacte i descripció del fet"
+                                    placeholder="Nom i cognoms del trucant, relació de l’alertant amb l’incident, telèfon de contacte i descripció del fet"
                                     aria-describedby="input-common-note-feedback"
                                     :state="!isEmptyOrNull(call.commonNote)"
                                     rows="5"
@@ -179,7 +179,7 @@
                                     class="user-select-none"
                                     for="input-common-note"
                                 >
-                                    Nom i cognoms del trucant, relació e
+                                    Nom i cognoms del trucant, relació de
                                     l’alertant amb l’incident, telèfon de
                                     contacte i descripció del fet
                                 </label>

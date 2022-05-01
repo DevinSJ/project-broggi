@@ -124,7 +124,7 @@ export default {
             }, 10 * index);
         });
 
-        this.callDateTimeIni = this.today.format("DD/MM/yyyy HH:mm:ss");
+        this.callDateTimeIni = this.today.format("YYYY-MM-DD HH:mm:ss");
 
         this.startCrono();
 

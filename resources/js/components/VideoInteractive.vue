@@ -24,7 +24,7 @@
             <b-button
               variant="primary"
               @click="playPauseVideo"
-              :disabled="isVideoLoaded ? false : true"
+              :disabled="(isVideoLoaded && !showQuestion) ? false : true"
             >
               <i
                 :class="'fa-solid fa-fw fa-' + (isPlaying ? 'pause' : 'play')"
@@ -42,7 +42,7 @@
                 value="0"
                 min="0"
                 :max="totalDurationInSeconds"
-                :disabled="isVideoLoaded ? false : true"
+                :disabled="(isVideoLoaded && !showQuestion) ? false : true"
               ></b-form-input>
             </div>
           </div>
@@ -583,17 +583,22 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 }
 
 .divQuestion{
+    border: 1px solid black;
     position: absolute;
     z-index: 1;
-    width: fit-content;
+    width: 500px;
     height: fit-content;
     padding: 20px;
-    top:50%;
-    left: 25%;
+    top:20%;
+    left: 15%;
     background: white;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }
 
 .buttonsQuestion{
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;

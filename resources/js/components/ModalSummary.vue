@@ -410,10 +410,10 @@
         >
             <svg-vue v-if="isLoadingSave" icon="spinner" class="mx-auto my-auto" width="50" />
             <div v-else>
-                <i v-if="errorInputsMessage" class="fas fa-check-circle fa-2xl text-success"></i>
-                <i v-else class="fas fa-circle-x fa-2xl text-danger"></i>
-                <label v-if="errorInputsMessage" class="text-success">{{ errorInputsMessage }}</label>
-                <label v-else class="text-danger">{{ correctSaveMessage }}</label>
+                <i v-if="errorSaveMessage" class="fas fa-exclamation-circle fa-2xl text-danger"></i>
+                <i v-else class="fas fa-check-circle fa-2xl text-success"></i>
+                <label v-if="errorSaveMessage" class="text-danger">{{ errorSaveMessage }}</label>
+                <label v-else class="text-success">{{ correctSaveMessage }}</label>
             </div>
         </b-modal>
     </div>
@@ -493,7 +493,7 @@ export default {
             this.$refs.expedientsCall.getExpedients(this.filterExpedientsCall);
         },
         finishFetchExpedientsCall() {
-            this.lastUpdateTimeExpedientsCall = moment().locale("es").format("DD/MM/YYYY HH:mm:ss");
+            this.lastUpdateTimeExpedientsCall = moment().locale("es").format("YYYY-MM-DD HH:mm:ss");           //.format("DD/MM/YYYY HH:mm:ss");
         },
         hideModalExpedientsCall() {
             this.$refs['modal-expedients-call'].hide();
@@ -519,12 +519,15 @@ export default {
             this.isLoadingSave = true;
 
             let me = this;
-
+            console.log(this.call.user);
             axios
                 .post('api/cartes_trucades', this.call)
                 .then((response) => {
                     if (response.status === 201) {
                         me.correctSaveMessage = "Guardat correctament."
+                        setTimeout(() => {
+                            me.callback();
+                        }, 1500);
                     } else {
                         me.errorSaveMessage = "S'ha produït un error inesperat...";
                     }

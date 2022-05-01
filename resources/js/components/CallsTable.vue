@@ -191,7 +191,7 @@ export default {
             );
 
             if (call_selected)
-                this.$refs["modal-calls-details"].loadCallInfo(call_selected);
+                this.$refs["modal-calls-details"].loadCallInfo(call_selected, true);
         },
     },
 };

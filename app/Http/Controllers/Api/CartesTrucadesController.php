@@ -74,7 +74,6 @@ class CartesTrucadesController extends Controller
                 ->with('municipi.comarca')
                 ->with('municipi_trucada')
                 ->with('incident.tipo_incident')
-                ->with('cartes_trucades_has_agencies.agencia')
                 ->with('cartes_trucades_has_agencies.estat_agencia')
                 ->where('expedients_id', '=', $idExpedient)
                 ->where('usuaris_id', '=', $id_user)
@@ -89,7 +88,6 @@ class CartesTrucadesController extends Controller
                 ->with('municipi.comarca')
                 ->with('municipi_trucada')
                 ->with('incident.tipo_incident')
-                ->with('cartes_trucades_has_agencies.agencia')
                 ->with('cartes_trucades_has_agencies.estat_agencia')
                 ->where('expedients_id', '=', $idExpedient)
                 ->get();
@@ -107,6 +105,7 @@ class CartesTrucadesController extends Controller
     public function store(Request $request)
     {
         $carta_trucada = new Cartes_trucades();
+
 
         $address = $request->input('address');
         $agenciesSelected = $request->input('agenciesSelected');
@@ -159,10 +158,10 @@ class CartesTrucadesController extends Controller
             }
             else
             {
-                $carta_trucada->expedients_id = $expedientSelected->id;
+                $carta_trucada->expedients_id = $expedientSelected['id'];
             }
 
-            $carta_trucada->usuaris_id = $user->id;
+            $carta_trucada->usuaris_id = $user['id']; // Con $user->id da error porque user en este caso se envia como un array, no como un objeto.
 
             $carta_trucada->codi_trucada = $codeCall;
             $carta_trucada->data_hora = $callDateTimeIni;
@@ -196,11 +195,11 @@ class CartesTrucadesController extends Controller
                 $region = "";
                 $town = "";
 
-                if ($provinceSelected) $province = $provinceSelected->nom;
-                if ($regionSelected) $region = $regionSelected->nom;
-                if ($townSelected) $town = $townSelected->nom;
+                if ($provinceSelected) $province = $provinceSelected['nom']; //Igual que con user.
+                if ($regionSelected) $region = $regionSelected['nom']; //Igual que con user.
+                if ($townSelected) $town = $townSelected['nom']; //Igual que con user.
 
-                switch($typeLocationSelected->id) {
+                switch($typeLocationSelected['id']) { //Igual que con user.
                     case 1: //CARRERS
                         $description_location = $typeStreet . " " . $nameStreet . " " . $numberStreet . ", Escalera " . $numberStair . ", Pis " . $numberFloor . " Porta " . $numberDoor;
 
@@ -224,20 +223,24 @@ class CartesTrucadesController extends Controller
             $carta_trucada->altres_ref_localitzacio = $extraInformationStreet;
             $carta_trucada->nota_comuna_descripcio = $commonNote;
 
-            $carta_trucada->municipis_id_trucada = $townCallSelected->id ?? null;
-            $carta_trucada->provincies_id = $provinceSelected->id ?? null;
-            $carta_trucada->municipis_id = $townSelected->id ?? null;
-            $carta_trucada->tipus_localitzacions_id = $typeLocationSelected->id;
-            $carta_trucada->incidents_id = $incidentSelected->id ?? null;
+            $carta_trucada->municipis_id_trucada = $townCallSelected['id'] ?? null;
+            $carta_trucada->provincies_id = $provinceSelected['id'] ?? null;
+            $carta_trucada->municipis_id = $townSelected['id'] ?? null;
+            $carta_trucada->tipus_localitzacions_id = $typeLocationSelected['id'];
+            $carta_trucada->incidents_id = $incidentSelected['id'] ?? null;
             $carta_trucada->save();
 
+            $carta_trucada_agencia = new Cartes_trucades_has_agencies();
             //Insert agencies.
             foreach ($agenciesSelected as $agency) {
-                $carta_trucada_agencia = new Cartes_trucades_has_agencies();
                 $carta_trucada_agencia->cartes_trucades_id = $carta_trucada->id;
-                $carta_trucada_agencia->agencies_id = $agency->id;
+                $carta_trucada_agencia->agencies_id = $agency['id'];
                 $carta_trucada_agencia->estats_agencies_id = 1; //Default contacted.
             }
+            if($agenciesSelected){
+                $carta_trucada_agencia->save();
+            }
+
 
             $response = (new Cartes_trucadesResource($carta_trucada))
                 ->response()
