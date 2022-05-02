@@ -35,7 +35,7 @@ class CartesTrucadesController extends Controller
             ->with('incident.tipo_incident');
 
         if ($request->input('filtreCodiCall')) {
-            $query->where('codi_trucada', 'like', $request->input('filtreCodiCall'));
+            $query->where('codi_trucada', 'like', '%' . $request->input('filtreCodiCall') . '%');
         }
 
         if ($request->input('filtreCodiExp')) {
@@ -154,10 +154,8 @@ class CartesTrucadesController extends Controller
                 $expedient->codi = $expedientCode;
                 $expedient->save();
 
-                $carta_trucada->expedients_id = $expedient->id;
-            }
-            else
-            {
+                $carta_trucada->expedients_id = $expedient['id'];
+            } else {
                 $carta_trucada->expedients_id = $expedientSelected['id'];
             }
 
@@ -175,10 +173,16 @@ class CartesTrucadesController extends Controller
                     $dada_personal->antecedents = $antecedents;
                     $dada_personal->save();
 
-                    $carta_trucada->dades_personals_id = $dada_personal->id;
+                    $carta_trucada->dades_personals_id = $dada_personal['id'];
                 }
             } else {
-                $carta_trucada->dades_personals_id = $phoneSelected->id;
+                $dada_personal = Dades_personals::find($phoneSelected['id']);
+                $dada_personal->telefon = $phone;
+                $dada_personal->adreca = $address;
+                $dada_personal->antecedents = $antecedents;
+                $dada_personal->save();
+
+                $carta_trucada->dades_personals_id = $dada_personal->id;
             }
 
             $carta_trucada->telefon = $phone;
@@ -199,7 +203,7 @@ class CartesTrucadesController extends Controller
                 if ($regionSelected) $region = $regionSelected['nom']; //Igual que con user.
                 if ($townSelected) $town = $townSelected['nom']; //Igual que con user.
 
-                switch($typeLocationSelected['id']) { //Igual que con user.
+                switch ($typeLocationSelected['id']) { //Igual que con user.
                     case 1: //CARRERS
                         $description_location = $typeStreet . " " . $nameStreet . " " . $numberStreet . ", Escalera " . $numberStair . ", Pis " . $numberFloor . " Porta " . $numberDoor;
 
@@ -233,14 +237,14 @@ class CartesTrucadesController extends Controller
             $carta_trucada_agencia = new Cartes_trucades_has_agencies();
             //Insert agencies.
             foreach ($agenciesSelected as $agency) {
-                $carta_trucada_agencia->cartes_trucades_id = $carta_trucada->id;
+                $carta_trucada_agencia->cartes_trucades_id = $carta_trucada['id'];
                 $carta_trucada_agencia->agencies_id = $agency['id'];
                 $carta_trucada_agencia->estats_agencies_id = 1; //Default contacted.
             }
-            if($agenciesSelected){
+
+            if ($agenciesSelected) {
                 $carta_trucada_agencia->save();
             }
-
 
             $response = (new Cartes_trucadesResource($carta_trucada))
                 ->response()

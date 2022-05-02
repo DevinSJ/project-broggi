@@ -30,14 +30,14 @@
                             <b-button
                                 variant="info"
                                 class="btn-sm"
-                                @click="fetchCalls()"
+                                @click="fetchCalls(1, false)"
                                 ><i class="fa-solid fa-filter"></i>
                                 Filtrar</b-button
                             >
                             <b-button
                                 class="btn-sm"
                                 variant="secondary ml-2"
-                                @click="fetchCalls()"
+                                @click="fetchCalls(1, true)"
                             >
                                 <i class="fa-solid fa-magnifying-glass"></i>
                                 Mostrar tots</b-button
@@ -90,12 +90,13 @@
 </template>
 
 <script>
-import moment from 'moment';
+import moment from "moment";
 
 export default {
     mounted() {
         document.title = "Trucades - Broggi";
         this.user = window.Vue.prototype.$user;
+
         this.fetchCalls();
     },
     data() {
@@ -150,7 +151,12 @@ export default {
         };
     },
     methods: {
-        fetchCalls(page = 1) {
+        fetchCalls(page = 1, clean_filter) {
+            if (clean_filter) {
+                this.filtre.call_code = "";
+                this.filtre.exp_code = "";
+            }
+
             this.isLoading = true;
 
             let consulta = new URLSearchParams({
@@ -186,12 +192,12 @@ export default {
                 });
         },
         toggleModalCalls(id_call) {
-            const call_selected = this.calls.data.filter(
+            const call_selected = this.calls.data.find(
                 (call) => call.id == id_call
             );
 
             if (call_selected)
-                this.$refs["modal-calls-details"].loadCallInfo(call_selected, true);
+                this.$refs["modal-calls-details"].loadCallInfo(call_selected);
         },
     },
 };

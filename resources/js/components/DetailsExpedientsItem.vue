@@ -86,12 +86,12 @@
                 <svg-vue icon="spinner" class="mx-auto my-auto" width="100" />
             </div>
         </b-modal>
-        <modal-calls-details ref="modal-calls-details"/>
+        <modal-calls-details ref="modal-calls-details" />
     </div>
 </template>
 
 <script>
-import moment from 'moment';
+import moment from "moment";
 
 export default {
     props: {
@@ -262,7 +262,7 @@ export default {
             this.$emit("toggleSelectExpedient", expedient);
         },
         toggleModalCalls(id_call) {
-            const call_selected = this.trucades.filter(
+            const call_selected = this.trucades.find(
                 (call) => call.id == id_call
             );
 
@@ -313,7 +313,7 @@ export default {
                     me.isLoading = false;
                 });
 
-            this.$refs['modal-call-expedients'].show();
+            this.$refs["modal-call-expedients"].show();
         },
     },
 };
