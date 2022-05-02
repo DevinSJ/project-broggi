@@ -263,7 +263,7 @@
                 <b-button
                     v-b-modal.modal-confirm-discard
                     variant="danger"
-                    class="font-weight-bold flex-fill mr-2"
+                    class="font-weight-bold mr-2 btn-half"
                     ><i class="fa-solid fa-x mr-2"></i>DESCARTAR
                     TRUCADA</b-button
                 >
@@ -271,14 +271,14 @@
                     v-b-modal.modal-options
                     v-if="!errorInputsMessage"
                     variant="primary"
-                    class="font-weight-bold flex-fill ml-2"
+                    class="font-weight-bold ml-2 btn-half"
                     ><i class="fa-solid fa-floppy-disk mr-2"></i>GUARDAR
                     TRUCADA</b-button
                 >
                 <b-button
                     v-else
                     variant="primary"
-                    class="font-weight-bold flex-fill ml-2"
+                    class="font-weight-bold ml-2 btn-half"
                     @click="dismissModalSummary"
                     ><i class="fa-solid fa-angle-left mr-2"></i>TORNAR AL
                     FORMULARI DE LA TRUCADA</b-button
@@ -299,13 +299,13 @@
             <template #modal-footer>
                 <b-button
                     variant="primary"
-                    class="font-weight-bold flex-fill mr-2"
+                    class="font-weight-bold mr-2 btn-half"
                     @click="dismissModalConfirm"
                     >CANCEL·LAR</b-button
                 >
                 <b-button
                     variant="danger"
-                    class="font-weight-bold flex-fill ml-2"
+                    class="font-weight-bold ml-2 btn-half"
                     @click="discardCall"
                     >CONFIRMAR</b-button
                 >
@@ -323,7 +323,7 @@
             <section class="d-flex p-0 mt-2">
                 <b-button
                     variant="danger"
-                    class="font-weight-bold flex-fill mr-2"
+                    class="font-weight-bold mr-2 btn-half"
                     v-b-modal.modal-expedients-call
                     style="position: relative;height: 100px; max-width: 50%;padding-left: 75px;font-size: 13px;"
                     ><i
@@ -334,7 +334,7 @@
                 >
                 <b-button
                     variant="primary"
-                    class="font-weight-bold flex-fill ml-2"
+                    class="font-weight-bold ml-2 btn-half"
                     @click="saveCall(true)"
                     style="position: relative;height: 100px; max-width: 50%;padding-left: 75px;font-size: 13px;"
                     ><i
@@ -403,7 +403,9 @@
             id="modal-loading-save"
             ref="modal-loading-save"
             body-class="myModal"
+            no-close-on-backdrop
             size="sm"
+            modal-class="zoominout"
             hide-footer
             hide-header
             centered
@@ -519,7 +521,7 @@ export default {
             this.isLoadingSave = true;
 
             let me = this;
-            console.log(this.call.user);
+
             axios
                 .post('api/cartes_trucades', this.call)
                 .then((response) => {
@@ -539,7 +541,7 @@ export default {
                 .finally(() => {
                     me.isLoadingSave = false;
 
-                    //setTimeout(() => this.$refs['modal-loading-save'].hide(), 3000);
+                    setTimeout(() => this.$refs['modal-loading-save'].hide(), 3000);
                 });
         },
     },
@@ -574,5 +576,8 @@ footer {
 }
 .text-pre-wrap {
     white-space: pre-wrap;
+}
+.btn-half {
+    flex: 1;
 }
 </style>
