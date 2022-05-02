@@ -465,7 +465,6 @@ export default {
         .then((response) => {
           if (response.status === 200) {
             me.trucades = response.data;
-            console.log(me.trucades);
             if (me.trucades.length == 0) {
               me.showTrucades = false;
             }
@@ -614,7 +613,6 @@ export default {
         });
     },
     toggleModalCalls(id_call) {
-        console.log(this.trucades[0])
       this.$refs["modal-calls-details"].loadCallInfo(this.trucades[0], false);
     },
   },

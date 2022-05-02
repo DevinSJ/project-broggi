@@ -410,8 +410,6 @@ export default {
       } else {
         this.call = call_selected;
       }
-      console.log(this.call);
-
       if (this.call.dada_personal == null) {
         this.adreca = "--";
         this.antecedents = "--";
