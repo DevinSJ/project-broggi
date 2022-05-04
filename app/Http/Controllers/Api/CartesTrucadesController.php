@@ -234,15 +234,12 @@ class CartesTrucadesController extends Controller
             $carta_trucada->incidents_id = $incidentSelected['id'] ?? null;
             $carta_trucada->save();
 
-            $carta_trucada_agencia = new Cartes_trucades_has_agencies();
             //Insert agencies.
             foreach ($agenciesSelected as $agency) {
+                $carta_trucada_agencia = new Cartes_trucades_has_agencies();
                 $carta_trucada_agencia->cartes_trucades_id = $carta_trucada['id'];
                 $carta_trucada_agencia->agencies_id = $agency['id'];
                 $carta_trucada_agencia->estats_agencies_id = 1; //Default contacted.
-            }
-
-            if ($agenciesSelected) {
                 $carta_trucada_agencia->save();
             }
 
