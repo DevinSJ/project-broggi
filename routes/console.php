@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
@@ -17,3 +18,13 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+
+//Command generate iseed to all tables.
+Artisan::command('iseed:all', function () {
+    $tables = DB::select('SHOW TABLES');
+    foreach ($tables as $table) {
+        foreach ($table as $key => $value) {
+            $this->call('iseed', ['tables' => $value, '--force' => true]);
+        }
+    }
+})->purpose('Generate iseed all tables');
