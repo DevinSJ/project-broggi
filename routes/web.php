@@ -21,32 +21,24 @@ Route::get('/', function () {
     return redirect(RouteServiceProvider::HOME);
 });
 
-Route::get('/login',[LoginController::class, 'show']);
-Route::get('/logout',[LoginController::class,'logout']);
+Route::get('/login', [LoginController::class, 'show'])->name('login');
+Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::post('/login', [LoginController::class, 'login']);
 
 Route::middleware(['auth'])->group(function () {
-    /*
-    Route::get('/{route?}', function ($route) {
-        if ($route !== "login") {
-            return view('templates.index');
-        } else {
-            return redirect("/login");
-        }
-    });*/
-    Route::get('/expedients', function () {
+    Route::get('expedients', function () {
         return view('templates.index');
     })->middleware(['role:1|2|3']);
 
-    Route::get('/trucades', function () {
+    Route::get('trucades', function () {
         return view('templates.index');
     })->middleware(['role:1|2|3']);
 
-    Route::get('/grafics', function () {
+    Route::get('grafics', function () {
         return view('templates.index');
     })->middleware(['role:1|2|3']);
 
-    Route::get('/usuaris', function () {
+    Route::get('usuaris', function () {
         return view('templates.index');
     })->middleware(['role:3']);
 

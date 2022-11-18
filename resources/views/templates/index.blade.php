@@ -26,8 +26,8 @@
     <!-- MAPBOX -->
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js"></script>
     <script src="https://unpkg.com/@mapbox/mapbox-sdk/umd/mapbox-sdk.min.js"></script>
-    <script type="text/javascript" src="{{ mix('js/svg.js') }}"></script>
-    <script type="text/javascript" src="{{ mix('js/app.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/svg.js')  }}"></script>
+    <script type="text/javascript" src="{{ asset('js/app.js')  }}"></script>
 </body>
 
 </html>

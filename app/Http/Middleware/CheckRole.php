@@ -35,7 +35,7 @@ class CheckRole
         }
         else
         {
-            return redirect('/login');
+            return redirect('login');
         }
 
         return $next($request);

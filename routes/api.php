@@ -45,17 +45,17 @@ Route::apiResource('agencies', AgenciesController::class);
 Route::apiResource('phones', DadesPersonalsController::class);
 
 // Customized routes
-Route::get('/expedients_call', [ExpedientsController::class, 'expedients_call']);
-Route::get('/cartes_trucades/list/{id_expedient}', [CartesTrucadesController::class, 'calls_from_expedients']);
-Route::post('/expedients/put/{expedient}', [ExpedientsController::class, 'update']);
+Route::get('expedients_call', [ExpedientsController::class, 'expedients_call']);
+Route::get('cartes_trucades/list/{id_expedient}', [CartesTrucadesController::class, 'calls_from_expedients']);
+Route::post('expedients/put/{expedient}', [ExpedientsController::class, 'update']);
 Route::post('cartes_trucades_has_agencies/put/{id_call}/{id_agency}', [CartesTrucadesHasAgenciesController::class, 'update']);
-Route::post('users/put/update/{user}',[UsuarisController::class,"update"]);
-Route::post('users/put/updatePassword/{user}',[UsuarisController::class,"updatePassword"]);
-Route::get('graph-expedients-status', [ExpedientsController::class,"graph_expedients_status"]);
-Route::get('graph-users-perfil', [UsuarisController::class,"graph_users_perfil"]);
-Route::get('graph-calls', [CartesTrucadesController::class,"graph_calls"]);
+Route::post('users/put/update/{user}', [UsuarisController::class, "update"]);
+Route::post('users/put/updatePassword/{user}', [UsuarisController::class, "updatePassword"]);
+Route::get('graph-expedients-status', [ExpedientsController::class, "graph_expedients_status"]);
+Route::get('graph-users-perfil', [UsuarisController::class, "graph_users_perfil"]);
+Route::get('graph-calls', [CartesTrucadesController::class, "graph_calls"]);
 
-Route::get('/video-interactive', function () {
+Route::get('video-interactive', function () {
     $path = public_path() . '\\video\\video-interactive.mp4';
 
     $size = filesize($path);
@@ -66,17 +66,17 @@ Route::get('/video-interactive', function () {
     $response->header('Content-Type', 'video/mp4');
     $response->header('Accept-Ranges', 'bytes');
     $response->header('Content-Length', $size);
-    $response->header('Content-Range', 'bytes 1-' . $size - 1 . '/' . $size);
+    $response->header('Content-Range', 'bytes 1-' . $size - 1 . '' . $size);
 
     return $response;
 });
 
 // Customized routes
-Route::get('/cartes_trucades/list/{id_expedient}', [CartesTrucadesController::class, 'calls_from_expedients']);
-Route::post('/expedients/put/{expedient}', [ExpedientsController::class, 'update']);
+Route::get('cartes_trucades/list/{id_expedient}', [CartesTrucadesController::class, 'calls_from_expedients']);
+Route::post('expedients/put/{expedient}', [ExpedientsController::class, 'update']);
 Route::post('cartes_trucades_has_agencies/put/{id_call}/{id_agency}', [CartesTrucadesHasAgenciesController::class, 'update']);
-Route::post('users/put/update/{user}',[UsuarisController::class,"update"]);
-Route::post('users/put/updatePassword/{user}',[UsuarisController::class,"updatePassword"]);
-Route::post('users/changePassword/{user}',[UsuarisController::class,"changePassword"]);
-Route::get('graph-expedients-status', [ExpedientsController::class,"graph_expedients_status"]);
-Route::get('graph-users-perfil', [UsuarisController::class,"graph_users_perfil"]);
+Route::post('users/put/update/{user}', [UsuarisController::class, "update"]);
+Route::post('users/put/updatePassword/{user}', [UsuarisController::class, "updatePassword"]);
+Route::post('users/changePassword/{user}', [UsuarisController::class, "changePassword"]);
+Route::get('graph-expedients-status', [ExpedientsController::class, "graph_expedients_status"]);
+Route::get('graph-users-perfil', [UsuarisController::class, "graph_users_perfil"]);
