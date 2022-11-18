@@ -20,11 +20,13 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 //Command generate iseed to all tables.
-Artisan::command('iseed:all', function () {
-    $tables = DB::select('SHOW TABLES');
+Artisan::command('iseed:all {--force}', function () {
+    //Get all tables from database.
+    $tables = DB::select('SHOW FULL TABLES WHERE Table_Type = "BASE TABLE"');
+
     foreach ($tables as $table) {
         foreach ($table as $key => $value) {
-            $this->call('iseed', ['tables' => $value, '--force' => true]);
+            $this->call('iseed', ['tables' => $value, '--force' => $this->option('force')]);
         }
     }
 })->purpose('Generate iseed all tables');
